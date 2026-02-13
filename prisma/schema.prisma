@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../server/db/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  pending
+  paid
+  production
+  shipped
+  delivered
+  cancelled
+}
+
+enum ProductType {
+  tshirt
+  hoodie
+  mug
+  sticker
+  other
+}
+
+enum ShirtSize {
+  PP
+  P
+  M
+  G
+  GG
+}
+
+// Necessary for Next auth
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  refresh_token_expires_in Int?
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String     @id @default(uuid())
+  name          String
+  email         String     @unique
+  password      String?
+  image         String?
+  emailVerified DateTime?
+  addresses     Address[]
+  orders        Order[]
+  cartItems     CartItem[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Address {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  recipient  String
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String
+  zipCode    String
+
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  type        ProductType
+  price       Decimal
+  active      Boolean     @default(true)
+
+  images   ProductImage[]
+  variants ProductVariant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductVariant {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  size  ShirtSize?
+  stock Int
+  price Decimal?
+
+  createdAt DateTime @default(now())
+}
+
+model ProductImage {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  url   String
+  order Int
+
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  status OrderStatus @default(pending)
+
+  totalQuantity Int
+  subtotal      Decimal
+  shippingPrice Decimal
+  total         Decimal
+
+  shipping Shipping?
+  address  OrderAddress?
+  items    OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  productType ProductType
+
+  productId String
+  name      String
+  size      String?
+  quantity  Int
+  price     Decimal
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderAddress {
+  id      String @id @default(uuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  recipient  String
+  street     String
+  number     String
+  complement String?
+  district   String
+  city       String
+  state      String
+  zipCode    String
+
+  createdAt DateTime @default(now())
+}
+
+model Shipping {
+  id      String @id @default(uuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  method      String // PAC, Sedex, J&T
+  price       Decimal
+  estimatedAt Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  variantId String
+  name      String
+  image     String
+  price     Decimal
+  quantity  Int
+  size      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, variantId])
+  @@index([userId])
+}
