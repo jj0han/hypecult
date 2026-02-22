@@ -229,6 +229,7 @@ export type ProductVariantWhereInput = {
   price?: Prisma.DecimalNullableFilter<"ProductVariant"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  mappings?: Prisma.ProductProviderMappingListRelationFilter
 }
 
 export type ProductVariantOrderByWithRelationInput = {
@@ -239,6 +240,7 @@ export type ProductVariantOrderByWithRelationInput = {
   price?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   product?: Prisma.ProductOrderByWithRelationInput
+  mappings?: Prisma.ProductProviderMappingOrderByRelationAggregateInput
 }
 
 export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
@@ -252,6 +254,7 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   price?: Prisma.DecimalNullableFilter<"ProductVariant"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
+  mappings?: Prisma.ProductProviderMappingListRelationFilter
 }, "id">
 
 export type ProductVariantOrderByWithAggregationInput = {
@@ -287,6 +290,7 @@ export type ProductVariantCreateInput = {
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+  mappings?: Prisma.ProductProviderMappingCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateInput = {
@@ -296,6 +300,7 @@ export type ProductVariantUncheckedCreateInput = {
   stock: number
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
+  mappings?: Prisma.ProductProviderMappingUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUpdateInput = {
@@ -305,6 +310,7 @@ export type ProductVariantUpdateInput = {
   price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+  mappings?: Prisma.ProductProviderMappingUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateInput = {
@@ -314,6 +320,7 @@ export type ProductVariantUncheckedUpdateInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mappings?: Prisma.ProductProviderMappingUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantCreateManyInput = {
@@ -389,6 +396,11 @@ export type ProductVariantSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
 }
 
+export type ProductVariantScalarRelationFilter = {
+  is?: Prisma.ProductVariantWhereInput
+  isNot?: Prisma.ProductVariantWhereInput
+}
+
 export type ProductVariantCreateNestedManyWithoutProductInput = {
   create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutProductInput, Prisma.ProductVariantUncheckedCreateWithoutProductInput> | Prisma.ProductVariantCreateWithoutProductInput[] | Prisma.ProductVariantUncheckedCreateWithoutProductInput[]
   connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutProductInput | Prisma.ProductVariantCreateOrConnectWithoutProductInput[]
@@ -451,12 +463,27 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type ProductVariantCreateNestedOneWithoutMappingsInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutMappingsInput, Prisma.ProductVariantUncheckedCreateWithoutMappingsInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutMappingsInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+}
+
+export type ProductVariantUpdateOneRequiredWithoutMappingsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductVariantCreateWithoutMappingsInput, Prisma.ProductVariantUncheckedCreateWithoutMappingsInput>
+  connectOrCreate?: Prisma.ProductVariantCreateOrConnectWithoutMappingsInput
+  upsert?: Prisma.ProductVariantUpsertWithoutMappingsInput
+  connect?: Prisma.ProductVariantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductVariantUpdateToOneWithWhereWithoutMappingsInput, Prisma.ProductVariantUpdateWithoutMappingsInput>, Prisma.ProductVariantUncheckedUpdateWithoutMappingsInput>
+}
+
 export type ProductVariantCreateWithoutProductInput = {
   id?: string
   size?: $Enums.ShirtSize | null
   stock: number
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
+  mappings?: Prisma.ProductProviderMappingCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantUncheckedCreateWithoutProductInput = {
@@ -465,6 +492,7 @@ export type ProductVariantUncheckedCreateWithoutProductInput = {
   stock: number
   price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
+  mappings?: Prisma.ProductProviderMappingUncheckedCreateNestedManyWithoutVariantInput
 }
 
 export type ProductVariantCreateOrConnectWithoutProductInput = {
@@ -505,6 +533,58 @@ export type ProductVariantScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ProductVariant"> | Date | string
 }
 
+export type ProductVariantCreateWithoutMappingsInput = {
+  id?: string
+  size?: $Enums.ShirtSize | null
+  stock: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Date | string
+  product: Prisma.ProductCreateNestedOneWithoutVariantsInput
+}
+
+export type ProductVariantUncheckedCreateWithoutMappingsInput = {
+  id?: string
+  productId: string
+  size?: $Enums.ShirtSize | null
+  stock: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Date | string
+}
+
+export type ProductVariantCreateOrConnectWithoutMappingsInput = {
+  where: Prisma.ProductVariantWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutMappingsInput, Prisma.ProductVariantUncheckedCreateWithoutMappingsInput>
+}
+
+export type ProductVariantUpsertWithoutMappingsInput = {
+  update: Prisma.XOR<Prisma.ProductVariantUpdateWithoutMappingsInput, Prisma.ProductVariantUncheckedUpdateWithoutMappingsInput>
+  create: Prisma.XOR<Prisma.ProductVariantCreateWithoutMappingsInput, Prisma.ProductVariantUncheckedCreateWithoutMappingsInput>
+  where?: Prisma.ProductVariantWhereInput
+}
+
+export type ProductVariantUpdateToOneWithWhereWithoutMappingsInput = {
+  where?: Prisma.ProductVariantWhereInput
+  data: Prisma.XOR<Prisma.ProductVariantUpdateWithoutMappingsInput, Prisma.ProductVariantUncheckedUpdateWithoutMappingsInput>
+}
+
+export type ProductVariantUpdateWithoutMappingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  product?: Prisma.ProductUpdateOneRequiredWithoutVariantsNestedInput
+}
+
+export type ProductVariantUncheckedUpdateWithoutMappingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
+  stock?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ProductVariantCreateManyProductInput = {
   id?: string
   size?: $Enums.ShirtSize | null
@@ -519,6 +599,7 @@ export type ProductVariantUpdateWithoutProductInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mappings?: Prisma.ProductProviderMappingUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateWithoutProductInput = {
@@ -527,6 +608,7 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
   stock?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mappings?: Prisma.ProductProviderMappingUncheckedUpdateManyWithoutVariantNestedInput
 }
 
 export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
@@ -538,6 +620,35 @@ export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
 }
 
 
+/**
+ * Count Type ProductVariantCountOutputType
+ */
+
+export type ProductVariantCountOutputType = {
+  mappings: number
+}
+
+export type ProductVariantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  mappings?: boolean | ProductVariantCountOutputTypeCountMappingsArgs
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductVariantCountOutputType
+   */
+  select?: Prisma.ProductVariantCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProductVariantCountOutputType without action
+ */
+export type ProductVariantCountOutputTypeCountMappingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductProviderMappingWhereInput
+}
+
 
 export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -547,6 +658,8 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
   price?: boolean
   createdAt?: boolean
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  mappings?: boolean | Prisma.ProductVariant$mappingsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["productVariant"]>
 
 export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -581,6 +694,8 @@ export type ProductVariantSelectScalar = {
 export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "size" | "stock" | "price" | "createdAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
+  mappings?: boolean | Prisma.ProductVariant$mappingsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProductVariantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProductVariantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -593,6 +708,7 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "ProductVariant"
   objects: {
     product: Prisma.$ProductPayload<ExtArgs>
+    mappings: Prisma.$ProductProviderMappingPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -996,6 +1112,7 @@ readonly fields: ProductVariantFieldRefs;
 export interface Prisma__ProductVariantClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  mappings<T extends Prisma.ProductVariant$mappingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductVariant$mappingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductProviderMappingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1424,6 +1541,30 @@ export type ProductVariantDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many ProductVariants to delete.
    */
   limit?: number
+}
+
+/**
+ * ProductVariant.mappings
+ */
+export type ProductVariant$mappingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductProviderMapping
+   */
+  select?: Prisma.ProductProviderMappingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductProviderMapping
+   */
+  omit?: Prisma.ProductProviderMappingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductProviderMappingInclude<ExtArgs> | null
+  where?: Prisma.ProductProviderMappingWhereInput
+  orderBy?: Prisma.ProductProviderMappingOrderByWithRelationInput | Prisma.ProductProviderMappingOrderByWithRelationInput[]
+  cursor?: Prisma.ProductProviderMappingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductProviderMappingScalarFieldEnum | Prisma.ProductProviderMappingScalarFieldEnum[]
 }
 
 /**

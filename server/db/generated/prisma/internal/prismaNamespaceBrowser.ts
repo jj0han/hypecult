@@ -63,7 +63,9 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
   Shipping: 'Shipping',
-  CartItem: 'CartItem'
+  CartItem: 'CartItem',
+  ProductProviderMapping: 'ProductProviderMapping',
+  PaymentWebhookEvent: 'PaymentWebhookEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -192,6 +194,15 @@ export const OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   status: 'status',
+  paymentIntentId: 'paymentIntentId',
+  externalProvider: 'externalProvider',
+  externalOrderId: 'externalOrderId',
+  externalStatus: 'externalStatus',
+  externalSyncedAt: 'externalSyncedAt',
+  externalLastError: 'externalLastError',
+  externalRetryCount: 'externalRetryCount',
+  externalLastAttemptAt: 'externalLastAttemptAt',
+  externalNextRetryAt: 'externalNextRetryAt',
   totalQuantity: 'totalQuantity',
   subtotal: 'subtotal',
   shippingPrice: 'shippingPrice',
@@ -208,6 +219,7 @@ export const OrderItemScalarFieldEnum = {
   orderId: 'orderId',
   productType: 'productType',
   productId: 'productId',
+  variantId: 'variantId',
   name: 'name',
   size: 'size',
   quantity: 'quantity',
@@ -263,6 +275,30 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const ProductProviderMappingScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  variantId: 'variantId',
+  externalProductId: 'externalProductId',
+  externalVariantId: 'externalVariantId',
+  externalSku: 'externalSku',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductProviderMappingScalarFieldEnum = (typeof ProductProviderMappingScalarFieldEnum)[keyof typeof ProductProviderMappingScalarFieldEnum]
+
+
+export const PaymentWebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  eventType: 'eventType',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentWebhookEventScalarFieldEnum = (typeof PaymentWebhookEventScalarFieldEnum)[keyof typeof PaymentWebhookEventScalarFieldEnum]
 
 
 export const SortOrder = {

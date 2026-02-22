@@ -19,6 +19,7 @@ export const createOrderSchema = z.object({
   items: z.array(createOrderItemSchema).min(1),
   address: addressSchema,
   shipping: shippingOptionSchema,
+  paymentIntentId: z.string().optional(),
 });
 
 export const orderSchema = createOrderSchema.extend({

@@ -81,6 +81,11 @@ export default function Page() {
                       .map((item) => `${item.name} (${item.quantity})`)
                       .join(", ")}
                   </ItemDescription>
+                  {order.externalStatus && (
+                    <ItemDescription>
+                      Produção: {order.externalStatus}
+                    </ItemDescription>
+                  )}
                 </ItemContent>
               </Item>
             </CardContent>

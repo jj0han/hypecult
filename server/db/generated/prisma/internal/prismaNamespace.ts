@@ -396,7 +396,9 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
   Shipping: 'Shipping',
-  CartItem: 'CartItem'
+  CartItem: 'CartItem',
+  ProductProviderMapping: 'ProductProviderMapping',
+  PaymentWebhookEvent: 'PaymentWebhookEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +414,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "user" | "verificationToken" | "address" | "product" | "productVariant" | "productImage" | "order" | "orderItem" | "orderAddress" | "shipping" | "cartItem"
+    modelProps: "account" | "session" | "user" | "verificationToken" | "address" | "product" | "productVariant" | "productImage" | "order" | "orderItem" | "orderAddress" | "shipping" | "cartItem" | "productProviderMapping" | "paymentWebhookEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1380,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductProviderMapping: {
+      payload: Prisma.$ProductProviderMappingPayload<ExtArgs>
+      fields: Prisma.ProductProviderMappingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductProviderMappingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductProviderMappingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductProviderMappingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductProviderMappingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        findMany: {
+          args: Prisma.ProductProviderMappingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>[]
+        }
+        create: {
+          args: Prisma.ProductProviderMappingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        createMany: {
+          args: Prisma.ProductProviderMappingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductProviderMappingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductProviderMappingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        update: {
+          args: Prisma.ProductProviderMappingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductProviderMappingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductProviderMappingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductProviderMappingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductProviderMappingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductProviderMappingPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductProviderMappingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductProviderMapping>
+        }
+        groupBy: {
+          args: Prisma.ProductProviderMappingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductProviderMappingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductProviderMappingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductProviderMappingCountAggregateOutputType> | number
+        }
+      }
+    }
+    PaymentWebhookEvent: {
+      payload: Prisma.$PaymentWebhookEventPayload<ExtArgs>
+      fields: Prisma.PaymentWebhookEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentWebhookEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentWebhookEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentWebhookEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentWebhookEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentWebhookEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentWebhookEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentWebhookEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentWebhookEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        update: {
+          args: Prisma.PaymentWebhookEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentWebhookEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentWebhookEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentWebhookEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentWebhookEventPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentWebhookEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePaymentWebhookEvent>
+        }
+        groupBy: {
+          args: Prisma.PaymentWebhookEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentWebhookEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentWebhookEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentWebhookEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1527,6 +1677,15 @@ export const OrderScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   status: 'status',
+  paymentIntentId: 'paymentIntentId',
+  externalProvider: 'externalProvider',
+  externalOrderId: 'externalOrderId',
+  externalStatus: 'externalStatus',
+  externalSyncedAt: 'externalSyncedAt',
+  externalLastError: 'externalLastError',
+  externalRetryCount: 'externalRetryCount',
+  externalLastAttemptAt: 'externalLastAttemptAt',
+  externalNextRetryAt: 'externalNextRetryAt',
   totalQuantity: 'totalQuantity',
   subtotal: 'subtotal',
   shippingPrice: 'shippingPrice',
@@ -1543,6 +1702,7 @@ export const OrderItemScalarFieldEnum = {
   orderId: 'orderId',
   productType: 'productType',
   productId: 'productId',
+  variantId: 'variantId',
   name: 'name',
   size: 'size',
   quantity: 'quantity',
@@ -1598,6 +1758,30 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const ProductProviderMappingScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  variantId: 'variantId',
+  externalProductId: 'externalProductId',
+  externalVariantId: 'externalVariantId',
+  externalSku: 'externalSku',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductProviderMappingScalarFieldEnum = (typeof ProductProviderMappingScalarFieldEnum)[keyof typeof ProductProviderMappingScalarFieldEnum]
+
+
+export const PaymentWebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  eventType: 'eventType',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentWebhookEventScalarFieldEnum = (typeof PaymentWebhookEventScalarFieldEnum)[keyof typeof PaymentWebhookEventScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1736,6 +1920,20 @@ export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'ExternalProvider'
+ */
+export type EnumExternalProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExternalProvider'>
+    
+
+
+/**
+ * Reference to a field of type 'ExternalProvider[]'
+ */
+export type ListEnumExternalProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExternalProvider[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -1856,6 +2054,8 @@ export type GlobalOmitConfig = {
   orderAddress?: Prisma.OrderAddressOmit
   shipping?: Prisma.ShippingOmit
   cartItem?: Prisma.CartItemOmit
+  productProviderMapping?: Prisma.ProductProviderMappingOmit
+  paymentWebhookEvent?: Prisma.PaymentWebhookEventOmit
 }
 
 /* Types for Logging */

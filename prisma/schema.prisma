@@ -24,6 +24,10 @@ enum ProductType {
   other
 }
 
+enum ExternalProvider {
+  dimona
+}
+
 enum ShirtSize {
   PP
   P
@@ -121,9 +125,10 @@ model ProductVariant {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  size  ShirtSize?
-  stock Int
-  price Decimal?
+  size     ShirtSize?
+  stock    Int
+  price    Decimal?
+  mappings ProductProviderMapping[]
 
   createdAt DateTime @default(now())
 }
@@ -144,7 +149,17 @@ model Order {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  status OrderStatus @default(pending)
+  status          OrderStatus @default(pending)
+  paymentIntentId String?     @unique
+
+  externalProvider      ExternalProvider?
+  externalOrderId       String?
+  externalStatus        String?
+  externalSyncedAt      DateTime?
+  externalLastError     String?
+  externalRetryCount    Int               @default(0)
+  externalLastAttemptAt DateTime?
+  externalNextRetryAt   DateTime?
 
   totalQuantity Int
   subtotal      Decimal
@@ -158,7 +173,10 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([externalProvider, externalOrderId])
   @@index([userId])
+  @@index([externalProvider, externalStatus])
+  @@index([externalNextRetryAt])
 }
 
 model OrderItem {
@@ -169,6 +187,7 @@ model OrderItem {
   productType ProductType
 
   productId String
+  variantId String?
   name      String
   size      String?
   quantity  Int
@@ -227,4 +246,28 @@ model CartItem {
 
   @@unique([userId, variantId])
   @@index([userId])
+}
+
+model ProductProviderMapping {
+  id        String           @id @default(uuid())
+  provider  ExternalProvider
+  variantId String
+  variant   ProductVariant   @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  externalProductId String?
+  externalVariantId String?
+  externalSku       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([provider, variantId])
+  @@index([provider, externalVariantId])
+}
+
+model PaymentWebhookEvent {
+  id        String   @id
+  provider  String
+  eventType String
+  createdAt DateTime @default(now())
 }

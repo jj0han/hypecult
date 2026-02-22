@@ -297,6 +297,13 @@ export type EnumOrderStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
 }
 
+export type EnumExternalProviderNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel> | $Enums.ExternalProvider | null
+}
+
 export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.OrderStatus | Prisma.EnumOrderStatusFieldRefInput<$PrismaModel>
   in?: $Enums.OrderStatus[] | Prisma.ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -305,6 +312,33 @@ export type EnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
+}
+
+export type EnumExternalProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumExternalProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.ExternalProvider | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel>
+}
+
+export type EnumExternalProviderFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel>
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel> | $Enums.ExternalProvider
+}
+
+export type EnumExternalProviderWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel>
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExternalProviderWithAggregatesFilter<$PrismaModel> | $Enums.ExternalProvider
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel>
 }
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -603,6 +637,13 @@ export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
 }
 
+export type NestedEnumExternalProviderNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel> | $Enums.ExternalProvider | null
+}
+
 export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.OrderStatus | Prisma.EnumOrderStatusFieldRefInput<$PrismaModel>
   in?: $Enums.OrderStatus[] | Prisma.ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -611,6 +652,33 @@ export type NestedEnumOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOrderStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumExternalProviderNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumExternalProviderNullableWithAggregatesFilter<$PrismaModel> | $Enums.ExternalProvider | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExternalProviderNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumExternalProviderFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel>
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel> | $Enums.ExternalProvider
+}
+
+export type NestedEnumExternalProviderWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExternalProvider | Prisma.EnumExternalProviderFieldRefInput<$PrismaModel>
+  in?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExternalProvider[] | Prisma.ListEnumExternalProviderFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExternalProviderWithAggregatesFilter<$PrismaModel> | $Enums.ExternalProvider
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExternalProviderFilter<$PrismaModel>
 }
 
 

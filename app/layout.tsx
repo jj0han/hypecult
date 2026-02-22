@@ -20,7 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} no-scrollbar scroll-smooth`}>
+    <html
+      lang="pt-BR"
+      className={`${outfit.variable} no-scrollbar scroll-smooth`}
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -8,7 +8,7 @@ export default function Logo({ className }: { className?: string }) {
     <motion.div
       layoutId="logo-motion"
       layout="position"
-      className={cn("h-8 p-2", className)}
+      className={cn("sm:h-9 h-8 p-2", className)}
     >
       <Link href={"/"}>
         <Image

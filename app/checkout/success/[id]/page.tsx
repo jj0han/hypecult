@@ -3,6 +3,7 @@ import { Bag, CheckCircle, Shirt01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,12 +24,26 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/lib/trpc";
 import { formatCurrency } from "@/utils/formatters";
+import { getStatusLabel, getStatusVariant } from "@/utils/helpers";
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
   const trpc = useTRPC();
-  const { data, isPending } = useQuery(trpc.order.byId.queryOptions({ id }));
+  const { data, isPending, refetch } = useQuery({
+    ...trpc.order.byId.queryOptions({ id }),
+    refetchInterval: 5000,
+  });
   const router = useRouter();
+
+  const statusMessage =
+    data?.status === "pending"
+      ? "Pagamento pendente. Assim que confirmado, iniciaremos a produção com a Dimona."
+      : data?.status === "paid"
+        ? "Pagamento confirmado. Seu pedido esta sendo enviado para a produção."
+        : data?.status === "production"
+          ? "Pedido em produção sob demanda."
+          : "Acompanhe o status do seu pedido e detalhes do pagamento.";
+
   return (
     <div className="grid grid-cols-3 gap-8">
       <Card className="col-span-2">
@@ -39,11 +54,9 @@ export default function Page() {
               strokeWidth={2}
               className="size-5 text-green-600"
             />
-            Pedido confirmado
+            Pedido criado
           </CardTitle>
-          <CardDescription>
-            Acompanhe o status do seu pedido e detalhes do pagamento.
-          </CardDescription>
+          <CardDescription>{statusMessage}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
           {isPending ? (
@@ -64,7 +77,17 @@ export default function Page() {
                   </div>
                   <div className="flex justify-between">
                     <span>Status do pedido</span>
-                    <span className="font-bold">{data?.status}</span>
+                    <Badge
+                      variant={getStatusVariant(data?.status ?? "pending")}
+                    >
+                      {getStatusLabel(data?.status ?? "pending")}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Status na produção</span>
+                    <span className="font-medium">
+                      {data?.externalStatus ?? "-"}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Frete</span>
@@ -76,6 +99,18 @@ export default function Page() {
                   </div>
                 </ItemContent>
               </Item>
+              {data?.externalLastError && (
+                <Item variant={"muted"}>
+                  <ItemHeader>
+                    <ItemTitle>Observação de produção</ItemTitle>
+                  </ItemHeader>
+                  <ItemContent>
+                    <ItemDescription className="line-clamp-none">
+                      {data.externalLastError}
+                    </ItemDescription>
+                  </ItemContent>
+                </Item>
+              )}
               <Item variant={"muted"}>
                 <ItemHeader>
                   <ItemTitle>Endereço de entrega</ItemTitle>
@@ -93,7 +128,19 @@ export default function Page() {
           )}
         </CardContent>
         <CardFooter>
-          <Button size={"lg"} className="w-full sm:w-auto sm:ml-auto">
+          <Button
+            size={"lg"}
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => refetch()}
+          >
+            Atualizar status
+          </Button>
+          <Button
+            size={"lg"}
+            className="w-full sm:w-auto sm:ml-auto"
+            onClick={() => router.push("/")}
+          >
             <HugeiconsIcon icon={Bag} strokeWidth={2} />
             Ir para a loja
           </Button>

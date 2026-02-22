@@ -31,7 +31,7 @@ export default function Page() {
   const firstName = session.data?.user?.name?.split(" ")[0] ?? "Cliente";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Olá, {firstName}</CardTitle>

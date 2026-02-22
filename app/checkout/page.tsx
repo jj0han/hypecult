@@ -27,7 +27,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -164,6 +164,7 @@ type CheckoutFormData = z.infer<typeof checkoutFormSchema>;
 
 export default function Page() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { cart, clear } = useCart();
   const session = useSession();
   const [currentStep, setCurrentStep] = useState<number>(
@@ -242,6 +243,7 @@ export default function Page() {
     trpc.order.create.mutationOptions({
       onSuccess: (order) => {
         clear(); // Clear cart after successful order creation
+        toast.success("Pedido criado. Aguardando confirmação de pagamento.");
         router.push(`/checkout/success/${order.id}`);
       },
       onError: (error) => {
@@ -577,8 +579,10 @@ export default function Page() {
     }
 
     const normalizedZipCode = watchedValues.zipCode.replace(/\D/g, "");
+    const paymentIntentId = searchParams.get("payment_intent") ?? undefined;
     await createOrder.mutateAsync({
       items: checkoutItems,
+      paymentIntentId,
       address: {
         recipient:
           `${watchedValues.firstName} ${watchedValues.lastName}`.trim(),
@@ -1549,6 +1553,15 @@ export default function Page() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-6">
+                      <Item variant={"muted"}>
+                        <ItemContent>
+                          <ItemDescription className="line-clamp-none">
+                            O pedido será criado agora e o status será
+                            atualizado automaticamente após a confirmação do
+                            pagamento.
+                          </ItemDescription>
+                        </ItemContent>
+                      </Item>
                       {/* Shipping Address Review */}
                       <Item variant={"muted"}>
                         <ItemHeader>

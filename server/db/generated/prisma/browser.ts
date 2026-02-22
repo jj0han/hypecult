@@ -82,3 +82,13 @@ export type Shipping = Prisma.ShippingModel
  * 
  */
 export type CartItem = Prisma.CartItemModel
+/**
+ * Model ProductProviderMapping
+ * 
+ */
+export type ProductProviderMapping = Prisma.ProductProviderMappingModel
+/**
+ * Model PaymentWebhookEvent
+ * 
+ */
+export type PaymentWebhookEvent = Prisma.PaymentWebhookEventModel

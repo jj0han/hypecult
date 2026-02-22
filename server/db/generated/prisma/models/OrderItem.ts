@@ -41,6 +41,7 @@ export type OrderItemMinAggregateOutputType = {
   orderId: string | null
   productType: $Enums.ProductType | null
   productId: string | null
+  variantId: string | null
   name: string | null
   size: string | null
   quantity: number | null
@@ -53,6 +54,7 @@ export type OrderItemMaxAggregateOutputType = {
   orderId: string | null
   productType: $Enums.ProductType | null
   productId: string | null
+  variantId: string | null
   name: string | null
   size: string | null
   quantity: number | null
@@ -65,6 +67,7 @@ export type OrderItemCountAggregateOutputType = {
   orderId: number
   productType: number
   productId: number
+  variantId: number
   name: number
   size: number
   quantity: number
@@ -89,6 +92,7 @@ export type OrderItemMinAggregateInputType = {
   orderId?: true
   productType?: true
   productId?: true
+  variantId?: true
   name?: true
   size?: true
   quantity?: true
@@ -101,6 +105,7 @@ export type OrderItemMaxAggregateInputType = {
   orderId?: true
   productType?: true
   productId?: true
+  variantId?: true
   name?: true
   size?: true
   quantity?: true
@@ -113,6 +118,7 @@ export type OrderItemCountAggregateInputType = {
   orderId?: true
   productType?: true
   productId?: true
+  variantId?: true
   name?: true
   size?: true
   quantity?: true
@@ -212,6 +218,7 @@ export type OrderItemGroupByOutputType = {
   orderId: string
   productType: $Enums.ProductType
   productId: string
+  variantId: string | null
   name: string
   size: string | null
   quantity: number
@@ -247,6 +254,7 @@ export type OrderItemWhereInput = {
   orderId?: Prisma.StringFilter<"OrderItem"> | string
   productType?: Prisma.EnumProductTypeFilter<"OrderItem"> | $Enums.ProductType
   productId?: Prisma.StringFilter<"OrderItem"> | string
+  variantId?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   size?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   quantity?: Prisma.IntFilter<"OrderItem"> | number
@@ -260,6 +268,7 @@ export type OrderItemOrderByWithRelationInput = {
   orderId?: Prisma.SortOrder
   productType?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  variantId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -276,6 +285,7 @@ export type OrderItemWhereUniqueInput = Prisma.AtLeast<{
   orderId?: Prisma.StringFilter<"OrderItem"> | string
   productType?: Prisma.EnumProductTypeFilter<"OrderItem"> | $Enums.ProductType
   productId?: Prisma.StringFilter<"OrderItem"> | string
+  variantId?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   size?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   quantity?: Prisma.IntFilter<"OrderItem"> | number
@@ -289,6 +299,7 @@ export type OrderItemOrderByWithAggregationInput = {
   orderId?: Prisma.SortOrder
   productType?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  variantId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -309,6 +320,7 @@ export type OrderItemScalarWhereWithAggregatesInput = {
   orderId?: Prisma.StringWithAggregatesFilter<"OrderItem"> | string
   productType?: Prisma.EnumProductTypeWithAggregatesFilter<"OrderItem"> | $Enums.ProductType
   productId?: Prisma.StringWithAggregatesFilter<"OrderItem"> | string
+  variantId?: Prisma.StringNullableWithAggregatesFilter<"OrderItem"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"OrderItem"> | string
   size?: Prisma.StringNullableWithAggregatesFilter<"OrderItem"> | string | null
   quantity?: Prisma.IntWithAggregatesFilter<"OrderItem"> | number
@@ -320,6 +332,7 @@ export type OrderItemCreateInput = {
   id?: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -333,6 +346,7 @@ export type OrderItemUncheckedCreateInput = {
   orderId: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -344,6 +358,7 @@ export type OrderItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -357,6 +372,7 @@ export type OrderItemUncheckedUpdateInput = {
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -369,6 +385,7 @@ export type OrderItemCreateManyInput = {
   orderId: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -380,6 +397,7 @@ export type OrderItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -392,6 +410,7 @@ export type OrderItemUncheckedUpdateManyInput = {
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -414,6 +433,7 @@ export type OrderItemCountOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productType?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  variantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   size?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -431,6 +451,7 @@ export type OrderItemMaxOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productType?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  variantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   size?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -443,6 +464,7 @@ export type OrderItemMinOrderByAggregateInput = {
   orderId?: Prisma.SortOrder
   productType?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  variantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   size?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -501,6 +523,7 @@ export type OrderItemCreateWithoutOrderInput = {
   id?: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -512,6 +535,7 @@ export type OrderItemUncheckedCreateWithoutOrderInput = {
   id?: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -553,6 +577,7 @@ export type OrderItemScalarWhereInput = {
   orderId?: Prisma.StringFilter<"OrderItem"> | string
   productType?: Prisma.EnumProductTypeFilter<"OrderItem"> | $Enums.ProductType
   productId?: Prisma.StringFilter<"OrderItem"> | string
+  variantId?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   name?: Prisma.StringFilter<"OrderItem"> | string
   size?: Prisma.StringNullableFilter<"OrderItem"> | string | null
   quantity?: Prisma.IntFilter<"OrderItem"> | number
@@ -564,6 +589,7 @@ export type OrderItemCreateManyOrderInput = {
   id?: string
   productType: $Enums.ProductType
   productId: string
+  variantId?: string | null
   name: string
   size?: string | null
   quantity: number
@@ -575,6 +601,7 @@ export type OrderItemUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -586,6 +613,7 @@ export type OrderItemUncheckedUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -597,6 +625,7 @@ export type OrderItemUncheckedUpdateManyWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productType?: Prisma.EnumProductTypeFieldUpdateOperationsInput | $Enums.ProductType
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  variantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -611,6 +640,7 @@ export type OrderItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   orderId?: boolean
   productType?: boolean
   productId?: boolean
+  variantId?: boolean
   name?: boolean
   size?: boolean
   quantity?: boolean
@@ -624,6 +654,7 @@ export type OrderItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   orderId?: boolean
   productType?: boolean
   productId?: boolean
+  variantId?: boolean
   name?: boolean
   size?: boolean
   quantity?: boolean
@@ -637,6 +668,7 @@ export type OrderItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   orderId?: boolean
   productType?: boolean
   productId?: boolean
+  variantId?: boolean
   name?: boolean
   size?: boolean
   quantity?: boolean
@@ -650,6 +682,7 @@ export type OrderItemSelectScalar = {
   orderId?: boolean
   productType?: boolean
   productId?: boolean
+  variantId?: boolean
   name?: boolean
   size?: boolean
   quantity?: boolean
@@ -657,7 +690,7 @@ export type OrderItemSelectScalar = {
   createdAt?: boolean
 }
 
-export type OrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "productType" | "productId" | "name" | "size" | "quantity" | "price" | "createdAt", ExtArgs["result"]["orderItem"]>
+export type OrderItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "productType" | "productId" | "variantId" | "name" | "size" | "quantity" | "price" | "createdAt", ExtArgs["result"]["orderItem"]>
 export type OrderItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }
@@ -678,6 +711,7 @@ export type $OrderItemPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     orderId: string
     productType: $Enums.ProductType
     productId: string
+    variantId: string | null
     name: string
     size: string | null
     quantity: number
@@ -1111,6 +1145,7 @@ export interface OrderItemFieldRefs {
   readonly orderId: Prisma.FieldRef<"OrderItem", 'String'>
   readonly productType: Prisma.FieldRef<"OrderItem", 'ProductType'>
   readonly productId: Prisma.FieldRef<"OrderItem", 'String'>
+  readonly variantId: Prisma.FieldRef<"OrderItem", 'String'>
   readonly name: Prisma.FieldRef<"OrderItem", 'String'>
   readonly size: Prisma.FieldRef<"OrderItem", 'String'>
   readonly quantity: Prisma.FieldRef<"OrderItem", 'Int'>

@@ -32,6 +32,13 @@ export const ProductType = {
 export type ProductType = (typeof ProductType)[keyof typeof ProductType]
 
 
+export const ExternalProvider = {
+  dimona: 'dimona'
+} as const
+
+export type ExternalProvider = (typeof ExternalProvider)[keyof typeof ExternalProvider]
+
+
 export const ShirtSize = {
   PP: 'PP',
   P: 'P',

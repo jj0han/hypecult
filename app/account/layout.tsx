@@ -1,5 +1,6 @@
 "use client";
 import {
+  ArrowLeft01Icon,
   GridViewIcon,
   Logout01Icon,
   MapPin,
@@ -7,8 +8,11 @@ import {
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+  useSelectedLayoutSegments,
+} from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Fragment } from "react/jsx-runtime";
 import Footer from "@/components/footer";
@@ -27,6 +31,8 @@ export default function RootLayout({
   const { data, status } = useSession();
   const { logOut } = useAuth();
   const pathname = usePathname();
+  const segments = useSelectedLayoutSegments();
+  const router = useRouter();
 
   const accountLinks = [
     {
@@ -51,13 +57,21 @@ export default function RootLayout({
       <Header />
       <div className="p-6 min-h-svh">
         <div className="max-w-7xl mx-auto space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold">Minha conta</h1>
-            <p className="text-sm text-muted-foreground">
-              Gerencie seus pedidos, endereços e dados de compra.
-            </p>
-          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <h1 className="text-2xl font-bold">Minha conta</h1>
+              <p className="text-sm text-muted-foreground">
+                Gerencie seus pedidos, endereços e dados de compra.
+              </p>
+            </div>
+            <div className="lg:col-span-2 flex items-end gap-2 w-full">
+              {segments.length > 1 && (
+                <Button variant="outline" onClick={() => router.back()}>
+                  <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+                  Voltar
+                </Button>
+              )}
+            </div>
             <aside className="lg:col-span-1">
               <Card className="lg:sticky lg:top-6">
                 <CardHeader>
@@ -100,13 +114,11 @@ export default function RootLayout({
                         variant={isActive ? "secondary" : "ghost"}
                         size="lg"
                         className="justify-start w-full"
-                        render={
-                          <Link href={href}>
-                            <HugeiconsIcon icon={icon} strokeWidth={2} />
-                            <span>{label}</span>
-                          </Link>
-                        }
-                      />
+                        onClick={() => router.push(href)}
+                      >
+                        <HugeiconsIcon icon={icon} strokeWidth={2} />
+                        <span>{label}</span>
+                      </Button>
                     );
                   })}
                   <Button

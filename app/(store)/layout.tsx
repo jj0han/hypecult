@@ -1,4 +1,3 @@
-"use client";
 import { Fragment } from "react/jsx-runtime";
 import Footer from "@/components/footer";
 import Header from "@/components/header";

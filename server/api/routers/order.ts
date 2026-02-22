@@ -83,6 +83,7 @@ export const orderRouter = createTRPCRouter({
         return await tx.order.create({
           data: {
             userId: ctx.session.user.id,
+            paymentIntentId: input.paymentIntentId,
             subtotal,
             totalQuantity,
             shippingPrice: shipping.price,
@@ -92,6 +93,7 @@ export const orderRouter = createTRPCRouter({
                 data: validatedItems.map(({ item, variant, unitPrice }) => ({
                   productType: variant.product.type,
                   productId: item.productId,
+                  variantId: item.variantId,
                   name: variant.product.name,
                   size: variant.size ?? undefined,
                   quantity: item.quantity,
