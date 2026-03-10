@@ -36,7 +36,17 @@ export default function Page() {
   if (!data?.length) {
     return (
       <Card>
-        <CardContent className="p-6 text-sm text-muted-foreground">
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <HugeiconsIcon
+              icon={ShoppingBag}
+              strokeWidth={2}
+              className="size-5"
+            />
+            Pedidos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
           Voce ainda nao fez nenhum pedido.
         </CardContent>
       </Card>
@@ -67,7 +77,7 @@ export default function Page() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2">
               <Item variant={"muted"}>
                 <ItemContent className="grid grid-cols-2 gap-4!">
                   <ItemDescription>
@@ -81,11 +91,6 @@ export default function Page() {
                       .map((item) => `${item.name} (${item.quantity})`)
                       .join(", ")}
                   </ItemDescription>
-                  {order.externalStatus && (
-                    <ItemDescription>
-                      Produção: {order.externalStatus}
-                    </ItemDescription>
-                  )}
                 </ItemContent>
               </Item>
             </CardContent>

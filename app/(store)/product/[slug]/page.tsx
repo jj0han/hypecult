@@ -14,9 +14,10 @@ import {
   SlowWindsIcon,
   StarAward02Icon,
   Sun01Icon,
+  Truck,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -59,6 +60,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -70,6 +72,8 @@ import {
 } from "@/components/ui/table";
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
+import { formatZipCode } from "@/utils/formatters";
+import { getShirtSizeLabel } from "@/utils/helpers";
 
 export default function Page() {
   const { slug } = useParams<{ slug: string }>();
@@ -79,6 +83,7 @@ export default function Page() {
     trpc.product.byId.queryOptions({ id: slug })
   );
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [cep, setCep] = useState("");
 
   const careItems = [
     {
@@ -127,6 +132,35 @@ export default function Page() {
     }
   }
 
+  const createQuote = useMutation(trpc.prodigiQuote.create.mutationOptions());
+  // const { data: productDetails } = useQuery(
+  //   trpc.prodigiProductDetails.bySku.queryOptions("TEE-AA-1301")
+  // );
+
+  function onSubmit() {
+    createQuote.mutate({
+      items: [
+        {
+          assets: [
+            {
+              printArea: "front",
+            },
+          ],
+          attributes: {
+            color: "black",
+            size: getShirtSizeLabel(
+              data?.variants.find((v) => v.id === selectedVariant)?.size
+            ),
+          },
+          copies: 1,
+          sku: data?.sku ?? "",
+        },
+      ],
+      destinationCountryCode: "BR",
+      currencyCode: "USD",
+    });
+  }
+
   return (
     <div className="px-6">
       <div className="max-w-7xl mx-auto">
@@ -140,7 +174,7 @@ export default function Page() {
                 <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
               </BreadcrumbSeparator>
               <BreadcrumbItem>
-                <Link href="/product">Produtos</Link>
+                <Link href="/">Produtos</Link>
               </BreadcrumbItem>
               <BreadcrumbSeparator>
                 <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
@@ -258,6 +292,8 @@ export default function Page() {
                             add({
                               image: data.images[0].url,
                               name: data.name,
+                              sku: data.sku,
+                              color: variant?.color ?? "",
                               price: productPrice,
                               quantity: 1,
                               variantId: selectedVariant,
@@ -277,41 +313,88 @@ export default function Page() {
                         </Button>
                       </div>
 
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-base">Calcular frete</Label>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-base">Calcular frete</Label>
+                            <Link
+                              href={
+                                "https://buscacepinter.correios.com.br/app/endereco/index.php"
+                              }
+                              target="_blank"
+                              className="text-sm text-muted-foreground"
+                            >
+                              Não sei meu CEP
+                            </Link>
+                          </div>
+                          <InputGroup>
+                            <InputGroupInput
+                              maxLength={8}
+                              type="text"
+                              placeholder="CEP"
+                              disabled={
+                                createQuote.isPending || !selectedVariant
+                              }
+                              value={formatZipCode(cep)}
+                              onChange={(e) => setCep(e.target.value)}
+                            />
+                            <InputGroupAddon align="inline-end">
+                              <InputGroupButton
+                                variant={"destructive"}
+                                size={"xs"}
+                                disabled={
+                                  createQuote.isPending || !selectedVariant
+                                }
+                                onClick={onSubmit}
+                              >
+                                {createQuote.isPending ? (
+                                  <Spinner strokeWidth={2} />
+                                ) : (
+                                  <>
+                                    <HugeiconsIcon
+                                      icon={SearchIcon}
+                                      strokeWidth={2}
+                                    />
+                                    <span>Calcular</span>
+                                  </>
+                                )}
+                              </InputGroupButton>
+                            </InputGroupAddon>
+                          </InputGroup>
                           <Link
-                            href={
-                              "https://buscacepinter.correios.com.br/app/endereco/index.php"
-                            }
+                            href="https://www.correios.com.br/a-correios/precisa-de-ajuda/politica-de-frete-e-entrega"
                             target="_blank"
                             className="text-sm text-muted-foreground"
                           >
-                            Não sei meu CEP
+                            Política de Frete e Entrega
                           </Link>
                         </div>
-                        <InputGroup>
-                          <InputGroupInput type="text" placeholder="CEP" />
-                          <InputGroupAddon align="inline-end">
-                            <InputGroupButton
-                              variant={"destructive"}
-                              size={"xs"}
-                            >
-                              <HugeiconsIcon
-                                icon={SearchIcon}
-                                strokeWidth={2}
-                              />
-                              Calcular
-                            </InputGroupButton>
-                          </InputGroupAddon>
-                        </InputGroup>
-                        <Link
-                          href="https://www.correios.com.br/a-correios/precisa-de-ajuda/politica-de-frete-e-entrega"
-                          target="_blank"
-                          className="text-sm text-muted-foreground"
-                        >
-                          Política de Frete e Entrega
-                        </Link>
+                        {createQuote.data && (
+                          <div className="space-y-2">
+                            <Label className="text-base">Opções de frete</Label>
+                            {createQuote.data.quotes.map((quote) => (
+                              <Item key={quote.shipmentMethod} variant="muted">
+                                <ItemMedia>
+                                  <HugeiconsIcon icon={Truck} strokeWidth={2} />
+                                </ItemMedia>
+                                <ItemContent className="gap-1">
+                                  <ItemTitle>
+                                    {quote.shipments[0].carrier.name} -{" "}
+                                    {quote.shipmentMethod}
+                                  </ItemTitle>
+                                  <ItemDescription>
+                                    {Intl.NumberFormat("en-US", {
+                                      style: "currency",
+                                      currency: "USD",
+                                    }).format(
+                                      Number(quote.costSummary.shipping.amount)
+                                    )}
+                                  </ItemDescription>
+                                </ItemContent>
+                              </Item>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <ItemGroup>

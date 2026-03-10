@@ -23,6 +23,14 @@
       }
     }
   },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "files": {
     "includes": [
       "app/**/*.tsx",
@@ -31,6 +39,8 @@
       "hooks/**/*.ts",
       "context/**/*.tsx",
       "utils/**/*.ts",
+      "server/**/*.ts",
+      "!server/db/**/*.ts",
       "!**/*.min.js",
       "!**/*.gen.ts",
       "!**/*.d.ts"

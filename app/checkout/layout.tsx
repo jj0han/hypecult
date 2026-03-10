@@ -30,7 +30,9 @@ function Header() {
       <Button variant="ghost" size="icon-sm" onClick={() => router.back()}>
         <HugeiconsIcon icon={ChevronLeft} strokeWidth={2} />
       </Button>
-      <Logo className="justify-center" />
+      <div className="flex justify-center">
+        <Logo id="header-logo" />
+      </div>
       <Badge variant="outline" className="justify-self-end md:flex hidden">
         <HugeiconsIcon icon={Shield} strokeWidth={2} />
         Segurança SSL

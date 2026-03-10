@@ -1,6 +1,9 @@
 import type { VariantProps } from "class-variance-authority";
 import type { badgeVariants } from "@/components/ui/badge";
-import type { OrderStatus } from "@/server/db/generated/prisma/enums";
+import type {
+  OrderStatus,
+  ShirtSize,
+} from "@/server/db/generated/prisma/enums";
 
 export function getStatusVariant(
   status: OrderStatus
@@ -39,5 +42,48 @@ export function getStatusLabel(status: OrderStatus): string {
       return "Cancelado";
     default:
       return "Status desconhecido";
+  }
+}
+
+export function getShirtSizeLabel(size: ShirtSize | string | undefined | null) {
+  if (!size) return undefined;
+  switch (size.toUpperCase()) {
+    case "PP":
+      return "xs";
+    case "P":
+      return "s";
+    case "M":
+      return "m";
+    case "G":
+      return "l";
+    case "GG":
+      return "xl";
+  }
+}
+
+export function getColorLabel(color: string) {
+  switch (color.toLowerCase()) {
+    case "preto":
+      return "black";
+    case "branco":
+      return "white";
+    case "vermelho":
+      return "red";
+    case "azul":
+      return "blue";
+    case "verde":
+      return "green";
+    case "amarelo":
+      return "yellow";
+    case "roxo":
+      return "purple";
+    case "rosa":
+      return "pink";
+    case "marrom":
+      return "brown";
+    case "cinza":
+      return "gray";
+    case "laranja":
+      return "orange";
   }
 }

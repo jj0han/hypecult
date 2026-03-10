@@ -10,9 +10,9 @@ export const addressSchema = z.object({
   city: z.string(),
   state: z.string().length(2),
   zipCode: z.string().min(8),
-})
+});
 
-export const addressCreateSchema = addressSchema.omit({id: true});
+export const addressCreateSchema = addressSchema.omit({ id: true });
 
 export type Address = z.infer<typeof addressSchema>;
 

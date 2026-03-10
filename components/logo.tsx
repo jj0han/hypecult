@@ -1,14 +1,22 @@
+"use client";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-export default function Logo({ className }: { className?: string }) {
+export default function Logo({
+  className,
+  id,
+}: {
+  className?: string;
+  id?: string;
+}) {
   return (
     <motion.div
+      id={id}
       layoutId="logo-motion"
       layout="position"
-      className={cn("sm:h-9 h-8 p-2", className)}
+      className={cn("sm:h-9 h-8 p-2 z-10", className)}
     >
       <Link href={"/"}>
         <Image

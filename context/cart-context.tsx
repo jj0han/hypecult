@@ -30,6 +30,8 @@ export type CartItem = {
   productId: string;
   variantId: string;
   name: string;
+  sku: string;
+  color: string;
   price: number;
   image: string;
   quantity: number;
@@ -43,6 +45,8 @@ type CartContextType = {
   increment: (variantId: string, quantity: number) => void;
   clear: () => void;
   total: number | undefined;
+  isPending: boolean;
+  isLoading: boolean;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -261,7 +265,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{ cart, add, remove, increment, clear, total }}
+      value={{
+        cart,
+        add,
+        remove,
+        increment,
+        clear,
+        total,
+        isPending: listServerCart.isPending,
+        isLoading: listServerCart.isLoading,
+      }}
     >
       {children}
     </CartContext.Provider>

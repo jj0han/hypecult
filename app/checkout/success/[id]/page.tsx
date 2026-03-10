@@ -37,7 +37,7 @@ export default function Page() {
 
   const statusMessage =
     data?.status === "pending"
-      ? "Pagamento pendente. Assim que confirmado, iniciaremos a produção com a Dimona."
+      ? "Pagamento pendente. Assim que confirmado, iniciaremos a produção com a Prodigi."
       : data?.status === "paid"
         ? "Pagamento confirmado. Seu pedido esta sendo enviado para a produção."
         : data?.status === "production"
@@ -84,12 +84,6 @@ export default function Page() {
                     </Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span>Status na produção</span>
-                    <span className="font-medium">
-                      {data?.externalStatus ?? "-"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
                     <span>Frete</span>
                     <span>{formatCurrency(Number(data?.shippingPrice))}</span>
                   </div>
@@ -99,18 +93,6 @@ export default function Page() {
                   </div>
                 </ItemContent>
               </Item>
-              {data?.externalLastError && (
-                <Item variant={"muted"}>
-                  <ItemHeader>
-                    <ItemTitle>Observação de produção</ItemTitle>
-                  </ItemHeader>
-                  <ItemContent>
-                    <ItemDescription className="line-clamp-none">
-                      {data.externalLastError}
-                    </ItemDescription>
-                  </ItemContent>
-                </Item>
-              )}
               <Item variant={"muted"}>
                 <ItemHeader>
                   <ItemTitle>Endereço de entrega</ItemTitle>

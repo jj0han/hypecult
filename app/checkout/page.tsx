@@ -1568,16 +1568,18 @@ export default function Page() {
                           <ItemTitle>Endereço de entrega</ItemTitle>
                         </ItemHeader>
                         <ItemContent>
-                          <ItemDescription className="line-clamp-none">
-                            <p>
-                              {watchedValues.firstName} {watchedValues.lastName}
-                            </p>
-                            <p>{watchedValues.address}</p>
-                            <p>
-                              {watchedValues.city}, {watchedValues.state}{" "}
-                              {watchedValues.zipCode}
-                            </p>
-                            <p>{watchedValues.email}</p>
+                          <ItemDescription>
+                            {watchedValues.firstName} {watchedValues.lastName}
+                          </ItemDescription>
+                          <ItemDescription>
+                            {watchedValues.address}
+                          </ItemDescription>
+                          <ItemDescription>
+                            {watchedValues.city}, {watchedValues.state}{" "}
+                            {watchedValues.zipCode}
+                          </ItemDescription>
+                          <ItemDescription>
+                            {watchedValues.email}
                           </ItemDescription>
                         </ItemContent>
                       </Item>
@@ -1587,18 +1589,16 @@ export default function Page() {
                         </ItemHeader>
                         <ItemContent>
                           <ItemDescription>
-                            <p>
-                              {calculateShipping.data?.find(
-                                (method) =>
-                                  method.id === watchedValues.shippingMethod
-                              )?.label || "-"}
-                            </p>
-                            <p>
-                              {calculateShipping.data?.find(
-                                (method) =>
-                                  method.id === watchedValues.shippingMethod
-                              )?.deadline || "-"}
-                            </p>
+                            {calculateShipping.data?.find(
+                              (method) =>
+                                method.id === watchedValues.shippingMethod
+                            )?.label || "-"}
+                          </ItemDescription>
+                          <ItemDescription>
+                            {calculateShipping.data?.find(
+                              (method) =>
+                                method.id === watchedValues.shippingMethod
+                            )?.deadline || "-"}
                           </ItemDescription>
                         </ItemContent>
                       </Item>
@@ -1608,32 +1608,30 @@ export default function Page() {
                           <ItemTitle>Método de pagamento</ItemTitle>
                         </ItemHeader>
                         <ItemContent>
-                          <ItemDescription>
-                            <span className="flex items-center gap-2">
-                              <HugeiconsIcon
-                                icon={
-                                  paymentMethods.find(
-                                    (method) =>
-                                      method.value === watchedValues.paymentType
-                                  )?.icon || Wallet
-                                }
-                                strokeWidth={2}
-                                className={cn(
-                                  "size-4",
-                                  paymentMethods.find(
-                                    (method) =>
-                                      method.value === watchedValues.paymentType
-                                  )?.className
-                                )}
-                              />
-                              <span>
-                                {paymentMethods.find(
+                          <div className="flex items-center gap-2">
+                            <HugeiconsIcon
+                              icon={
+                                paymentMethods.find(
                                   (method) =>
                                     method.value === watchedValues.paymentType
-                                )?.label || "Método de pagamento"}
-                              </span>
-                            </span>
-                          </ItemDescription>
+                                )?.icon || Wallet
+                              }
+                              strokeWidth={2}
+                              className={cn(
+                                "size-4",
+                                paymentMethods.find(
+                                  (method) =>
+                                    method.value === watchedValues.paymentType
+                                )?.className
+                              )}
+                            />
+                            <ItemDescription>
+                              {paymentMethods.find(
+                                (method) =>
+                                  method.value === watchedValues.paymentType
+                              )?.label || "Método de pagamento"}
+                            </ItemDescription>
+                          </div>
                         </ItemContent>
                       </Item>
 

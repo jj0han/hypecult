@@ -1,5 +1,5 @@
-import { cartSchema } from "@/schemas/cart";
 import type { Cart } from "@/schemas/cart";
+import { cartSchema } from "@/schemas/cart";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 function normalizeCartItems(input: Cart) {
@@ -30,6 +30,8 @@ export const cartRouter = createTRPCRouter({
     return items.map((item) => ({
       productId: item.productId,
       variantId: item.variantId,
+      sku: item.sku,
+      color: item.color,
       name: item.name,
       image: item.image,
       price: Number(item.price),
@@ -56,6 +58,8 @@ export const cartRouter = createTRPCRouter({
             userId: ctx.session.user.id,
             productId: item.productId,
             variantId: item.variantId,
+            sku: item.sku,
+            color: item.color,
             name: item.name,
             image: item.image,
             price: item.price,
@@ -68,4 +72,3 @@ export const cartRouter = createTRPCRouter({
       return { ok: true };
     }),
 });
-

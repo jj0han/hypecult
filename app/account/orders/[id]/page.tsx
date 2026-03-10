@@ -51,7 +51,7 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between gap-2">
@@ -141,45 +141,6 @@ export default function Page() {
               </ItemContent>
             </Item>
           ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Produção sob demanda</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Item variant="muted">
-            <ItemContent className="grid grid-cols-1 sm:grid-cols-2 gap-2!">
-              <ItemDescription>
-                Provider: {data.externalProvider ?? "-"}
-              </ItemDescription>
-              <ItemDescription>
-                Pedido externo: {data.externalOrderId ?? "-"}
-              </ItemDescription>
-              <ItemDescription>
-                Status externo: {data.externalStatus ?? "-"}
-              </ItemDescription>
-              <ItemDescription>
-                Última sincronização:{" "}
-                {data.externalSyncedAt
-                  ? format(new Date(data.externalSyncedAt), "dd/MM/yyyy HH:mm")
-                  : "-"}
-              </ItemDescription>
-            </ItemContent>
-          </Item>
-          {data.externalLastError && (
-            <Item variant="muted">
-              <ItemHeader>
-                <ItemTitle>Erro de sincronização</ItemTitle>
-              </ItemHeader>
-              <ItemContent>
-                <ItemDescription className="line-clamp-none">
-                  {data.externalLastError}
-                </ItemDescription>
-              </ItemContent>
-            </Item>
-          )}
         </CardContent>
       </Card>
     </div>

@@ -1,14 +1,14 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import bcrypt from "bcryptjs";
 import type { GetServerSidePropsContext } from "next";
 import {
+  type DefaultSession,
   getServerSession,
   type NextAuthOptions,
-  type DefaultSession,
 } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "../db/prisma";
-import bcrypt from "bcryptjs";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { prisma } from "../db/prisma";
 
 /**
  * Module augmentation for `next-auth` types.
@@ -77,20 +77,25 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
         if (!user) {
           return null;
         }
 
         if (!user.password) return null;
 
-        const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+        const passwordMatch = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
         if (!passwordMatch) return null;
 
         return { id: user.id, name: user.name, email: user.email };
-      }
-    })
+      },
+    }),
     /**
      * ...add more providers here
      *

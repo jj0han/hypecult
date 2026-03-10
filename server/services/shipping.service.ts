@@ -26,4 +26,3 @@ export function getShippingOptions() {
 export function getShippingOptionById(id: string) {
   return SHIPPING_OPTIONS.find((option) => option.id === id);
 }
-

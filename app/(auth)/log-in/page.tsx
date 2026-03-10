@@ -51,7 +51,6 @@ export default function Page() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     await mutateAsync(values);
   }
 

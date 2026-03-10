@@ -63,9 +63,7 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
   Shipping: 'Shipping',
-  CartItem: 'CartItem',
-  ProductProviderMapping: 'ProductProviderMapping',
-  PaymentWebhookEvent: 'PaymentWebhookEvent'
+  CartItem: 'CartItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -155,6 +153,7 @@ export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeo
 
 export const ProductScalarFieldEnum = {
   id: 'id',
+  sku: 'sku',
   name: 'name',
   description: 'description',
   type: 'type',
@@ -170,6 +169,7 @@ export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeo
 export const ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
+  color: 'color',
   size: 'size',
   stock: 'stock',
   price: 'price',
@@ -183,6 +183,7 @@ export const ProductImageScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   url: 'url',
+  printArea: 'printArea',
   order: 'order',
   createdAt: 'createdAt'
 } as const
@@ -192,17 +193,10 @@ export type ProductImageScalarFieldEnum = (typeof ProductImageScalarFieldEnum)[k
 
 export const OrderScalarFieldEnum = {
   id: 'id',
+  orderId: 'orderId',
   userId: 'userId',
   status: 'status',
   paymentIntentId: 'paymentIntentId',
-  externalProvider: 'externalProvider',
-  externalOrderId: 'externalOrderId',
-  externalStatus: 'externalStatus',
-  externalSyncedAt: 'externalSyncedAt',
-  externalLastError: 'externalLastError',
-  externalRetryCount: 'externalRetryCount',
-  externalLastAttemptAt: 'externalLastAttemptAt',
-  externalNextRetryAt: 'externalNextRetryAt',
   totalQuantity: 'totalQuantity',
   subtotal: 'subtotal',
   shippingPrice: 'shippingPrice',
@@ -266,6 +260,8 @@ export const CartItemScalarFieldEnum = {
   productId: 'productId',
   variantId: 'variantId',
   name: 'name',
+  sku: 'sku',
+  color: 'color',
   image: 'image',
   price: 'price',
   quantity: 'quantity',
@@ -275,30 +271,6 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
-
-
-export const ProductProviderMappingScalarFieldEnum = {
-  id: 'id',
-  provider: 'provider',
-  variantId: 'variantId',
-  externalProductId: 'externalProductId',
-  externalVariantId: 'externalVariantId',
-  externalSku: 'externalSku',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ProductProviderMappingScalarFieldEnum = (typeof ProductProviderMappingScalarFieldEnum)[keyof typeof ProductProviderMappingScalarFieldEnum]
-
-
-export const PaymentWebhookEventScalarFieldEnum = {
-  id: 'id',
-  provider: 'provider',
-  eventType: 'eventType',
-  createdAt: 'createdAt'
-} as const
-
-export type PaymentWebhookEventScalarFieldEnum = (typeof PaymentWebhookEventScalarFieldEnum)[keyof typeof PaymentWebhookEventScalarFieldEnum]
 
 
 export const SortOrder = {

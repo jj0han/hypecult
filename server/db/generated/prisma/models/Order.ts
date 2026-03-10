@@ -27,7 +27,6 @@ export type AggregateOrder = {
 }
 
 export type OrderAvgAggregateOutputType = {
-  externalRetryCount: number | null
   totalQuantity: number | null
   subtotal: runtime.Decimal | null
   shippingPrice: runtime.Decimal | null
@@ -35,7 +34,6 @@ export type OrderAvgAggregateOutputType = {
 }
 
 export type OrderSumAggregateOutputType = {
-  externalRetryCount: number | null
   totalQuantity: number | null
   subtotal: runtime.Decimal | null
   shippingPrice: runtime.Decimal | null
@@ -44,17 +42,10 @@ export type OrderSumAggregateOutputType = {
 
 export type OrderMinAggregateOutputType = {
   id: string | null
+  orderId: string | null
   userId: string | null
   status: $Enums.OrderStatus | null
   paymentIntentId: string | null
-  externalProvider: $Enums.ExternalProvider | null
-  externalOrderId: string | null
-  externalStatus: string | null
-  externalSyncedAt: Date | null
-  externalLastError: string | null
-  externalRetryCount: number | null
-  externalLastAttemptAt: Date | null
-  externalNextRetryAt: Date | null
   totalQuantity: number | null
   subtotal: runtime.Decimal | null
   shippingPrice: runtime.Decimal | null
@@ -65,17 +56,10 @@ export type OrderMinAggregateOutputType = {
 
 export type OrderMaxAggregateOutputType = {
   id: string | null
+  orderId: string | null
   userId: string | null
   status: $Enums.OrderStatus | null
   paymentIntentId: string | null
-  externalProvider: $Enums.ExternalProvider | null
-  externalOrderId: string | null
-  externalStatus: string | null
-  externalSyncedAt: Date | null
-  externalLastError: string | null
-  externalRetryCount: number | null
-  externalLastAttemptAt: Date | null
-  externalNextRetryAt: Date | null
   totalQuantity: number | null
   subtotal: runtime.Decimal | null
   shippingPrice: runtime.Decimal | null
@@ -86,17 +70,10 @@ export type OrderMaxAggregateOutputType = {
 
 export type OrderCountAggregateOutputType = {
   id: number
+  orderId: number
   userId: number
   status: number
   paymentIntentId: number
-  externalProvider: number
-  externalOrderId: number
-  externalStatus: number
-  externalSyncedAt: number
-  externalLastError: number
-  externalRetryCount: number
-  externalLastAttemptAt: number
-  externalNextRetryAt: number
   totalQuantity: number
   subtotal: number
   shippingPrice: number
@@ -108,7 +85,6 @@ export type OrderCountAggregateOutputType = {
 
 
 export type OrderAvgAggregateInputType = {
-  externalRetryCount?: true
   totalQuantity?: true
   subtotal?: true
   shippingPrice?: true
@@ -116,7 +92,6 @@ export type OrderAvgAggregateInputType = {
 }
 
 export type OrderSumAggregateInputType = {
-  externalRetryCount?: true
   totalQuantity?: true
   subtotal?: true
   shippingPrice?: true
@@ -125,17 +100,10 @@ export type OrderSumAggregateInputType = {
 
 export type OrderMinAggregateInputType = {
   id?: true
+  orderId?: true
   userId?: true
   status?: true
   paymentIntentId?: true
-  externalProvider?: true
-  externalOrderId?: true
-  externalStatus?: true
-  externalSyncedAt?: true
-  externalLastError?: true
-  externalRetryCount?: true
-  externalLastAttemptAt?: true
-  externalNextRetryAt?: true
   totalQuantity?: true
   subtotal?: true
   shippingPrice?: true
@@ -146,17 +114,10 @@ export type OrderMinAggregateInputType = {
 
 export type OrderMaxAggregateInputType = {
   id?: true
+  orderId?: true
   userId?: true
   status?: true
   paymentIntentId?: true
-  externalProvider?: true
-  externalOrderId?: true
-  externalStatus?: true
-  externalSyncedAt?: true
-  externalLastError?: true
-  externalRetryCount?: true
-  externalLastAttemptAt?: true
-  externalNextRetryAt?: true
   totalQuantity?: true
   subtotal?: true
   shippingPrice?: true
@@ -167,17 +128,10 @@ export type OrderMaxAggregateInputType = {
 
 export type OrderCountAggregateInputType = {
   id?: true
+  orderId?: true
   userId?: true
   status?: true
   paymentIntentId?: true
-  externalProvider?: true
-  externalOrderId?: true
-  externalStatus?: true
-  externalSyncedAt?: true
-  externalLastError?: true
-  externalRetryCount?: true
-  externalLastAttemptAt?: true
-  externalNextRetryAt?: true
   totalQuantity?: true
   subtotal?: true
   shippingPrice?: true
@@ -275,17 +229,10 @@ export type OrderGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type OrderGroupByOutputType = {
   id: string
+  orderId: string
   userId: string
   status: $Enums.OrderStatus
   paymentIntentId: string | null
-  externalProvider: $Enums.ExternalProvider | null
-  externalOrderId: string | null
-  externalStatus: string | null
-  externalSyncedAt: Date | null
-  externalLastError: string | null
-  externalRetryCount: number
-  externalLastAttemptAt: Date | null
-  externalNextRetryAt: Date | null
   totalQuantity: number
   subtotal: runtime.Decimal
   shippingPrice: runtime.Decimal
@@ -319,17 +266,10 @@ export type OrderWhereInput = {
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   id?: Prisma.StringFilter<"Order"> | string
+  orderId?: Prisma.StringFilter<"Order"> | string
   userId?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalProvider?: Prisma.EnumExternalProviderNullableFilter<"Order"> | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalStatus?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalSyncedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalLastError?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalRetryCount?: Prisma.IntFilter<"Order"> | number
-  externalLastAttemptAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalNextRetryAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   totalQuantity?: Prisma.IntFilter<"Order"> | number
   subtotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -344,17 +284,10 @@ export type OrderWhereInput = {
 
 export type OrderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  orderId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalProvider?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalStatus?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalLastError?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalRetryCount?: Prisma.SortOrder
-  externalLastAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalNextRetryAt?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -369,21 +302,13 @@ export type OrderOrderByWithRelationInput = {
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  orderId?: string
   paymentIntentId?: string
-  externalProvider_externalOrderId?: Prisma.OrderExternalProviderExternalOrderIdCompoundUniqueInput
   AND?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   userId?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
-  externalProvider?: Prisma.EnumExternalProviderNullableFilter<"Order"> | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalStatus?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalSyncedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalLastError?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalRetryCount?: Prisma.IntFilter<"Order"> | number
-  externalLastAttemptAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalNextRetryAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   totalQuantity?: Prisma.IntFilter<"Order"> | number
   subtotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -394,21 +319,14 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   shipping?: Prisma.XOR<Prisma.ShippingNullableScalarRelationFilter, Prisma.ShippingWhereInput> | null
   address?: Prisma.XOR<Prisma.OrderAddressNullableScalarRelationFilter, Prisma.OrderAddressWhereInput> | null
   items?: Prisma.OrderItemListRelationFilter
-}, "id" | "paymentIntentId" | "externalProvider_externalOrderId">
+}, "id" | "orderId" | "paymentIntentId">
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  orderId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalProvider?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalOrderId?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalStatus?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalLastError?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalRetryCount?: Prisma.SortOrder
-  externalLastAttemptAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  externalNextRetryAt?: Prisma.SortOrderInput | Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -427,17 +345,10 @@ export type OrderScalarWhereWithAggregatesInput = {
   OR?: Prisma.OrderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OrderScalarWhereWithAggregatesInput | Prisma.OrderScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Order"> | string
+  orderId?: Prisma.StringWithAggregatesFilter<"Order"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
-  externalProvider?: Prisma.EnumExternalProviderNullableWithAggregatesFilter<"Order"> | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
-  externalStatus?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
-  externalSyncedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
-  externalLastError?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
-  externalRetryCount?: Prisma.IntWithAggregatesFilter<"Order"> | number
-  externalLastAttemptAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
-  externalNextRetryAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
   totalQuantity?: Prisma.IntWithAggregatesFilter<"Order"> | number
   subtotal?: Prisma.DecimalWithAggregatesFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalWithAggregatesFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -448,16 +359,9 @@ export type OrderScalarWhereWithAggregatesInput = {
 
 export type OrderCreateInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -472,17 +376,10 @@ export type OrderCreateInput = {
 
 export type OrderUncheckedCreateInput = {
   id?: string
+  orderId: string
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -496,16 +393,9 @@ export type OrderUncheckedCreateInput = {
 
 export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -520,17 +410,10 @@ export type OrderUpdateInput = {
 
 export type OrderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -544,17 +427,10 @@ export type OrderUncheckedUpdateInput = {
 
 export type OrderCreateManyInput = {
   id?: string
+  orderId: string
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -565,16 +441,9 @@ export type OrderCreateManyInput = {
 
 export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -585,17 +454,10 @@ export type OrderUpdateManyMutationInput = {
 
 export type OrderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -614,24 +476,12 @@ export type OrderOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type OrderExternalProviderExternalOrderIdCompoundUniqueInput = {
-  externalProvider: $Enums.ExternalProvider
-  externalOrderId: string
-}
-
 export type OrderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  orderId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrder
-  externalProvider?: Prisma.SortOrder
-  externalOrderId?: Prisma.SortOrder
-  externalStatus?: Prisma.SortOrder
-  externalSyncedAt?: Prisma.SortOrder
-  externalLastError?: Prisma.SortOrder
-  externalRetryCount?: Prisma.SortOrder
-  externalLastAttemptAt?: Prisma.SortOrder
-  externalNextRetryAt?: Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -641,7 +491,6 @@ export type OrderCountOrderByAggregateInput = {
 }
 
 export type OrderAvgOrderByAggregateInput = {
-  externalRetryCount?: Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -650,17 +499,10 @@ export type OrderAvgOrderByAggregateInput = {
 
 export type OrderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  orderId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrder
-  externalProvider?: Prisma.SortOrder
-  externalOrderId?: Prisma.SortOrder
-  externalStatus?: Prisma.SortOrder
-  externalSyncedAt?: Prisma.SortOrder
-  externalLastError?: Prisma.SortOrder
-  externalRetryCount?: Prisma.SortOrder
-  externalLastAttemptAt?: Prisma.SortOrder
-  externalNextRetryAt?: Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -671,17 +513,10 @@ export type OrderMaxOrderByAggregateInput = {
 
 export type OrderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  orderId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrder
-  externalProvider?: Prisma.SortOrder
-  externalOrderId?: Prisma.SortOrder
-  externalStatus?: Prisma.SortOrder
-  externalSyncedAt?: Prisma.SortOrder
-  externalLastError?: Prisma.SortOrder
-  externalRetryCount?: Prisma.SortOrder
-  externalLastAttemptAt?: Prisma.SortOrder
-  externalNextRetryAt?: Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -691,7 +526,6 @@ export type OrderMinOrderByAggregateInput = {
 }
 
 export type OrderSumOrderByAggregateInput = {
-  externalRetryCount?: Prisma.SortOrder
   totalQuantity?: Prisma.SortOrder
   subtotal?: Prisma.SortOrder
   shippingPrice?: Prisma.SortOrder
@@ -749,10 +583,6 @@ export type EnumOrderStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrderStatus
 }
 
-export type NullableEnumExternalProviderFieldUpdateOperationsInput = {
-  set?: $Enums.ExternalProvider | null
-}
-
 export type OrderCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutItemsInput, Prisma.OrderUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutItemsInput
@@ -797,16 +627,9 @@ export type OrderUpdateOneRequiredWithoutShippingNestedInput = {
 
 export type OrderCreateWithoutUserInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -820,16 +643,9 @@ export type OrderCreateWithoutUserInput = {
 
 export type OrderUncheckedCreateWithoutUserInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -872,17 +688,10 @@ export type OrderScalarWhereInput = {
   OR?: Prisma.OrderScalarWhereInput[]
   NOT?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
   id?: Prisma.StringFilter<"Order"> | string
+  orderId?: Prisma.StringFilter<"Order"> | string
   userId?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalProvider?: Prisma.EnumExternalProviderNullableFilter<"Order"> | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalStatus?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalSyncedAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalLastError?: Prisma.StringNullableFilter<"Order"> | string | null
-  externalRetryCount?: Prisma.IntFilter<"Order"> | number
-  externalLastAttemptAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
-  externalNextRetryAt?: Prisma.DateTimeNullableFilter<"Order"> | Date | string | null
   totalQuantity?: Prisma.IntFilter<"Order"> | number
   subtotal?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -893,16 +702,9 @@ export type OrderScalarWhereInput = {
 
 export type OrderCreateWithoutItemsInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -916,17 +718,10 @@ export type OrderCreateWithoutItemsInput = {
 
 export type OrderUncheckedCreateWithoutItemsInput = {
   id?: string
+  orderId: string
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -955,16 +750,9 @@ export type OrderUpdateToOneWithWhereWithoutItemsInput = {
 
 export type OrderUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -978,17 +766,10 @@ export type OrderUpdateWithoutItemsInput = {
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1001,16 +782,9 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
 
 export type OrderCreateWithoutAddressInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1024,17 +798,10 @@ export type OrderCreateWithoutAddressInput = {
 
 export type OrderUncheckedCreateWithoutAddressInput = {
   id?: string
+  orderId: string
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1063,16 +830,9 @@ export type OrderUpdateToOneWithWhereWithoutAddressInput = {
 
 export type OrderUpdateWithoutAddressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1086,17 +846,10 @@ export type OrderUpdateWithoutAddressInput = {
 
 export type OrderUncheckedUpdateWithoutAddressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1109,16 +862,9 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
 
 export type OrderCreateWithoutShippingInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1132,17 +878,10 @@ export type OrderCreateWithoutShippingInput = {
 
 export type OrderUncheckedCreateWithoutShippingInput = {
   id?: string
+  orderId: string
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1171,16 +910,9 @@ export type OrderUpdateToOneWithWhereWithoutShippingInput = {
 
 export type OrderUpdateWithoutShippingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1194,17 +926,10 @@ export type OrderUpdateWithoutShippingInput = {
 
 export type OrderUncheckedUpdateWithoutShippingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1217,16 +942,9 @@ export type OrderUncheckedUpdateWithoutShippingInput = {
 
 export type OrderCreateManyUserInput = {
   id?: string
+  orderId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
-  externalProvider?: $Enums.ExternalProvider | null
-  externalOrderId?: string | null
-  externalStatus?: string | null
-  externalSyncedAt?: Date | string | null
-  externalLastError?: string | null
-  externalRetryCount?: number
-  externalLastAttemptAt?: Date | string | null
-  externalNextRetryAt?: Date | string | null
   totalQuantity: number
   subtotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1237,16 +955,9 @@ export type OrderCreateManyUserInput = {
 
 export type OrderUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1260,16 +971,9 @@ export type OrderUpdateWithoutUserInput = {
 
 export type OrderUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1283,16 +987,9 @@ export type OrderUncheckedUpdateWithoutUserInput = {
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalProvider?: Prisma.NullableEnumExternalProviderFieldUpdateOperationsInput | $Enums.ExternalProvider | null
-  externalOrderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalLastError?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  externalRetryCount?: Prisma.IntFieldUpdateOperationsInput | number
-  externalLastAttemptAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  externalNextRetryAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
   subtotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   shippingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1334,17 +1031,10 @@ export type OrderCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Ext
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  orderId?: boolean
   userId?: boolean
   status?: boolean
   paymentIntentId?: boolean
-  externalProvider?: boolean
-  externalOrderId?: boolean
-  externalStatus?: boolean
-  externalSyncedAt?: boolean
-  externalLastError?: boolean
-  externalRetryCount?: boolean
-  externalLastAttemptAt?: boolean
-  externalNextRetryAt?: boolean
   totalQuantity?: boolean
   subtotal?: boolean
   shippingPrice?: boolean
@@ -1360,17 +1050,10 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 
 export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  orderId?: boolean
   userId?: boolean
   status?: boolean
   paymentIntentId?: boolean
-  externalProvider?: boolean
-  externalOrderId?: boolean
-  externalStatus?: boolean
-  externalSyncedAt?: boolean
-  externalLastError?: boolean
-  externalRetryCount?: boolean
-  externalLastAttemptAt?: boolean
-  externalNextRetryAt?: boolean
   totalQuantity?: boolean
   subtotal?: boolean
   shippingPrice?: boolean
@@ -1382,17 +1065,10 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  orderId?: boolean
   userId?: boolean
   status?: boolean
   paymentIntentId?: boolean
-  externalProvider?: boolean
-  externalOrderId?: boolean
-  externalStatus?: boolean
-  externalSyncedAt?: boolean
-  externalLastError?: boolean
-  externalRetryCount?: boolean
-  externalLastAttemptAt?: boolean
-  externalNextRetryAt?: boolean
   totalQuantity?: boolean
   subtotal?: boolean
   shippingPrice?: boolean
@@ -1404,17 +1080,10 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 
 export type OrderSelectScalar = {
   id?: boolean
+  orderId?: boolean
   userId?: boolean
   status?: boolean
   paymentIntentId?: boolean
-  externalProvider?: boolean
-  externalOrderId?: boolean
-  externalStatus?: boolean
-  externalSyncedAt?: boolean
-  externalLastError?: boolean
-  externalRetryCount?: boolean
-  externalLastAttemptAt?: boolean
-  externalNextRetryAt?: boolean
   totalQuantity?: boolean
   subtotal?: boolean
   shippingPrice?: boolean
@@ -1423,7 +1092,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "status" | "paymentIntentId" | "externalProvider" | "externalOrderId" | "externalStatus" | "externalSyncedAt" | "externalLastError" | "externalRetryCount" | "externalLastAttemptAt" | "externalNextRetryAt" | "totalQuantity" | "subtotal" | "shippingPrice" | "total" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "userId" | "status" | "paymentIntentId" | "totalQuantity" | "subtotal" | "shippingPrice" | "total" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   shipping?: boolean | Prisma.Order$shippingArgs<ExtArgs>
@@ -1448,17 +1117,10 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    orderId: string
     userId: string
     status: $Enums.OrderStatus
     paymentIntentId: string | null
-    externalProvider: $Enums.ExternalProvider | null
-    externalOrderId: string | null
-    externalStatus: string | null
-    externalSyncedAt: Date | null
-    externalLastError: string | null
-    externalRetryCount: number
-    externalLastAttemptAt: Date | null
-    externalNextRetryAt: Date | null
     totalQuantity: number
     subtotal: runtime.Decimal
     shippingPrice: runtime.Decimal
@@ -1893,17 +1555,10 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
  */
 export interface OrderFieldRefs {
   readonly id: Prisma.FieldRef<"Order", 'String'>
+  readonly orderId: Prisma.FieldRef<"Order", 'String'>
   readonly userId: Prisma.FieldRef<"Order", 'String'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
   readonly paymentIntentId: Prisma.FieldRef<"Order", 'String'>
-  readonly externalProvider: Prisma.FieldRef<"Order", 'ExternalProvider'>
-  readonly externalOrderId: Prisma.FieldRef<"Order", 'String'>
-  readonly externalStatus: Prisma.FieldRef<"Order", 'String'>
-  readonly externalSyncedAt: Prisma.FieldRef<"Order", 'DateTime'>
-  readonly externalLastError: Prisma.FieldRef<"Order", 'String'>
-  readonly externalRetryCount: Prisma.FieldRef<"Order", 'Int'>
-  readonly externalLastAttemptAt: Prisma.FieldRef<"Order", 'DateTime'>
-  readonly externalNextRetryAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly totalQuantity: Prisma.FieldRef<"Order", 'Int'>
   readonly subtotal: Prisma.FieldRef<"Order", 'Decimal'>
   readonly shippingPrice: Prisma.FieldRef<"Order", 'Decimal'>

@@ -1,6 +1,7 @@
 "use client";
 import { ArrowRightIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { Decimal } from "@prisma/client/runtime/client";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,9 +25,44 @@ import {
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/lib/trpc";
+import type {
+  ProductType,
+  ShirtSize,
+} from "@/server/db/generated/prisma/client";
+
+type ProductProps =
+  | ({
+      images: {
+        id: string;
+        createdAt: Date;
+        order: number;
+        productId: string;
+        url: string;
+        printArea: string;
+      }[];
+      variants: {
+        id: string;
+        price: Decimal | null;
+        createdAt: Date;
+        productId: string;
+        color: string;
+        size: ShirtSize | null;
+        stock: number;
+      }[];
+    } & {
+      id: string;
+      sku: string;
+      name: string;
+      description: string;
+      type: ProductType;
+      price: Decimal;
+      active: boolean;
+      createdAt: Date;
+      updatedAt: Date;
+    })[]
+  | undefined;
 
 export default function Page() {
-  const router = useRouter();
   const trpc = useTRPC();
   const { data, isPending } = useQuery(trpc.product.list.queryOptions());
 
@@ -63,58 +99,88 @@ export default function Page() {
 
       <div className="px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="space-y-4 py-4">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Novidades</h1>
-              <Button variant="link" onClick={() => router.push("/store")}>
-                Ver todos
-                <HugeiconsIcon icon={ArrowRightIcon} strokeWidth={2} />
-              </Button>
-            </div>
-            <ItemGroup className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {isPending &&
-                Array.from({ length: 4 }).map((_, index) => (
-                  <ItemSkeleton
-                    key={`skeleton-${
-                      // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
-                      index
-                    }`}
-                  />
-                ))}
-              {data?.map((product) => {
-                const productPrice = Number(product.price);
-                return (
-                  <Link key={product.id} href={`/product/${product.id}`}>
-                    <Item
-                      variant={"default"}
-                      size={"xs"}
-                      className="items-start"
-                    >
-                      <ItemHeader>
-                        <div className="relative aspect-square border rounded-lg size-full!">
-                          <Image
-                            src={product.images[0].url}
-                            alt={product.name}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                      </ItemHeader>
-                      <ItemContent className="space-y-2">
-                        <div>
-                          <ItemTitle className="text-base font-bold">
-                            {product.name}
-                          </ItemTitle>
-                          <ItemDescription className="text-base">
-                            {product.description}
-                          </ItemDescription>
-                        </div>
-                        <ItemTitle className="text-base font-bold">
-                          {productPrice.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                          {/* <span className="text-sm text-muted-foreground space-x-2">
+          <ProductList
+            data={data}
+            isPending={isPending}
+            title="Novidades"
+            category="novidades"
+          />
+          <ProductList
+            data={data}
+            isPending={isPending}
+            title="Camisetas"
+            category="camisetas"
+          />
+        </div>
+      </div>
+    </Fragment>
+  );
+}
+
+function ProductList({
+  data,
+  isPending,
+  title,
+  category,
+}: {
+  data: ProductProps;
+  isPending: boolean;
+  title: string;
+  category: string;
+}) {
+  const router = useRouter();
+  return (
+    <div className="space-y-4 py-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <Button
+          variant="link"
+          onClick={() => router.push(`/store?category=${category}`)}
+        >
+          Ver todos
+          <HugeiconsIcon icon={ArrowRightIcon} strokeWidth={2} />
+        </Button>
+      </div>
+      <ItemGroup className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {isPending &&
+          Array.from({ length: 4 }).map((_, index) => (
+            <ItemSkeleton
+              key={`skeleton-${
+                // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
+                index
+              }`}
+            />
+          ))}
+        {data?.map((product) => {
+          const productPrice = Number(product.price);
+          return (
+            <Link key={product.id} href={`/product/${product.id}`}>
+              <Item variant={"default"} size={"xs"} className="items-start">
+                <ItemHeader>
+                  <div className="relative aspect-square border rounded-lg size-full!">
+                    <Image
+                      src={product.images[0].url}
+                      alt={product.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </ItemHeader>
+                <ItemContent className="space-y-2">
+                  <div>
+                    <ItemTitle className="text-base font-bold">
+                      {product.name}
+                    </ItemTitle>
+                    <ItemDescription className="text-base">
+                      {product.description}
+                    </ItemDescription>
+                  </div>
+                  <ItemTitle className="text-base font-bold">
+                    {productPrice.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                    {/* <span className="text-sm text-muted-foreground space-x-2">
                             <span className="line-through font-normal">
                               {productPrice.toLocaleString("pt-BR", {
                                 style: "currency",
@@ -123,17 +189,14 @@ export default function Page() {
                             </span>
                             <span className="text-green-700">20% OFF</span>
                           </span> */}
-                        </ItemTitle>
-                      </ItemContent>
-                    </Item>
-                  </Link>
-                );
-              })}
-            </ItemGroup>
-          </div>
-        </div>
-      </div>
-    </Fragment>
+                  </ItemTitle>
+                </ItemContent>
+              </Item>
+            </Link>
+          );
+        })}
+      </ItemGroup>
+    </div>
   );
 }
 

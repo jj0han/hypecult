@@ -53,7 +53,7 @@ export default function Header() {
     <Sheet>
       <header className="p-6 border-b">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-          <Logo />
+          <Logo id="header-logo" />
           <div className="md:flex hidden items-center gap-2">
             <InputGroup className="w-full">
               <InputGroupInput placeholder="Pesquisar" />

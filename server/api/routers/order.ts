@@ -1,8 +1,8 @@
-import { createOrderSchema } from "@/schemas/order";
 import { TRPCError } from "@trpc/server";
+import z from "zod";
+import { createOrderSchema } from "@/schemas/order";
 import { getShippingOptionById } from "@/server/services/shipping.service";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import z from "zod";
 
 export const orderRouter = createTRPCRouter({
   create: protectedProcedure
@@ -136,16 +136,18 @@ export const orderRouter = createTRPCRouter({
       },
     });
   }),
-  byId: protectedProcedure.input(z.object({ id: z.uuid() })).query(({ ctx, input }) => {
-    return ctx.prisma.order.findUnique({
-      where: {
-        id: input.id,
-        userId: ctx.session.user.id,
-      },
-      include: {
-        items: true,
-        address: true,
-      },
-    });
-  }),
+  byId: protectedProcedure
+    .input(z.object({ id: z.uuid() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.order.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id,
+        },
+        include: {
+          items: true,
+          address: true,
+        },
+      });
+    }),
 });

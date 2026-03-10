@@ -1,8 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { logInSchema, signUpSchema } from "../../schemas/auth";
-import { publicProcedure, createTRPCRouter } from "../trpc";
-import { logIn, signUp } from "@/server/services/auth.service";
 import { clearSession, setSession } from "@/server/auth/session";
+import { logIn, signUp } from "@/server/services/auth.service";
+import { logInSchema, signUpSchema } from "../../schemas/auth";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 function toAuthError(error: unknown) {
   if (error instanceof Error) {

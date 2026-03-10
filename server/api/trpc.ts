@@ -15,7 +15,7 @@
  * These allow you to access things when processing a request, like the
  * database, the session, etc.
  */
-import { type Session } from "next-auth";
+import type { Session } from "next-auth";
 
 import { getAppRouterAuthSession } from "../auth/auth";
 import { prisma } from "../db/prisma";
@@ -99,10 +99,23 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure.
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user?.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  const user = await ctx.prisma.user.findUnique({
+    where: { id: ctx.session.user.id },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Session is no longer valid. Please sign in again.",
+    });
+  }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable
