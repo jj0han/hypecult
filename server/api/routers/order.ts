@@ -1,14 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { createOrderSchema } from "@/schemas/order";
-import { getShippingOptionById } from "@/server/services/shipping.service";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const orderRouter = createTRPCRouter({
   create: protectedProcedure
     .input(createOrderSchema)
     .mutation(async ({ ctx, input }) => {
-      const shipping = getShippingOptionById(input.shipping.id);
+      const shipping = input.shipping;
       if (!shipping) {
         throw new TRPCError({
           code: "BAD_REQUEST",
@@ -83,6 +82,7 @@ export const orderRouter = createTRPCRouter({
         return await tx.order.create({
           data: {
             userId: ctx.session.user.id,
+            orderId: crypto.randomUUID(),
             paymentIntentId: input.paymentIntentId,
             subtotal,
             totalQuantity,

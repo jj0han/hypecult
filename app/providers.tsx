@@ -106,17 +106,6 @@ function Intro({ onComplete }: { onComplete: () => void }) {
         { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
         "-=0.1"
       )
-      .to(".stroke-logo-animation", {
-        opacity: 1,
-        duration: 0.4,
-        ease: "power2.inOut",
-        stagger,
-      })
-      .to(
-        ".stroke-logo-animation",
-        { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
-        "-=0.1"
-      )
       .to(gsap.utils.toArray(".stroke-logo-animation").slice(0, 3), {
         opacity: 1,
         duration: 0.4,
