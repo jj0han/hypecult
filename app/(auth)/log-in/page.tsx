@@ -175,7 +175,7 @@ export default function Page() {
                 ></path>
               </g>
             </svg>
-            Entrar com Google
+            Conta Google
           </Button>
           <FieldDescription className="text-center">
             Não tem uma conta?{" "}

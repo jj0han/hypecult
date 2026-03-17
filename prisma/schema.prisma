@@ -103,15 +103,16 @@ model Address {
 
 model Product {
   id          String      @id @default(uuid())
-  sku         String // Prodigi SKU
+  sku         String // Internal product reference code
   name        String
   description String
   type        ProductType
   price       Decimal
   active      Boolean     @default(true)
 
-  images   ProductImage[]
-  variants ProductVariant[]
+  images      ProductImage[]
+  printFiles  ProductPrintFile[]
+  variants    ProductVariant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -122,29 +123,44 @@ model ProductVariant {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  color String
-  size  ShirtSize?
-  stock Int
-  price Decimal?
+  productUid String? // Gelato productUid for this specific variant (encodes size + color)
+  color      String
+  size       ShirtSize?
+  stock      Int
+  price      Decimal?
 
   createdAt DateTime @default(now())
 }
 
+// Customer-facing display images (mockups, lifestyle photos, etc.)
 model ProductImage {
   id        String  @id @default(uuid())
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  url       String
-  printArea String @default("default") // Prodigi print area
-  order     Int
+  url   String
+  alt   String?
+  order Int
+
+  createdAt DateTime @default(now())
+}
+
+// Print-ready artwork files sent to Gelato for fulfillment
+model ProductPrintFile {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  fileType String // Gelato file type: default, front, back, neck-inner, etc.
+  url      String // URL to the high-resolution print-ready artwork
+  order    Int    @default(0)
 
   createdAt DateTime @default(now())
 }
 
 model Order {
   id      String @id @default(uuid())
-  orderId String @unique // Prodigi order ID
+  orderId String @unique // Gelato order ID (set after fulfillment submission)
   userId  String
   user    User   @relation(fields: [userId], references: [id])
 
@@ -168,7 +184,7 @@ model Order {
 
 model OrderItem {
   id      String @id @default(uuid())
-  orderId String // Prodigi order ID
+  orderId String // Local order ID
   order   Order  @relation(fields: [orderId], references: [id])
 
   productType ProductType

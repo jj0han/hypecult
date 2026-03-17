@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { createOrderSchema } from "@/schemas/order";
+import * as gelatoOrderService from "@/server/integrations/gelato/gelato.order.service";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const orderRouter = createTRPCRouter({
@@ -27,7 +28,13 @@ export const orderRouter = createTRPCRouter({
           id: { in: input.items.map((item) => item.variantId) },
         },
         include: {
-          product: true,
+          product: {
+            include: {
+              printFiles: {
+                orderBy: { order: "asc" },
+              },
+            },
+          },
         },
       });
 
@@ -67,7 +74,7 @@ export const orderRouter = createTRPCRouter({
       );
       const total = subtotal + shipping.price;
 
-      return await ctx.prisma.$transaction(async (tx) => {
+      const localOrder = await ctx.prisma.$transaction(async (tx) => {
         for (const { item, variant } of validatedItems) {
           await tx.productVariant.update({
             where: { id: variant.id },
@@ -122,7 +129,55 @@ export const orderRouter = createTRPCRouter({
           },
         });
       });
+
+      // Submit order to Gelato for fulfillment
+      const [firstName, ...rest] = input.address.recipient.trim().split(" ");
+      const lastName = rest.join(" ") || firstName;
+      const userEmail = ctx.session.user.email ?? "";
+
+      try {
+        const gelatoOrder = await gelatoOrderService.create({
+          orderType: "order",
+          orderReferenceId: localOrder.id,
+          customerReferenceId: ctx.session.user.id,
+          currency: "BRL",
+          items: validatedItems.map(({ item, variant }) => ({
+            itemReferenceId: item.variantId,
+            productUid: variant.productUid ?? variant.product.sku,
+            files: variant.product.printFiles.map((f) => ({
+              type: f.fileType,
+              url: f.url,
+            })),
+            quantity: item.quantity,
+          })),
+          shipmentMethodUid: shipping.id,
+          shippingAddress: {
+            firstName: firstName ?? "",
+            lastName,
+            addressLine1: `${input.address.street}, ${input.address.number}`,
+            addressLine2: input.address.complement,
+            city: input.address.city,
+            postCode: input.address.zipCode,
+            state: input.address.state,
+            country: "BR",
+            email: userEmail,
+            federalTaxId: input.cpf,
+          },
+        });
+
+        // Store the Gelato order ID
+        await ctx.prisma.order.update({
+          where: { id: localOrder.id },
+          data: { orderId: gelatoOrder.id },
+        });
+
+        return { ...localOrder, orderId: gelatoOrder.id };
+      } catch {
+        // Return the local order even if Gelato submission fails — it can be retried later
+        return localOrder;
+      }
     }),
+
   list: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.order.findMany({
       where: {
@@ -136,6 +191,7 @@ export const orderRouter = createTRPCRouter({
       },
     });
   }),
+
   byId: protectedProcedure
     .input(z.object({ id: z.uuid() }))
     .query(({ ctx, input }) => {

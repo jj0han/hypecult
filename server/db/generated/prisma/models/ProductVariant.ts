@@ -39,6 +39,7 @@ export type ProductVariantSumAggregateOutputType = {
 export type ProductVariantMinAggregateOutputType = {
   id: string | null
   productId: string | null
+  productUid: string | null
   color: string | null
   size: $Enums.ShirtSize | null
   stock: number | null
@@ -49,6 +50,7 @@ export type ProductVariantMinAggregateOutputType = {
 export type ProductVariantMaxAggregateOutputType = {
   id: string | null
   productId: string | null
+  productUid: string | null
   color: string | null
   size: $Enums.ShirtSize | null
   stock: number | null
@@ -59,6 +61,7 @@ export type ProductVariantMaxAggregateOutputType = {
 export type ProductVariantCountAggregateOutputType = {
   id: number
   productId: number
+  productUid: number
   color: number
   size: number
   stock: number
@@ -81,6 +84,7 @@ export type ProductVariantSumAggregateInputType = {
 export type ProductVariantMinAggregateInputType = {
   id?: true
   productId?: true
+  productUid?: true
   color?: true
   size?: true
   stock?: true
@@ -91,6 +95,7 @@ export type ProductVariantMinAggregateInputType = {
 export type ProductVariantMaxAggregateInputType = {
   id?: true
   productId?: true
+  productUid?: true
   color?: true
   size?: true
   stock?: true
@@ -101,6 +106,7 @@ export type ProductVariantMaxAggregateInputType = {
 export type ProductVariantCountAggregateInputType = {
   id?: true
   productId?: true
+  productUid?: true
   color?: true
   size?: true
   stock?: true
@@ -198,6 +204,7 @@ export type ProductVariantGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type ProductVariantGroupByOutputType = {
   id: string
   productId: string
+  productUid: string | null
   color: string
   size: $Enums.ShirtSize | null
   stock: number
@@ -231,6 +238,7 @@ export type ProductVariantWhereInput = {
   NOT?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   id?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
+  productUid?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   color?: Prisma.StringFilter<"ProductVariant"> | string
   size?: Prisma.EnumShirtSizeNullableFilter<"ProductVariant"> | $Enums.ShirtSize | null
   stock?: Prisma.IntFilter<"ProductVariant"> | number
@@ -242,6 +250,7 @@ export type ProductVariantWhereInput = {
 export type ProductVariantOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productUid?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   stock?: Prisma.SortOrder
@@ -256,6 +265,7 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProductVariantWhereInput[]
   NOT?: Prisma.ProductVariantWhereInput | Prisma.ProductVariantWhereInput[]
   productId?: Prisma.StringFilter<"ProductVariant"> | string
+  productUid?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   color?: Prisma.StringFilter<"ProductVariant"> | string
   size?: Prisma.EnumShirtSizeNullableFilter<"ProductVariant"> | $Enums.ShirtSize | null
   stock?: Prisma.IntFilter<"ProductVariant"> | number
@@ -267,6 +277,7 @@ export type ProductVariantWhereUniqueInput = Prisma.AtLeast<{
 export type ProductVariantOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productUid?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrder
   size?: Prisma.SortOrderInput | Prisma.SortOrder
   stock?: Prisma.SortOrder
@@ -285,6 +296,7 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProductVariantScalarWhereWithAggregatesInput | Prisma.ProductVariantScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   productId?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
+  productUid?: Prisma.StringNullableWithAggregatesFilter<"ProductVariant"> | string | null
   color?: Prisma.StringWithAggregatesFilter<"ProductVariant"> | string
   size?: Prisma.EnumShirtSizeNullableWithAggregatesFilter<"ProductVariant"> | $Enums.ShirtSize | null
   stock?: Prisma.IntWithAggregatesFilter<"ProductVariant"> | number
@@ -294,6 +306,7 @@ export type ProductVariantScalarWhereWithAggregatesInput = {
 
 export type ProductVariantCreateInput = {
   id?: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -305,6 +318,7 @@ export type ProductVariantCreateInput = {
 export type ProductVariantUncheckedCreateInput = {
   id?: string
   productId: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -314,6 +328,7 @@ export type ProductVariantUncheckedCreateInput = {
 
 export type ProductVariantUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -325,6 +340,7 @@ export type ProductVariantUpdateInput = {
 export type ProductVariantUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -335,6 +351,7 @@ export type ProductVariantUncheckedUpdateInput = {
 export type ProductVariantCreateManyInput = {
   id?: string
   productId: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -344,6 +361,7 @@ export type ProductVariantCreateManyInput = {
 
 export type ProductVariantUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -354,6 +372,7 @@ export type ProductVariantUpdateManyMutationInput = {
 export type ProductVariantUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   productId?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -374,6 +393,7 @@ export type ProductVariantOrderByRelationAggregateInput = {
 export type ProductVariantCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productUid?: Prisma.SortOrder
   color?: Prisma.SortOrder
   size?: Prisma.SortOrder
   stock?: Prisma.SortOrder
@@ -389,6 +409,7 @@ export type ProductVariantAvgOrderByAggregateInput = {
 export type ProductVariantMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productUid?: Prisma.SortOrder
   color?: Prisma.SortOrder
   size?: Prisma.SortOrder
   stock?: Prisma.SortOrder
@@ -399,6 +420,7 @@ export type ProductVariantMaxOrderByAggregateInput = {
 export type ProductVariantMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   productId?: Prisma.SortOrder
+  productUid?: Prisma.SortOrder
   color?: Prisma.SortOrder
   size?: Prisma.SortOrder
   stock?: Prisma.SortOrder
@@ -475,6 +497,7 @@ export type NullableDecimalFieldUpdateOperationsInput = {
 
 export type ProductVariantCreateWithoutProductInput = {
   id?: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -484,6 +507,7 @@ export type ProductVariantCreateWithoutProductInput = {
 
 export type ProductVariantUncheckedCreateWithoutProductInput = {
   id?: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -523,6 +547,7 @@ export type ProductVariantScalarWhereInput = {
   NOT?: Prisma.ProductVariantScalarWhereInput | Prisma.ProductVariantScalarWhereInput[]
   id?: Prisma.StringFilter<"ProductVariant"> | string
   productId?: Prisma.StringFilter<"ProductVariant"> | string
+  productUid?: Prisma.StringNullableFilter<"ProductVariant"> | string | null
   color?: Prisma.StringFilter<"ProductVariant"> | string
   size?: Prisma.EnumShirtSizeNullableFilter<"ProductVariant"> | $Enums.ShirtSize | null
   stock?: Prisma.IntFilter<"ProductVariant"> | number
@@ -532,6 +557,7 @@ export type ProductVariantScalarWhereInput = {
 
 export type ProductVariantCreateManyProductInput = {
   id?: string
+  productUid?: string | null
   color: string
   size?: $Enums.ShirtSize | null
   stock: number
@@ -541,6 +567,7 @@ export type ProductVariantCreateManyProductInput = {
 
 export type ProductVariantUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -550,6 +577,7 @@ export type ProductVariantUpdateWithoutProductInput = {
 
 export type ProductVariantUncheckedUpdateWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -559,6 +587,7 @@ export type ProductVariantUncheckedUpdateWithoutProductInput = {
 
 export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  productUid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   color?: Prisma.StringFieldUpdateOperationsInput | string
   size?: Prisma.NullableEnumShirtSizeFieldUpdateOperationsInput | $Enums.ShirtSize | null
   stock?: Prisma.IntFieldUpdateOperationsInput | number
@@ -571,6 +600,7 @@ export type ProductVariantUncheckedUpdateManyWithoutProductInput = {
 export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productId?: boolean
+  productUid?: boolean
   color?: boolean
   size?: boolean
   stock?: boolean
@@ -582,6 +612,7 @@ export type ProductVariantSelect<ExtArgs extends runtime.Types.Extensions.Intern
 export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productId?: boolean
+  productUid?: boolean
   color?: boolean
   size?: boolean
   stock?: boolean
@@ -593,6 +624,7 @@ export type ProductVariantSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   productId?: boolean
+  productUid?: boolean
   color?: boolean
   size?: boolean
   stock?: boolean
@@ -604,6 +636,7 @@ export type ProductVariantSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 export type ProductVariantSelectScalar = {
   id?: boolean
   productId?: boolean
+  productUid?: boolean
   color?: boolean
   size?: boolean
   stock?: boolean
@@ -611,7 +644,7 @@ export type ProductVariantSelectScalar = {
   createdAt?: boolean
 }
 
-export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "color" | "size" | "stock" | "price" | "createdAt", ExtArgs["result"]["productVariant"]>
+export type ProductVariantOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "productId" | "productUid" | "color" | "size" | "stock" | "price" | "createdAt", ExtArgs["result"]["productVariant"]>
 export type ProductVariantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
 }
@@ -630,6 +663,7 @@ export type $ProductVariantPayload<ExtArgs extends runtime.Types.Extensions.Inte
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     productId: string
+    productUid: string | null
     color: string
     size: $Enums.ShirtSize | null
     stock: number
@@ -1061,6 +1095,7 @@ export interface Prisma__ProductVariantClient<T, Null = never, ExtArgs extends r
 export interface ProductVariantFieldRefs {
   readonly id: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly productId: Prisma.FieldRef<"ProductVariant", 'String'>
+  readonly productUid: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly color: Prisma.FieldRef<"ProductVariant", 'String'>
   readonly size: Prisma.FieldRef<"ProductVariant", 'ShirtSize'>
   readonly stock: Prisma.FieldRef<"ProductVariant", 'Int'>

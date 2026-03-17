@@ -20,6 +20,7 @@ export const createOrderSchema = z.object({
   address: addressSchema,
   shipping: shippingOptionSchema,
   paymentIntentId: z.string().optional(),
+  cpf: z.string(),
 });
 
 export const orderSchema = createOrderSchema.extend({

@@ -227,7 +227,7 @@ export default function SignupPage() {
                 ></path>
               </g>
             </svg>
-            Entrar com Google
+            Conta Google
           </Button>
           <FieldDescription className="px-6 text-center">
             Já tem uma conta? <Link href={"/log-in"}>Entrar</Link>

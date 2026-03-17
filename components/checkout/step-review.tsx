@@ -30,12 +30,12 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import type { CheckoutFormData } from "@/schemas/checkout";
-import type { ProdigiQuote } from "@/server/integrations/prodigi/prodigi.types";
+import type { GelatoShipmentMethod } from "@/server/integrations/gelato/gelato.types";
 
 interface StepReviewProps {
   form: UseFormReturn<CheckoutFormData>;
   watchedValues: CheckoutFormData;
-  shippingMethods: ProdigiQuote[] | undefined;
+  shippingMethods: GelatoShipmentMethod[] | undefined;
   orderPending: boolean;
   summary: CheckoutSummary;
   onPrev: () => void;
@@ -52,7 +52,7 @@ export function StepReview({
   onValidateAndSubmit,
 }: StepReviewProps) {
   const selectedShipping = shippingMethods?.find(
-    (quote) => quote.shipmentMethod === watchedValues.shippingMethod
+    (m) => m.shipmentMethodUid === watchedValues.shippingMethod
   );
   const selectedPayment = paymentMethods.find(
     (method) => method.value === watchedValues.paymentType
@@ -98,11 +98,11 @@ export function StepReview({
             <ItemTitle>Método de entrega</ItemTitle>
           </ItemHeader>
           <ItemContent>
+            <ItemDescription>{selectedShipping?.name || "-"}</ItemDescription>
             <ItemDescription>
-              {selectedShipping?.shipmentMethod || "-"}
-            </ItemDescription>
-            <ItemDescription>
-              {selectedShipping?.shipments[0].carrier.name || "-"}
+              {selectedShipping
+                ? `${selectedShipping.minDeliveryDays}–${selectedShipping.maxDeliveryDays} dias úteis`
+                : "-"}
             </ItemDescription>
           </ItemContent>
         </Item>

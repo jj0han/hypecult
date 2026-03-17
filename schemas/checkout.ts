@@ -6,6 +6,7 @@ export const checkoutFormSchema = z
     lastName: z.string().min(1, "Sobrenome é obrigatório"),
     email: z.email("E-mail inválido"),
     phone: z.string(),
+    cpf: z.string().min(11, "CPF é obrigatório"),
     address: z.string().min(1, "Endereço é obrigatório"),
     city: z.string().min(1, "Cidade é obrigatória"),
     state: z.string().min(1, "Estado é obrigatório"),

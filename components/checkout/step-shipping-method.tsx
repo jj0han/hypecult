@@ -1,10 +1,13 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: template */
-import { ChevronLeft, Truck } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight01Icon,
+  ChevronLeft,
+  Fire02Icon,
+  Truck,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import type { Currency } from "@/app/api/awesome/last/[currencies]/route";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,12 +29,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import type { CheckoutFormData } from "@/schemas/checkout";
-import type { ProdigiQuotes } from "@/server/integrations/prodigi/prodigi.types";
+import type { GelatoCreateQuoteResponse } from "@/server/integrations/gelato/gelato.types";
+import { Badge } from "../ui/badge";
 
 interface StepShippingMethodProps {
   form: UseFormReturn<CheckoutFormData>;
-  shippingMethods: ProdigiQuotes | undefined;
-  shippingLoading: boolean;
+  quoteData: GelatoCreateQuoteResponse | undefined | null;
+  quoteLoading: boolean;
   isPending: boolean;
   onNext: () => void;
   onPrev: () => void;
@@ -39,21 +43,16 @@ interface StepShippingMethodProps {
 
 export function StepShippingMethod({
   form,
-  shippingMethods,
-  shippingLoading,
+  quoteData,
+  quoteLoading,
   isPending,
   onNext,
   onPrev,
 }: StepShippingMethodProps) {
-  const listCurrency = useQuery({
-    queryKey: ["currency", "list"],
-    queryFn: async () => {
-      const response = await fetch("/api/awesome/last/USD-BRL");
-      return (await response.json()) as Currency;
-    },
-    enabled: !!shippingMethods,
-    placeholderData: keepPreviousData,
-  });
+  // Flatten all shipment methods across quotes (allowMultipleQuotes: false → usually one quote)
+  const shipmentMethods =
+    quoteData?.quotes.flatMap((q) => q.shipmentMethods) ?? [];
+
   return (
     <Card className="flex flex-col gap-6">
       <CardHeader>
@@ -65,49 +64,83 @@ export function StepShippingMethod({
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-3">
           <Label>Método de entrega</Label>
-          <div className="flex flex-col gap-4">
-            {shippingLoading &&
-              Array.from({ length: 3 }).map((_, index) => (
+          <div className="flex flex-col gap-3">
+            {!quoteLoading && shipmentMethods.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                Nenhum método de frete disponível para o endereço informado.
+              </p>
+            )}
+            {quoteLoading ? (
+              Array.from({ length: 2 }).map((_, index) => (
                 <Skeleton key={index} className="h-20 w-full" />
-              ))}
-            <Controller
-              name="shippingMethod"
-              control={form.control}
-              render={({ field }) => (
-                <RadioGroup value={field.value} onValueChange={field.onChange}>
-                  {shippingMethods?.quotes.map((quote) => (
-                    <FieldLabel
-                      key={quote.shipmentMethod}
-                      htmlFor={quote.shipmentMethod}
-                    >
-                      <Field orientation="horizontal">
-                        <RadioGroupItem
-                          value={quote.shipmentMethod}
-                          id={quote.shipmentMethod}
-                        />
-                        <FieldContent>
-                          <FieldTitle>{quote.shipmentMethod}</FieldTitle>
-                          <FieldDescription>
-                            {quote.shipments[0].carrier.name}
-                          </FieldDescription>
-                        </FieldContent>
-                        <FieldContent className="flex items-end">
-                          <FieldTitle>
-                            {(
-                              Number(quote.costSummary.shipping.amount) *
-                              Number(listCurrency.data?.USDBRL.bid)
-                            ).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            })}
-                          </FieldTitle>
-                        </FieldContent>
-                      </Field>
-                    </FieldLabel>
-                  ))}
-                </RadioGroup>
-              )}
-            />
+              ))
+            ) : (
+              <Controller
+                name="shippingMethod"
+                control={form.control}
+                render={({ field }) => (
+                  <RadioGroup
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    {shipmentMethods.map((method) => (
+                      <FieldLabel
+                        key={method.shipmentMethodUid}
+                        htmlFor={method.shipmentMethodUid}
+                      >
+                        <Field orientation="horizontal">
+                          <RadioGroupItem
+                            value={method.shipmentMethodUid}
+                            id={method.shipmentMethodUid}
+                          />
+                          <FieldContent className="flex-2">
+                            <FieldTitle className="flex flex-col items-start gap-1 sm:gap-2 sm:flex-row sm:items-center">
+                              <span>{method.name}</span>
+                              <div className="flex gap-1 sm:gap-2">
+                                {method.type === "express" && (
+                                  <Badge variant="destructive">
+                                    <HugeiconsIcon
+                                      icon={Fire02Icon}
+                                      strokeWidth={2}
+                                    />
+                                    Express
+                                  </Badge>
+                                )}
+                                <Badge variant="outline">
+                                  {quoteData?.quotes[0].fulfillmentCountry ===
+                                  "BR"
+                                    ? "BR"
+                                    : "US"}
+                                  <HugeiconsIcon
+                                    icon={ArrowRight01Icon}
+                                    strokeWidth={2}
+                                  />
+                                  BR
+                                </Badge>
+                              </div>
+                            </FieldTitle>
+                            <div className="flex gap-2 items-end">
+                              <FieldDescription>
+                                {method.minDeliveryDays}–
+                                {method.maxDeliveryDays} dias úteis
+                              </FieldDescription>
+                            </div>
+                          </FieldContent>
+                          <FieldContent className="flex items-end">
+                            <FieldTitle>
+                              {method.price.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: method.currency,
+                              })}
+                            </FieldTitle>
+                          </FieldContent>
+                        </Field>
+                      </FieldLabel>
+                    ))}
+                  </RadioGroup>
+                )}
+              />
+            )}
             {form.formState.errors.shippingMethod && (
               <FieldError errors={[form.formState.errors.shippingMethod]} />
             )}

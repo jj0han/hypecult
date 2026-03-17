@@ -20,6 +20,16 @@ import z from "zod";
 import type { City } from "@/app/api/ibge/estados/municipios/[uf]/route";
 import type { State } from "@/app/api/ibge/estados/route";
 import type { ViaCEPResponse } from "@/app/api/viacep/[cep]/route";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -175,18 +185,49 @@ export default function Page() {
     setIsFormOpen(false);
     setEditingAddressId(null);
     setSelectedAddressId("");
+    form.reset({
+      recipient: "",
+      address: "",
+      number: "",
+      complement: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    });
   }
 
   function handleCreateClick() {
     setEditingAddressId(null);
     setIsFormOpen(true);
     setSelectedAddressId("");
+    form.reset({
+      recipient: "",
+      address: "",
+      number: "",
+      complement: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      zipCode: "",
+    });
   }
 
-  function handleEditClick(address: NonNullable<typeof data>[number]) {
+  async function handleEditClick(address: NonNullable<typeof data>[number]) {
     setEditingAddressId(address.id);
     setSelectedAddressId(address.id);
     setIsFormOpen(true);
+    await viacep.mutateAsync(address.zipCode);
+    form.reset({
+      recipient: address.recipient,
+      address: address.street,
+      number: address.number,
+      complement: address.complement || "",
+      neighborhood: address.district,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+    });
   }
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
@@ -236,43 +277,74 @@ export default function Page() {
               <ItemGroup>
                 <div className="flex flex-col gap-3">
                   {data.map((address) => (
-                    <Item
-                      key={address.id}
-                      variant={
-                        selectedAddressId === address.id ? "outline" : "default"
-                      }
-                    >
-                      <ItemContent>
-                        <ItemTitle>{address.recipient}</ItemTitle>
-                        <ItemDescription className="line-clamp-none">
-                          {address.street}, {address.number}{" "}
-                          {address.complement} {address.district} {address.city}{" "}
-                          {address.state} {formatZipCode(address.zipCode)}
-                        </ItemDescription>
-                      </ItemContent>
-                      <ItemActions>
-                        <Button
-                          variant="outline"
-                          size="xs"
-                          onClick={() => handleEditClick(address)}
-                        >
-                          <HugeiconsIcon icon={Edit04Icon} strokeWidth={2} />
-                          Atualizar
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon-xs"
-                          onClick={() => remove.mutate({ id: address.id })}
-                          disabled={remove.isPending}
-                        >
-                          {remove.isPending ? (
-                            <Spinner />
-                          ) : (
-                            <HugeiconsIcon icon={Trash} strokeWidth={2} />
-                          )}
-                        </Button>
-                      </ItemActions>
-                    </Item>
+                    <AlertDialog key={address.id}>
+                      <Item
+                        key={address.id}
+                        variant={
+                          selectedAddressId === address.id
+                            ? "outline"
+                            : "default"
+                        }
+                      >
+                        <ItemContent>
+                          <ItemTitle>{address.recipient}</ItemTitle>
+                          <ItemDescription className="line-clamp-none">
+                            {address.street}, {address.number}{" "}
+                            {address.complement} {address.district}{" "}
+                            {address.city} {address.state}{" "}
+                            {formatZipCode(address.zipCode)}
+                          </ItemDescription>
+                        </ItemContent>
+                        <ItemActions>
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            onClick={async () => await handleEditClick(address)}
+                          >
+                            <HugeiconsIcon icon={Edit04Icon} strokeWidth={2} />
+                            Atualizar
+                          </Button>
+                          <AlertDialogTrigger>
+                            <Button
+                              variant="destructive"
+                              size="icon-xs"
+                              disabled={remove.isPending}
+                            >
+                              {remove.isPending ? (
+                                <Spinner />
+                              ) : (
+                                <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                              )}
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Tem certeza que deseja remover este endereço?
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel variant={"ghost"}>
+                                Cancelar
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                variant={"destructive"}
+                                onClick={async () =>
+                                  await remove.mutateAsync({ id: address.id })
+                                }
+                              >
+                                {remove.isPending ? (
+                                  <Spinner />
+                                ) : (
+                                  <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                                )}
+                                Remover
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </ItemActions>
+                      </Item>
+                    </AlertDialog>
                   ))}
                 </div>
               </ItemGroup>
@@ -424,7 +496,7 @@ export default function Page() {
                         {...field}
                         id="complement"
                         aria-invalid={fieldState.invalid}
-                        placeholder="Apto 101"
+                        placeholder="Exemplo: Apto 101"
                         autoComplete="off"
                       />
                       {fieldState.invalid && (
@@ -570,7 +642,9 @@ export default function Page() {
                 form="address-form"
                 type="submit"
                 size="lg"
-                disabled={create.isPending || update.isPending}
+                disabled={
+                  create.isPending || update.isPending || viacep.isPending
+                }
               >
                 {(create.isPending || update.isPending) && <Spinner />}
                 {editingAddressId ? "Salvar alterações" : "Salvar endereço"}

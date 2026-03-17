@@ -105,12 +105,6 @@ export default function Page() {
             title="Novidades"
             category="novidades"
           />
-          <ProductList
-            data={data}
-            isPending={isPending}
-            title="Camisetas"
-            category="camisetas"
-          />
         </div>
       </div>
     </Fragment>

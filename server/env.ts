@@ -6,9 +6,8 @@ loadEnvConfig(projectDir);
 
 const envSchema = z.object({
   DATABASE_URL: z.url(),
-  PRODIGI_API_URL: z.url(),
-  PRODIGI_API_URL_SANDBOX: z.url().optional(),
-  PRODIGI_API_KEY: z.string(),
+  GELATO_ORDER_API_URL: z.url(),
+  GELATO_API_KEY: z.string(),
 });
 
 export const env = envSchema.parse(process.env);

@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Shield, ShoppingBag } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Fragment, useEffect, useState } from "react";
@@ -30,8 +30,7 @@ import {
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
 import { type CheckoutFormData, checkoutFormSchema } from "@/schemas/checkout";
-import { getColorLabel, getShirtSizeLabel } from "@/utils/helpers";
-import type { Currency } from "../api/awesome/last/[currencies]/route";
+import type { GelatoCreateQuoteResponse } from "@/server/integrations/gelato/gelato.types";
 import { mapCartToCheckoutItems, mapCartToOrderItems } from "./cart-mappers";
 import { checkoutSteps } from "./constants";
 import { useCheckoutSummary } from "./use-checkout-summary";
@@ -44,6 +43,8 @@ export default function Page() {
   const [currentStep, setCurrentStep] = useState<number>(
     session.status === "authenticated" ? 1 : 0
   );
+  const [gelatoQuoteData, setGelatoQuoteData] =
+    useState<GelatoCreateQuoteResponse | null>(null);
 
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutFormSchema),
@@ -52,6 +53,7 @@ export default function Page() {
       lastName: "",
       email: "",
       phone: "",
+      cpf: "",
       address: "",
       city: "",
       state: "",
@@ -84,36 +86,14 @@ export default function Page() {
       enabled: session.status === "authenticated",
     })
   );
-  const listQuotes = useQuery(
-    trpc.prodigiQuote.list.queryOptions(
-      {
-        items:
-          cart?.map((item) => ({
-            sku: item.sku,
-            copies: item.quantity,
-            attributes: {
-              color: getColorLabel(item.color),
-              size: getShirtSizeLabel(item.size),
-            },
-            assets: [{ printArea: "front" }],
-          })) ?? [],
-        destinationCountryCode: "BR",
-        currencyCode: "USD",
-      },
-      {
-        enabled: !!cart,
-      }
-    )
+
+  const fetchQuote = useMutation(
+    trpc.gelatoQuote.create.mutationOptions({
+      onSuccess: (data) => setGelatoQuoteData(data),
+      onError: () => toast.error("Não foi possível calcular o frete"),
+    })
   );
-  const listCurrency = useQuery({
-    queryKey: ["currency", "list"],
-    queryFn: async () => {
-      const response = await fetch("/api/awesome/last/USD-BRL");
-      return (await response.json()) as Currency;
-    },
-    enabled: !!listQuotes.data,
-    placeholderData: keepPreviousData,
-  });
+
   const createAddress = useMutation(
     trpc.address.create.mutationOptions({
       onSuccess: () => listAddresses.refetch(),
@@ -157,6 +137,35 @@ export default function Page() {
     },
   });
 
+  // Build the Gelato quote request from current form values
+  function buildQuoteRequest() {
+    const normalizedZip = watchedValues.zipCode.replace(/\D/g, "");
+    return {
+      orderReferenceId: crypto.randomUUID(),
+      customerReferenceId: session.data?.user?.id ?? "guest",
+      currency: "BRL",
+      allowMultipleQuotes: false,
+      recipient: {
+        country: "BR",
+        firstName: watchedValues.firstName,
+        lastName: watchedValues.lastName,
+        addressLine1: `${watchedValues.address}, ${watchedValues.number}`,
+        addressLine2: watchedValues.complement || undefined,
+        city: watchedValues.city,
+        postCode: normalizedZip,
+        email: watchedValues.email,
+        phone: watchedValues.phone || undefined,
+      },
+      products:
+        cart?.map((item) => ({
+          itemReferenceId: item.variantId,
+          productUid:
+            "apparel_product_gca_t-shirt_gsc_crewneck_gcu_unisex_gqa_heavy-weight_gsi_s_gco_white_gpr_4-0_gildan_5000",
+          quantity: item.quantity,
+        })) ?? [],
+    };
+  }
+
   const validateStep = async (step: number): Promise<boolean> => {
     switch (step) {
       case 1: {
@@ -164,6 +173,7 @@ export default function Page() {
           "firstName",
           "lastName",
           "email",
+          "cpf",
           "address",
           "city",
           "state",
@@ -223,9 +233,16 @@ export default function Page() {
 
   const nextStep = async () => {
     const isValid = await validateStep(currentStep);
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, checkoutSteps.length - 1));
+    if (!isValid) return;
+
+    const next = Math.min(currentStep + 1, checkoutSteps.length - 1);
+
+    // Fetch Gelato quotes when moving into the shipping method step
+    if (next === 2 && cart && cart.length > 0) {
+      fetchQuote.mutate(buildQuoteRequest());
     }
+
+    setCurrentStep(next);
   };
 
   const prevStep = () => {
@@ -236,34 +253,36 @@ export default function Page() {
     form.setValue("appliedPromo", "");
   };
 
+  // All available shipment methods flattened across quotes
+  const allShipmentMethods =
+    gelatoQuoteData?.quotes.flatMap((q) => q.shipmentMethods) ?? [];
+
   const summary = useCheckoutSummary({
     items: orderItems,
     promoCode: watchedValues.appliedPromo,
     shippingMethodId: watchedValues.shippingMethod,
-    shippingMethods: listQuotes.data?.quotes.map((quote) => ({
-      id: quote.shipmentMethod,
-      label: quote.shipmentMethod,
-      price:
-        Number(quote.costSummary.shipping.amount) *
-        Number(listCurrency.data?.USDBRL.bid),
-      deadline: quote.shipments[0].carrier.name,
+    shippingMethods: allShipmentMethods.map((m) => ({
+      id: m.shipmentMethodUid,
+      price: m.price,
     })),
   });
 
   async function onSubmit() {
-    const selectedShipping = listQuotes.data?.quotes.find(
-      (quote) => quote.shipmentMethod === watchedValues.shippingMethod
+    const selectedMethod = allShipmentMethods.find(
+      (m) => m.shipmentMethodUid === watchedValues.shippingMethod
     );
-    if (!selectedShipping || checkoutItems.length === 0) {
+    if (!selectedMethod || checkoutItems.length === 0) {
       toast.error("Revise itens do carrinho e método de frete");
       return;
     }
 
     const normalizedZipCode = watchedValues.zipCode.replace(/\D/g, "");
     const paymentIntentId = searchParams.get("payment_intent") ?? undefined;
+
     await createOrder.mutateAsync({
       items: checkoutItems,
       paymentIntentId,
+      cpf: watchedValues.cpf.replace(/\D/g, ""),
       address: {
         recipient:
           `${watchedValues.firstName} ${watchedValues.lastName}`.trim(),
@@ -276,12 +295,10 @@ export default function Page() {
         state: watchedValues.state,
       },
       shipping: {
-        id: selectedShipping.shipmentMethod,
-        label: selectedShipping.shipmentMethod,
-        price:
-          Number(selectedShipping.costSummary.shipping.amount) *
-          Number(listCurrency.data?.USDBRL.bid),
-        deadline: selectedShipping.shipments[0].carrier.name,
+        id: selectedMethod.shipmentMethodUid,
+        label: selectedMethod.name,
+        price: selectedMethod.price,
+        deadline: `${selectedMethod.minDeliveryDays}–${selectedMethod.maxDeliveryDays} dias úteis`,
       },
     });
   }
@@ -294,6 +311,13 @@ export default function Page() {
       form.setValue("email", session.data?.user?.email ?? "");
     }
   }, [session.status, form.setValue, session.data]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to fetch quotes when the cart changes
+  useEffect(() => {
+    if (cart && cart.length > 0) {
+      fetchQuote.mutate(buildQuoteRequest());
+    }
+  }, [cart]);
 
   return (
     <Fragment>
@@ -359,9 +383,9 @@ export default function Page() {
               {currentStep === 2 && (
                 <StepShippingMethod
                   form={form}
-                  shippingMethods={listQuotes.data}
-                  shippingLoading={listQuotes.isPending}
-                  isPending={createAddress.isPending}
+                  quoteData={gelatoQuoteData}
+                  quoteLoading={fetchQuote.isPending}
+                  isPending={createAddress.isPending || fetchQuote.isPending}
                   onNext={nextStep}
                   onPrev={prevStep}
                 />
@@ -378,7 +402,9 @@ export default function Page() {
                 <StepReview
                   form={form}
                   watchedValues={watchedValues}
-                  shippingMethods={listQuotes.data?.quotes}
+                  shippingMethods={gelatoQuoteData?.quotes.flatMap(
+                    (q) => q.shipmentMethods
+                  )}
                   orderPending={createOrder.isPending}
                   summary={summary}
                   onPrev={prevStep}

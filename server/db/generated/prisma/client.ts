@@ -80,6 +80,11 @@ export type ProductVariant = Prisma.ProductVariantModel
  */
 export type ProductImage = Prisma.ProductImageModel
 /**
+ * Model ProductPrintFile
+ * 
+ */
+export type ProductPrintFile = Prisma.ProductPrintFileModel
+/**
  * Model Order
  * 
  */

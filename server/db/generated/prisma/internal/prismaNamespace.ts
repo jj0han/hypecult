@@ -392,6 +392,7 @@ export const ModelName = {
   Product: 'Product',
   ProductVariant: 'ProductVariant',
   ProductImage: 'ProductImage',
+  ProductPrintFile: 'ProductPrintFile',
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "session" | "user" | "verificationToken" | "address" | "product" | "productVariant" | "productImage" | "order" | "orderItem" | "orderAddress" | "shipping" | "cartItem"
+    modelProps: "account" | "session" | "user" | "verificationToken" | "address" | "product" | "productVariant" | "productImage" | "productPrintFile" | "order" | "orderItem" | "orderAddress" | "shipping" | "cartItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1008,6 +1009,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductPrintFile: {
+      payload: Prisma.$ProductPrintFilePayload<ExtArgs>
+      fields: Prisma.ProductPrintFileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductPrintFileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductPrintFileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        findFirst: {
+          args: Prisma.ProductPrintFileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductPrintFileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        findMany: {
+          args: Prisma.ProductPrintFileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>[]
+        }
+        create: {
+          args: Prisma.ProductPrintFileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        createMany: {
+          args: Prisma.ProductPrintFileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductPrintFileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>[]
+        }
+        delete: {
+          args: Prisma.ProductPrintFileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        update: {
+          args: Prisma.ProductPrintFileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductPrintFileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductPrintFileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductPrintFileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductPrintFileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductPrintFilePayload>
+        }
+        aggregate: {
+          args: Prisma.ProductPrintFileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductPrintFile>
+        }
+        groupBy: {
+          args: Prisma.ProductPrintFileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductPrintFileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductPrintFileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductPrintFileCountAggregateOutputType> | number
+        }
+      }
+    }
     Order: {
       payload: Prisma.$OrderPayload<ExtArgs>
       fields: Prisma.OrderFieldRefs
@@ -1504,6 +1579,7 @@ export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeo
 export const ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
+  productUid: 'productUid',
   color: 'color',
   size: 'size',
   stock: 'stock',
@@ -1518,12 +1594,24 @@ export const ProductImageScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   url: 'url',
-  printArea: 'printArea',
+  alt: 'alt',
   order: 'order',
   createdAt: 'createdAt'
 } as const
 
 export type ProductImageScalarFieldEnum = (typeof ProductImageScalarFieldEnum)[keyof typeof ProductImageScalarFieldEnum]
+
+
+export const ProductPrintFileScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  fileType: 'fileType',
+  url: 'url',
+  order: 'order',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductPrintFileScalarFieldEnum = (typeof ProductPrintFileScalarFieldEnum)[keyof typeof ProductPrintFileScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {
@@ -1859,6 +1947,7 @@ export type GlobalOmitConfig = {
   product?: Prisma.ProductOmit
   productVariant?: Prisma.ProductVariantOmit
   productImage?: Prisma.ProductImageOmit
+  productPrintFile?: Prisma.ProductPrintFileOmit
   order?: Prisma.OrderOmit
   orderItem?: Prisma.OrderItemOmit
   orderAddress?: Prisma.OrderAddressOmit

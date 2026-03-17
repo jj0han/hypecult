@@ -17,7 +17,6 @@ export type Currency = {
 }
 
 export async function GET(_request: Request, { params }: { params: Promise<{ currencies: string }> }) {
-  console.log((await params).currencies)
   try {
     const response = await fetch(`https://economia.awesomeapi.com.br/json/last/${(await params).currencies}`)
     const data = await response.json()

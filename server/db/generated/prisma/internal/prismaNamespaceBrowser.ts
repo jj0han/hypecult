@@ -59,6 +59,7 @@ export const ModelName = {
   Product: 'Product',
   ProductVariant: 'ProductVariant',
   ProductImage: 'ProductImage',
+  ProductPrintFile: 'ProductPrintFile',
   Order: 'Order',
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
@@ -169,6 +170,7 @@ export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeo
 export const ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
+  productUid: 'productUid',
   color: 'color',
   size: 'size',
   stock: 'stock',
@@ -183,12 +185,24 @@ export const ProductImageScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
   url: 'url',
-  printArea: 'printArea',
+  alt: 'alt',
   order: 'order',
   createdAt: 'createdAt'
 } as const
 
 export type ProductImageScalarFieldEnum = (typeof ProductImageScalarFieldEnum)[keyof typeof ProductImageScalarFieldEnum]
+
+
+export const ProductPrintFileScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  fileType: 'fileType',
+  url: 'url',
+  order: 'order',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductPrintFileScalarFieldEnum = (typeof ProductPrintFileScalarFieldEnum)[keyof typeof ProductPrintFileScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {

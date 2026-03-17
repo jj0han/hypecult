@@ -211,6 +211,35 @@ export function StepShippingInfo({
               </Field>
             )}
           />
+          <Controller
+            name="cpf"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>CPF *</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder="000.000.000-00"
+                  aria-invalid={fieldState.invalid}
+                  maxLength={14}
+                  onChange={(e) => {
+                    const digits = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 11);
+                    const formatted = digits
+                      .replace(/(\d{3})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                    field.onChange(formatted);
+                  }}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
         </div>
 
         {addresses && addresses.length > 0 && (

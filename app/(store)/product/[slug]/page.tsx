@@ -1,4 +1,5 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight01Icon,
   ChemistryIcon,
@@ -22,7 +23,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import z from "zod";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,6 +42,7 @@ import {
 import {
   Field,
   FieldContent,
+  FieldError,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
@@ -73,7 +77,13 @@ import {
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
 import { formatZipCode } from "@/utils/formatters";
-import { getShirtSizeLabel } from "@/utils/helpers";
+
+const formSchema = z.object({
+  cep: z
+    .string()
+    .min(8, "CEP deve ter 9 dígitos")
+    .max(8, "CEP deve ter 9 dígitos"),
+});
 
 export default function Page() {
   const { slug } = useParams<{ slug: string }>();
@@ -83,7 +93,13 @@ export default function Page() {
     trpc.product.byId.queryOptions({ id: slug })
   );
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
-  const [cep, setCep] = useState("");
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      cep: "",
+    },
+  });
 
   const careItems = [
     {
@@ -132,32 +148,48 @@ export default function Page() {
     }
   }
 
-  const createQuote = useMutation(trpc.prodigiQuote.create.mutationOptions());
-  // const { data: productDetails } = useQuery(
-  //   trpc.prodigiProductDetails.bySku.queryOptions("TEE-AA-1301")
-  // );
+  const createQuote = useMutation(trpc.gelatoQuote.create.mutationOptions());
 
-  function onSubmit() {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const normalizedCep = values.cep.replace(/\D/g, "");
+    if (normalizedCep.length < 8) return;
+
+    const variant = data?.variants.find((v) => v.id === selectedVariant);
+    if (!variant?.productUid) return;
+
+    // Lookup address from CEP so we can send a complete recipient to Gelato
+    let city = "São Paulo";
+    let addressLine1 = "Rua Exemplo";
+    try {
+      const res = await fetch(`/api/viacep/${normalizedCep}`);
+      const viacepData = await res.json();
+      if (viacepData?.localidade) city = viacepData.localidade;
+      if (viacepData?.logradouro) addressLine1 = viacepData.logradouro;
+    } catch {
+      // fall through with defaults
+    }
+
     createQuote.mutate({
-      items: [
+      orderReferenceId: crypto.randomUUID(),
+      customerReferenceId: "guest",
+      currency: "BRL",
+      allowMultipleQuotes: false,
+      recipient: {
+        country: "BR",
+        firstName: "Cliente",
+        lastName: "HypeCult",
+        addressLine1,
+        city,
+        postCode: normalizedCep,
+        email: "noreply@hypecult.com",
+      },
+      products: [
         {
-          assets: [
-            {
-              printArea: "front",
-            },
-          ],
-          attributes: {
-            color: "black",
-            size: getShirtSizeLabel(
-              data?.variants.find((v) => v.id === selectedVariant)?.size
-            ),
-          },
-          copies: 1,
-          sku: data?.sku ?? "",
+          itemReferenceId: variant.id,
+          productUid: variant.productUid,
+          quantity: 1,
         },
       ],
-      destinationCountryCode: "BR",
-      currencyCode: "USD",
     });
   }
 
@@ -292,7 +324,7 @@ export default function Page() {
                             add({
                               image: data.images[0].url,
                               name: data.name,
-                              sku: data.sku,
+                              sku: variant?.productUid ?? data.sku,
                               color: variant?.color ?? "",
                               price: productPrice,
                               quantity: 1,
@@ -327,40 +359,56 @@ export default function Page() {
                               Não sei meu CEP
                             </Link>
                           </div>
-                          <InputGroup>
-                            <InputGroupInput
-                              maxLength={8}
-                              type="text"
-                              placeholder="CEP"
-                              disabled={
-                                createQuote.isPending || !selectedVariant
-                              }
-                              value={formatZipCode(cep)}
-                              onChange={(e) => setCep(e.target.value)}
-                            />
-                            <InputGroupAddon align="inline-end">
-                              <InputGroupButton
-                                variant={"destructive"}
-                                size={"xs"}
-                                disabled={
-                                  createQuote.isPending || !selectedVariant
-                                }
-                                onClick={onSubmit}
-                              >
-                                {createQuote.isPending ? (
-                                  <Spinner strokeWidth={2} />
-                                ) : (
-                                  <>
-                                    <HugeiconsIcon
-                                      icon={SearchIcon}
-                                      strokeWidth={2}
+                          <form onSubmit={form.handleSubmit(onSubmit)}>
+                            <Controller
+                              name="cep"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...field}
+                                      aria-invalid={fieldState.invalid}
+                                      maxLength={9}
+                                      type="text"
+                                      placeholder="CEP"
+                                      disabled={
+                                        createQuote.isPending ||
+                                        !selectedVariant
+                                      }
+                                      value={formatZipCode(field.value)}
                                     />
-                                    <span>Calcular</span>
-                                  </>
-                                )}
-                              </InputGroupButton>
-                            </InputGroupAddon>
-                          </InputGroup>
+                                    <InputGroupAddon align="inline-end">
+                                      <InputGroupButton
+                                        variant={"destructive"}
+                                        size={"xs"}
+                                        disabled={
+                                          createQuote.isPending ||
+                                          !selectedVariant
+                                        }
+                                        type="submit"
+                                      >
+                                        {createQuote.isPending ? (
+                                          <Spinner strokeWidth={2} />
+                                        ) : (
+                                          <>
+                                            <HugeiconsIcon
+                                              icon={SearchIcon}
+                                              strokeWidth={2}
+                                            />
+                                            <span>Calcular</span>
+                                          </>
+                                        )}
+                                      </InputGroupButton>
+                                    </InputGroupAddon>
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </Field>
+                              )}
+                            />
+                          </form>
                           <Link
                             href="https://www.correios.com.br/a-correios/precisa-de-ajuda/politica-de-frete-e-entrega"
                             target="_blank"
@@ -370,175 +418,190 @@ export default function Page() {
                           </Link>
                         </div>
                         {createQuote.data && (
-                          <div className="space-y-2">
-                            <Label className="text-base">Opções de frete</Label>
-                            {createQuote.data.quotes.map((quote) => (
-                              <Item key={quote.shipmentMethod} variant="muted">
-                                <ItemMedia>
-                                  <HugeiconsIcon icon={Truck} strokeWidth={2} />
-                                </ItemMedia>
-                                <ItemContent className="gap-1">
-                                  <ItemTitle>
-                                    {quote.shipments[0].carrier.name} -{" "}
-                                    {quote.shipmentMethod}
-                                  </ItemTitle>
-                                  <ItemDescription>
-                                    {Intl.NumberFormat("en-US", {
-                                      style: "currency",
-                                      currency: "USD",
-                                    }).format(
-                                      Number(quote.costSummary.shipping.amount)
-                                    )}
-                                  </ItemDescription>
-                                </ItemContent>
-                              </Item>
-                            ))}
-                          </div>
+                          <ItemGroup>
+                            {createQuote.data.quotes
+                              .flatMap((q) => q.shipmentMethods)
+                              .map((method) => (
+                                <Item
+                                  key={method.shipmentMethodUid}
+                                  variant="muted"
+                                >
+                                  <ItemMedia>
+                                    <HugeiconsIcon
+                                      icon={Truck}
+                                      strokeWidth={2}
+                                    />
+                                  </ItemMedia>
+                                  <ItemContent className="gap-1">
+                                    <ItemTitle>{method.name}</ItemTitle>
+                                    <ItemDescription>
+                                      {method.minDeliveryDays}–
+                                      {method.maxDeliveryDays} dias úteis -{" "}
+                                      {method.price.toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: method.currency,
+                                      })}
+                                    </ItemDescription>
+                                  </ItemContent>
+                                </Item>
+                              ))}
+                          </ItemGroup>
                         )}
                       </div>
 
-                      <ItemGroup>
-                        {infoItems.map((item) => (
-                          <Item key={item.title} variant="outline">
-                            <ItemMedia>
-                              <HugeiconsIcon icon={item.icon} strokeWidth={2} />
-                            </ItemMedia>
-                            <ItemContent className="gap-1">
-                              <ItemTitle>{item.title}</ItemTitle>
-                              <ItemDescription>
-                                {item.description}
-                              </ItemDescription>
-                            </ItemContent>
-                          </Item>
-                        ))}
-                        <Collapsible className="space-y-2">
-                          <Item variant="outline">
-                            <ItemMedia>
-                              <HugeiconsIcon icon={RulerIcon} strokeWidth={2} />
-                            </ItemMedia>
-                            <ItemContent>
-                              <ItemTitle>Tabela de medidas</ItemTitle>
-                            </ItemContent>
-                            <ItemActions>
-                              <CollapsibleTrigger
-                                render={
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-8 group"
-                                  >
-                                    <HugeiconsIcon
-                                      icon={ChevronRight}
-                                      strokeWidth={2}
-                                      className="group-aria-expanded:hidden"
-                                    />
-                                    <HugeiconsIcon
-                                      icon={ChevronDown}
-                                      strokeWidth={2}
-                                      className="group-aria-[expanded=false]:hidden"
-                                    />
-                                    <span className="sr-only">
-                                      Toggle details
-                                    </span>
-                                  </Button>
-                                }
-                              />
-                            </ItemActions>
-                          </Item>
-                          <CollapsibleContent className="space-y-2">
-                            <Item variant="muted">
-                              <ItemContent>
-                                <Table>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead />
-                                      <TableHead>P</TableHead>
-                                      <TableHead>M</TableHead>
-                                      <TableHead>G</TableHead>
-                                      <TableHead>GG</TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    <TableRow>
-                                      <TableCell className="font-medium">
-                                        Larg. (cm)
-                                      </TableCell>
-                                      <TableCell>46-50</TableCell>
-                                      <TableCell>48-52</TableCell>
-                                      <TableCell>56-60</TableCell>
-                                      <TableCell>59-63</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                      <TableCell className="font-medium">
-                                        Compr. (cm)
-                                      </TableCell>
-                                      <TableCell>65-69</TableCell>
-                                      <TableCell>67-71</TableCell>
-                                      <TableCell>72-76</TableCell>
-                                      <TableCell>73-77</TableCell>
-                                    </TableRow>
-                                  </TableBody>
-                                  <TableCaption className="text-left">
-                                    Percentual de encolhimento pós lavagem:
-                                    Comprimento: 10%, Largura: 5%
-                                  </TableCaption>
-                                </Table>
+                      <div className="space-y-2">
+                        <Label className="text-base">
+                          Informações do produto
+                        </Label>
+                        <ItemGroup>
+                          {infoItems.map((item) => (
+                            <Item key={item.title} variant="outline">
+                              <ItemMedia>
+                                <HugeiconsIcon
+                                  icon={item.icon}
+                                  strokeWidth={2}
+                                />
+                              </ItemMedia>
+                              <ItemContent className="gap-1">
+                                <ItemTitle>{item.title}</ItemTitle>
+                                <ItemDescription>
+                                  {item.description}
+                                </ItemDescription>
                               </ItemContent>
                             </Item>
-                          </CollapsibleContent>
-                        </Collapsible>
-                        <Collapsible className="space-y-2">
-                          <Item variant="outline">
-                            <ItemMedia>
-                              <HugeiconsIcon icon={Info} strokeWidth={2} />
-                            </ItemMedia>
-                            <ItemContent>
-                              <ItemTitle>Cuidados com o produto</ItemTitle>
-                            </ItemContent>
-                            <ItemActions>
-                              <CollapsibleTrigger
-                                render={
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-8 group"
-                                  >
-                                    <HugeiconsIcon
-                                      icon={ChevronRight}
-                                      strokeWidth={2}
-                                      className="group-aria-expanded:hidden"
-                                    />
-                                    <HugeiconsIcon
-                                      icon={ChevronDown}
-                                      strokeWidth={2}
-                                      className="group-aria-[expanded=false]:hidden"
-                                    />
-                                    <span className="sr-only">
-                                      Toggle details
-                                    </span>
-                                  </Button>
-                                }
-                              />
-                            </ItemActions>
-                          </Item>
-
-                          <CollapsibleContent className="space-y-2">
-                            {careItems.map((item) => (
-                              <Item variant="muted" key={item.title}>
-                                <ItemMedia>
-                                  <HugeiconsIcon
-                                    icon={item.icon}
-                                    strokeWidth={2}
-                                  />
-                                </ItemMedia>
+                          ))}
+                          <Collapsible className="space-y-2">
+                            <Item variant="outline">
+                              <ItemMedia>
+                                <HugeiconsIcon
+                                  icon={RulerIcon}
+                                  strokeWidth={2}
+                                />
+                              </ItemMedia>
+                              <ItemContent>
+                                <ItemTitle>Tabela de medidas</ItemTitle>
+                              </ItemContent>
+                              <ItemActions>
+                                <CollapsibleTrigger
+                                  render={
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8 group"
+                                    >
+                                      <HugeiconsIcon
+                                        icon={ChevronRight}
+                                        strokeWidth={2}
+                                        className="group-aria-expanded:hidden"
+                                      />
+                                      <HugeiconsIcon
+                                        icon={ChevronDown}
+                                        strokeWidth={2}
+                                        className="group-aria-[expanded=false]:hidden"
+                                      />
+                                      <span className="sr-only">
+                                        Toggle details
+                                      </span>
+                                    </Button>
+                                  }
+                                />
+                              </ItemActions>
+                            </Item>
+                            <CollapsibleContent className="space-y-2">
+                              <Item variant="muted">
                                 <ItemContent>
-                                  <ItemTitle>{item.title}</ItemTitle>
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead />
+                                        <TableHead>P</TableHead>
+                                        <TableHead>M</TableHead>
+                                        <TableHead>G</TableHead>
+                                        <TableHead>GG</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      <TableRow>
+                                        <TableCell className="font-medium">
+                                          Larg. (cm)
+                                        </TableCell>
+                                        <TableCell>46-50</TableCell>
+                                        <TableCell>48-52</TableCell>
+                                        <TableCell>56-60</TableCell>
+                                        <TableCell>59-63</TableCell>
+                                      </TableRow>
+                                      <TableRow>
+                                        <TableCell className="font-medium">
+                                          Compr. (cm)
+                                        </TableCell>
+                                        <TableCell>65-69</TableCell>
+                                        <TableCell>67-71</TableCell>
+                                        <TableCell>72-76</TableCell>
+                                        <TableCell>73-77</TableCell>
+                                      </TableRow>
+                                    </TableBody>
+                                    <TableCaption className="text-left">
+                                      Percentual de encolhimento pós lavagem:
+                                      Comprimento: 10%, Largura: 5%
+                                    </TableCaption>
+                                  </Table>
                                 </ItemContent>
                               </Item>
-                            ))}
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </ItemGroup>
+                            </CollapsibleContent>
+                          </Collapsible>
+                          <Collapsible className="space-y-2">
+                            <Item variant="outline">
+                              <ItemMedia>
+                                <HugeiconsIcon icon={Info} strokeWidth={2} />
+                              </ItemMedia>
+                              <ItemContent>
+                                <ItemTitle>Cuidados com o produto</ItemTitle>
+                              </ItemContent>
+                              <ItemActions>
+                                <CollapsibleTrigger
+                                  render={
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8 group"
+                                    >
+                                      <HugeiconsIcon
+                                        icon={ChevronRight}
+                                        strokeWidth={2}
+                                        className="group-aria-expanded:hidden"
+                                      />
+                                      <HugeiconsIcon
+                                        icon={ChevronDown}
+                                        strokeWidth={2}
+                                        className="group-aria-[expanded=false]:hidden"
+                                      />
+                                      <span className="sr-only">
+                                        Toggle details
+                                      </span>
+                                    </Button>
+                                  }
+                                />
+                              </ItemActions>
+                            </Item>
+
+                            <CollapsibleContent className="space-y-2">
+                              {careItems.map((item) => (
+                                <Item variant="muted" key={item.title}>
+                                  <ItemMedia>
+                                    <HugeiconsIcon
+                                      icon={item.icon}
+                                      strokeWidth={2}
+                                    />
+                                  </ItemMedia>
+                                  <ItemContent>
+                                    <ItemTitle>{item.title}</ItemTitle>
+                                  </ItemContent>
+                                </Item>
+                              ))}
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </ItemGroup>
+                      </div>
                     </>
                   );
                 })()}

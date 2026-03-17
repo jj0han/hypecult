@@ -1,10 +1,9 @@
 import { addressRouter } from "./routers/address";
 import { authRouter } from "./routers/auth";
 import { cartRouter } from "./routers/cart";
+import { gelatoOrderRouter } from "./routers/gelato.order";
+import { gelatoQuoteRouter } from "./routers/gelato.quote";
 import { orderRouter } from "./routers/order";
-import { prodigiOrderRouter } from "./routers/prodigi.order";
-import { prodigiProductDetailsRouter } from "./routers/prodigi.product.details";
-import { prodigiQuoteRouter } from "./routers/prodigi.quote";
 import { productRouter } from "./routers/product";
 import { createTRPCRouter } from "./trpc";
 
@@ -13,9 +12,8 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   address: addressRouter,
   order: orderRouter,
-  prodigiOrder: prodigiOrderRouter,
-  prodigiQuote: prodigiQuoteRouter,
-  prodigiProductDetails: prodigiProductDetailsRouter,
+  gelatoOrder: gelatoOrderRouter,
+  gelatoQuote: gelatoQuoteRouter,
   cart: cartRouter,
 });
 
