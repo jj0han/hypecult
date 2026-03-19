@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import {
   Item,
   ItemContent,
-  ItemDescription,
   ItemGroup,
   ItemHeader,
   ItemTitle,
@@ -38,7 +37,7 @@ type ProductProps =
         order: number;
         productId: string;
         url: string;
-        printArea: string;
+        alt: string | null;
       }[];
       variants: {
         id: string;
@@ -151,7 +150,7 @@ function ProductList({
             <Link key={product.id} href={`/product/${product.id}`}>
               <Item variant={"default"} size={"xs"} className="items-start">
                 <ItemHeader>
-                  <div className="relative aspect-square border rounded-lg size-full!">
+                  <div className="relative aspect-square border rounded-lg overflow-hidden size-full!">
                     <Image
                       src={product.images[0].url}
                       alt={product.name}
@@ -165,9 +164,7 @@ function ProductList({
                     <ItemTitle className="text-base font-bold">
                       {product.name}
                     </ItemTitle>
-                    <ItemDescription className="text-base">
-                      {product.description}
-                    </ItemDescription>
+                    {/* <ItemDescription className="text-base" dangerouslySetInnerHTML={{ __html: product.description }} /> */}
                   </div>
                   <ItemTitle className="text-base font-bold">
                     {productPrice.toLocaleString("pt-BR", {

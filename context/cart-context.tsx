@@ -47,6 +47,7 @@ type CartContextType = {
   total: number | undefined;
   isPending: boolean;
   isLoading: boolean;
+  isUpdating: boolean;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -204,9 +205,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           : i;
       });
     });
-    toast.success(
-      `${quantity > 0 ? "Adicionado" : "Removido"} unidade ao carrinho`
-    );
   }
 
   function clear() {
@@ -274,6 +272,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         total,
         isPending: listServerCart.isPending,
         isLoading: listServerCart.isLoading,
+        isUpdating: replaceServerCart.isPending,
       }}
     >
       {children}

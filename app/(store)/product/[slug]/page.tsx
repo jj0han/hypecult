@@ -35,10 +35,18 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Field,
   FieldContent,
@@ -76,6 +84,7 @@ import {
 } from "@/components/ui/table";
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
+import { cn } from "@/lib/utils";
 import { formatZipCode } from "@/utils/formatters";
 
 const formSchema = z.object({
@@ -100,6 +109,8 @@ export default function Page() {
       cep: "",
     },
   });
+
+  const sizes = ["PP", "P", "M", "G", "GG", "XG", "XGG"];
 
   const careItems = [
     {
@@ -217,24 +228,49 @@ export default function Page() {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="grid grid-cols-2 gap-4 md:col-span-2 h-fit">
-            {isPending ? (
-              <ProductImageSkeleton />
-            ) : (
-              data?.images.map((image) => (
-                <div
-                  key={image.id}
-                  className="relative aspect-square border rounded-lg size-full!"
-                >
-                  <Image
-                    key={image.id}
-                    src={image.url}
-                    alt={data.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
-              ))
-            )}
+            <Dialog>
+              {isPending ? (
+                <ProductImageSkeleton />
+              ) : (
+                data?.images.map((image) => (
+                  <DialogTrigger key={image.id}>
+                    <div
+                      key={image.id}
+                      className="relative aspect-square border rounded-lg overflow-hidden size-full!"
+                    >
+                      <Image
+                        key={image.id}
+                        src={image.url}
+                        alt={data.name}
+                        fill
+                        objectFit="cover"
+                      />
+                    </div>
+                  </DialogTrigger>
+                ))
+              )}
+              <DialogContent className={"sm:max-w-4xl p-0 overflow-hidden"}>
+                <Carousel>
+                  <CarouselContent>
+                    {data?.images.map((image) => (
+                      <CarouselItem
+                        key={image.id}
+                        className="aspect-square size-full relative"
+                      >
+                        <Image
+                          src={image.url}
+                          alt={data.name}
+                          fill
+                          objectFit="cover"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className={"left-4"} />
+                  <CarouselNext className={"right-4"} />
+                </Carousel>
+              </DialogContent>
+            </Dialog>
           </div>
           {isPending ? (
             <ProductSkeleton />
@@ -242,15 +278,22 @@ export default function Page() {
             data && (
               <div className="space-y-6">
                 {(() => {
-                  const productPrice = Number(data.price);
+                  const variantPrice = data.variants.find(
+                    (v) => v.id === selectedVariant
+                  )?.price;
+                  const productPrice = Number(variantPrice ?? data.price);
                   return (
                     <>
                       <div className="flex items-start justify-between">
                         <div className="space-y-2">
                           <h1 className="text-3xl font-bold">{data.name}</h1>
-                          <p className="text-base text-muted-foreground">
-                            {data.description}
-                          </p>
+                          <div
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: we need to use dangerouslySetInnerHTML here to render the HTML content
+                            dangerouslySetInnerHTML={{
+                              __html: data.description,
+                            }}
+                            className="text-base text-muted-foreground space-y-4"
+                          />
                         </div>
                         <Button
                           variant={"link"}
@@ -287,27 +330,42 @@ export default function Page() {
                           value={selectedVariant}
                           onValueChange={setSelectedVariant}
                         >
-                          {data.variants.map((variant) => (
-                            <FieldLabel
-                              key={variant.id}
-                              htmlFor={variant.id}
-                              className="aspect-square size-12! flex items-center justify-center relative"
-                            >
-                              <Field
-                                orientation="horizontal"
-                                className="size-fit! p-0!"
+                          {sizes.map((size) => {
+                            const variant = data?.variants.find(
+                              (v) => v.size === size
+                            );
+                            return (
+                              <FieldLabel
+                                key={size}
+                                htmlFor={variant?.id}
+                                className="aspect-square size-full! max-w-14 flex items-center justify-center relative"
                               >
-                                <RadioGroupItem
-                                  value={variant.id}
-                                  id={variant.id}
-                                  className="sr-only absolute"
-                                />
-                                <FieldContent>
-                                  <FieldTitle>{variant.size}</FieldTitle>
-                                </FieldContent>
-                              </Field>
-                            </FieldLabel>
-                          ))}
+                                <Field
+                                  orientation="horizontal"
+                                  className="size-fit! p-0!"
+                                >
+                                  <RadioGroupItem
+                                    value={variant?.id}
+                                    id={variant?.id}
+                                    disabled={!variant}
+                                    className="sr-only absolute"
+                                  />
+                                  <FieldContent>
+                                    <FieldTitle
+                                      className={cn(
+                                        variant?.id === selectedVariant &&
+                                          "text-primary",
+                                        !variant &&
+                                          "text-muted-foreground line-through"
+                                      )}
+                                    >
+                                      {size}
+                                    </FieldTitle>
+                                  </FieldContent>
+                                </Field>
+                              </FieldLabel>
+                            );
+                          })}
                         </RadioGroup>
                       </div>
 
@@ -377,6 +435,11 @@ export default function Page() {
                                         !selectedVariant
                                       }
                                       value={formatZipCode(field.value)}
+                                      onChange={(e) => {
+                                        field.onChange(
+                                          e.target.value.replace(/\D/g, "")
+                                        );
+                                      }}
                                     />
                                     <InputGroupAddon align="inline-end">
                                       <InputGroupButton

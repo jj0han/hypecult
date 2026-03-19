@@ -36,6 +36,7 @@ export type ProductSumAggregateOutputType = {
 
 export type ProductMinAggregateOutputType = {
   id: string | null
+  gelatoProductId: string | null
   sku: string | null
   name: string | null
   description: string | null
@@ -48,6 +49,7 @@ export type ProductMinAggregateOutputType = {
 
 export type ProductMaxAggregateOutputType = {
   id: string | null
+  gelatoProductId: string | null
   sku: string | null
   name: string | null
   description: string | null
@@ -60,6 +62,7 @@ export type ProductMaxAggregateOutputType = {
 
 export type ProductCountAggregateOutputType = {
   id: number
+  gelatoProductId: number
   sku: number
   name: number
   description: number
@@ -82,6 +85,7 @@ export type ProductSumAggregateInputType = {
 
 export type ProductMinAggregateInputType = {
   id?: true
+  gelatoProductId?: true
   sku?: true
   name?: true
   description?: true
@@ -94,6 +98,7 @@ export type ProductMinAggregateInputType = {
 
 export type ProductMaxAggregateInputType = {
   id?: true
+  gelatoProductId?: true
   sku?: true
   name?: true
   description?: true
@@ -106,6 +111,7 @@ export type ProductMaxAggregateInputType = {
 
 export type ProductCountAggregateInputType = {
   id?: true
+  gelatoProductId?: true
   sku?: true
   name?: true
   description?: true
@@ -205,6 +211,7 @@ export type ProductGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type ProductGroupByOutputType = {
   id: string
+  gelatoProductId: string | null
   sku: string
   name: string
   description: string
@@ -240,6 +247,7 @@ export type ProductWhereInput = {
   OR?: Prisma.ProductWhereInput[]
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   id?: Prisma.StringFilter<"Product"> | string
+  gelatoProductId?: Prisma.StringNullableFilter<"Product"> | string | null
   sku?: Prisma.StringFilter<"Product"> | string
   name?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
@@ -255,6 +263,7 @@ export type ProductWhereInput = {
 
 export type ProductOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  gelatoProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -270,6 +279,7 @@ export type ProductOrderByWithRelationInput = {
 
 export type ProductWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  gelatoProductId?: string
   AND?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
   OR?: Prisma.ProductWhereInput[]
   NOT?: Prisma.ProductWhereInput | Prisma.ProductWhereInput[]
@@ -284,10 +294,11 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   images?: Prisma.ProductImageListRelationFilter
   printFiles?: Prisma.ProductPrintFileListRelationFilter
   variants?: Prisma.ProductVariantListRelationFilter
-}, "id">
+}, "id" | "gelatoProductId">
 
 export type ProductOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  gelatoProductId?: Prisma.SortOrderInput | Prisma.SortOrder
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -308,6 +319,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   OR?: Prisma.ProductScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ProductScalarWhereWithAggregatesInput | Prisma.ProductScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Product"> | string
+  gelatoProductId?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   sku?: Prisma.StringWithAggregatesFilter<"Product"> | string
   name?: Prisma.StringWithAggregatesFilter<"Product"> | string
   description?: Prisma.StringWithAggregatesFilter<"Product"> | string
@@ -320,6 +332,7 @@ export type ProductScalarWhereWithAggregatesInput = {
 
 export type ProductCreateInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -335,6 +348,7 @@ export type ProductCreateInput = {
 
 export type ProductUncheckedCreateInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -350,6 +364,7 @@ export type ProductUncheckedCreateInput = {
 
 export type ProductUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -365,6 +380,7 @@ export type ProductUpdateInput = {
 
 export type ProductUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -380,6 +396,7 @@ export type ProductUncheckedUpdateInput = {
 
 export type ProductCreateManyInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -392,6 +409,7 @@ export type ProductCreateManyInput = {
 
 export type ProductUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -404,6 +422,7 @@ export type ProductUpdateManyMutationInput = {
 
 export type ProductUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -416,6 +435,7 @@ export type ProductUncheckedUpdateManyInput = {
 
 export type ProductCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  gelatoProductId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -432,6 +452,7 @@ export type ProductAvgOrderByAggregateInput = {
 
 export type ProductMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  gelatoProductId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -444,6 +465,7 @@ export type ProductMaxOrderByAggregateInput = {
 
 export type ProductMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  gelatoProductId?: Prisma.SortOrder
   sku?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -523,6 +545,7 @@ export type ProductUpdateOneRequiredWithoutPrintFilesNestedInput = {
 
 export type ProductCreateWithoutVariantsInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -537,6 +560,7 @@ export type ProductCreateWithoutVariantsInput = {
 
 export type ProductUncheckedCreateWithoutVariantsInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -567,6 +591,7 @@ export type ProductUpdateToOneWithWhereWithoutVariantsInput = {
 
 export type ProductUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -581,6 +606,7 @@ export type ProductUpdateWithoutVariantsInput = {
 
 export type ProductUncheckedUpdateWithoutVariantsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -595,6 +621,7 @@ export type ProductUncheckedUpdateWithoutVariantsInput = {
 
 export type ProductCreateWithoutImagesInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -609,6 +636,7 @@ export type ProductCreateWithoutImagesInput = {
 
 export type ProductUncheckedCreateWithoutImagesInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -639,6 +667,7 @@ export type ProductUpdateToOneWithWhereWithoutImagesInput = {
 
 export type ProductUpdateWithoutImagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -653,6 +682,7 @@ export type ProductUpdateWithoutImagesInput = {
 
 export type ProductUncheckedUpdateWithoutImagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -667,6 +697,7 @@ export type ProductUncheckedUpdateWithoutImagesInput = {
 
 export type ProductCreateWithoutPrintFilesInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -681,6 +712,7 @@ export type ProductCreateWithoutPrintFilesInput = {
 
 export type ProductUncheckedCreateWithoutPrintFilesInput = {
   id?: string
+  gelatoProductId?: string | null
   sku: string
   name: string
   description: string
@@ -711,6 +743,7 @@ export type ProductUpdateToOneWithWhereWithoutPrintFilesInput = {
 
 export type ProductUpdateWithoutPrintFilesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -725,6 +758,7 @@ export type ProductUpdateWithoutPrintFilesInput = {
 
 export type ProductUncheckedUpdateWithoutPrintFilesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  gelatoProductId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sku?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -788,6 +822,7 @@ export type ProductCountOutputTypeCountVariantsArgs<ExtArgs extends runtime.Type
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  gelatoProductId?: boolean
   sku?: boolean
   name?: boolean
   description?: boolean
@@ -804,6 +839,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 
 export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  gelatoProductId?: boolean
   sku?: boolean
   name?: boolean
   description?: boolean
@@ -816,6 +852,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 
 export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  gelatoProductId?: boolean
   sku?: boolean
   name?: boolean
   description?: boolean
@@ -828,6 +865,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 
 export type ProductSelectScalar = {
   id?: boolean
+  gelatoProductId?: boolean
   sku?: boolean
   name?: boolean
   description?: boolean
@@ -838,7 +876,7 @@ export type ProductSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sku" | "name" | "description" | "type" | "price" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "gelatoProductId" | "sku" | "name" | "description" | "type" | "price" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   images?: boolean | Prisma.Product$imagesArgs<ExtArgs>
   printFiles?: boolean | Prisma.Product$printFilesArgs<ExtArgs>
@@ -857,6 +895,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    gelatoProductId: string | null
     sku: string
     name: string
     description: string
@@ -1292,6 +1331,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface ProductFieldRefs {
   readonly id: Prisma.FieldRef<"Product", 'String'>
+  readonly gelatoProductId: Prisma.FieldRef<"Product", 'String'>
   readonly sku: Prisma.FieldRef<"Product", 'String'>
   readonly name: Prisma.FieldRef<"Product", 'String'>
   readonly description: Prisma.FieldRef<"Product", 'String'>

@@ -37,7 +37,9 @@ export const ShirtSize = {
   P: 'P',
   M: 'M',
   G: 'G',
-  GG: 'GG'
+  GG: 'GG',
+  XG: 'XG',
+  XGG: 'XGG'
 } as const
 
 export type ShirtSize = (typeof ShirtSize)[keyof typeof ShirtSize]

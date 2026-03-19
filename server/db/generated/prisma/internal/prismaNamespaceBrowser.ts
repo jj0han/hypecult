@@ -154,6 +154,7 @@ export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeo
 
 export const ProductScalarFieldEnum = {
   id: 'id',
+  gelatoProductId: 'gelatoProductId',
   sku: 'sku',
   name: 'name',
   description: 'description',
@@ -170,6 +171,7 @@ export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeo
 export const ProductVariantScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
+  gelatoVariantId: 'gelatoVariantId',
   productUid: 'productUid',
   color: 'color',
   size: 'size',

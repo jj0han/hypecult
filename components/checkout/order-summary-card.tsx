@@ -46,7 +46,7 @@ export function OrderSummaryCard({
   summary,
   onRemovePromo,
 }: OrderSummaryCardProps) {
-  const { remove, clear, increment } = useCart();
+  const { remove, clear, increment, isUpdating } = useCart();
 
   return (
     <Card>
@@ -64,7 +64,7 @@ export function OrderSummaryCard({
             size={"icon-xs"}
             variant={"destructive"}
             onClick={() => clear()}
-            disabled={currentStep > 3}
+            disabled={currentStep > 3 || isUpdating}
           >
             <HugeiconsIcon icon={Trash} strokeWidth={2} />
           </Button>
@@ -118,7 +118,9 @@ export function OrderSummaryCard({
                         size={"icon-xs"}
                         variant={"outline"}
                         onClick={() => increment(item.id, -1)}
-                        disabled={currentStep > 3 || item.quantity <= 1}
+                        disabled={
+                          currentStep > 3 || item.quantity <= 1 || isUpdating
+                        }
                       >
                         <HugeiconsIcon icon={Minus} strokeWidth={2} />
                       </Button>
@@ -126,7 +128,7 @@ export function OrderSummaryCard({
                         size={"icon-xs"}
                         variant={"outline"}
                         onClick={() => increment(item.id, 1)}
-                        disabled={currentStep > 3}
+                        disabled={currentStep > 3 || isUpdating}
                       >
                         <HugeiconsIcon icon={Plus} strokeWidth={2} />
                       </Button>
@@ -136,7 +138,7 @@ export function OrderSummaryCard({
                         size={"icon-xs"}
                         variant={"destructive"}
                         onClick={() => remove(item.id)}
-                        disabled={currentStep > 3}
+                        disabled={currentStep > 3 || isUpdating}
                       >
                         <HugeiconsIcon icon={Trash} strokeWidth={2} />
                       </Button>

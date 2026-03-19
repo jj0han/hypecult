@@ -30,6 +30,8 @@ enum ShirtSize {
   M
   G
   GG
+  XG
+  XGG
 }
 
 // Necessary for Next auth
@@ -102,17 +104,18 @@ model Address {
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  sku         String // Internal product reference code
-  name        String
-  description String
-  type        ProductType
-  price       Decimal
-  active      Boolean     @default(true)
+  id              String      @id @default(uuid())
+  gelatoProductId String?     @unique // Gelato store product ID (set when synced from Gelato)
+  sku             String // Internal product reference code
+  name            String
+  description     String
+  type            ProductType
+  price           Decimal
+  active          Boolean     @default(true)
 
-  images      ProductImage[]
-  printFiles  ProductPrintFile[]
-  variants    ProductVariant[]
+  images     ProductImage[]
+  printFiles ProductPrintFile[]
+  variants   ProductVariant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,11 +126,12 @@ model ProductVariant {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  productUid String? // Gelato productUid for this specific variant (encodes size + color)
-  color      String
-  size       ShirtSize?
-  stock      Int
-  price      Decimal?
+  gelatoVariantId String?    @unique // Gelato store variant ID (set when synced from Gelato)
+  productUid      String? // Gelato productUid (encodes size + color, used for fulfillment)
+  color           String
+  size            ShirtSize?
+  stock           Int
+  price           Decimal?
 
   createdAt DateTime @default(now())
 }
