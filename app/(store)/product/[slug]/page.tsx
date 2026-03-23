@@ -94,6 +94,44 @@ const formSchema = z.object({
     .max(8, "CEP deve ter 9 dígitos"),
 });
 
+const sizes = ["PP", "P", "M", "G", "GG", "XG", "XGG"];
+
+const careItems = [
+  {
+    icon: Clock01Icon,
+    title: "Lavar somente 24h após o primeiro uso.",
+  },
+  {
+    icon: Fire03Icon,
+    title: "Não lavar com água quente.",
+  },
+  {
+    icon: ChemistryIcon,
+    title: "Não usar alvejante à base de cloro.",
+  },
+  {
+    icon: SlowWindsIcon,
+    title: "Centrifugação reduzida.",
+  },
+  {
+    icon: Sun01Icon,
+    title: "Secar à sombra, pendurada sem torcer.",
+  },
+  {
+    icon: Clothes,
+    title: "Nunca passar o ferro na estampa.",
+  },
+];
+
+const infoItems = [
+  {
+    icon: StarAward02Icon,
+    title: "Qualidade garantida",
+    description:
+      "Malha penteada fio 26.1, 100% algodão, acabamento lixado, gramatura 180g/m².",
+  },
+];
+
 export default function Page() {
   const { slug } = useParams<{ slug: string }>();
   const { add } = useCart();
@@ -109,44 +147,6 @@ export default function Page() {
       cep: "",
     },
   });
-
-  const sizes = ["PP", "P", "M", "G", "GG", "XG", "XGG"];
-
-  const careItems = [
-    {
-      icon: Clock01Icon,
-      title: "Lavar somente 24h após o primeiro uso.",
-    },
-    {
-      icon: Fire03Icon,
-      title: "Não lavar com água quente.",
-    },
-    {
-      icon: ChemistryIcon,
-      title: "Não usar alvejante à base de cloro.",
-    },
-    {
-      icon: SlowWindsIcon,
-      title: "Centrifugação reduzida.",
-    },
-    {
-      icon: Sun01Icon,
-      title: "Secar à sombra, pendurada sem torcer.",
-    },
-    {
-      icon: Clothes,
-      title: "Nunca passar o ferro na estampa.",
-    },
-  ];
-
-  const infoItems = [
-    {
-      icon: StarAward02Icon,
-      title: "Qualidade garantida",
-      description:
-        "Malha penteada fio 26.1, 100% algodão, acabamento lixado, gramatura 180g/m².",
-    },
-  ];
 
   async function handleShare() {
     try {
@@ -278,21 +278,42 @@ export default function Page() {
             data && (
               <div className="space-y-6">
                 {(() => {
-                  const variantPrice = data.variants.find(
+                  const selectedVariantData = data.variants.find(
                     (v) => v.id === selectedVariant
-                  )?.price;
-                  const productPrice = Number(variantPrice ?? data.price);
+                  );
+
+                  // Effective original (undiscounted) price:
+                  // variant.price > product.price (priority order)
+                  const originalPrice = Number(
+                    selectedVariantData?.price ?? data.price
+                  );
+
+                  // Effective final (post-discount) price:
+                  // variant.finalPrice > product.finalPrice > original price (fallback when no discount)
+                  const effectiveFinalPrice = Number(
+                    selectedVariantData?.finalPrice ??
+                      data.finalPrice ??
+                      originalPrice
+                  );
+
+                  const hasDiscount =
+                    Number(
+                      selectedVariantData?.discountAmount ??
+                        data.discountAmount ??
+                        0
+                    ) > 0;
+
                   return (
                     <>
                       <div className="flex items-start justify-between">
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <h1 className="text-3xl font-bold">{data.name}</h1>
                           <div
                             // biome-ignore lint/security/noDangerouslySetInnerHtml: we need to use dangerouslySetInnerHTML here to render the HTML content
                             dangerouslySetInnerHTML={{
                               __html: data.description,
                             }}
-                            className="text-base text-muted-foreground space-y-4"
+                            className="text-base text-muted-foreground space-y-2"
                           />
                         </div>
                         <Button
@@ -310,17 +331,19 @@ export default function Page() {
 
                       <div className="flex items-center gap-2">
                         <p className="text-xl font-bold">
-                          {productPrice.toLocaleString("pt-BR", {
+                          {effectiveFinalPrice.toLocaleString("pt-BR", {
                             style: "currency",
                             currency: "BRL",
                           })}
                         </p>
-                        {/* <p className="text-xl text-muted-foreground line-through">
-                          {productPrice.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </p> */}
+                        {hasDiscount && (
+                          <p className="text-xl text-muted-foreground line-through">
+                            {originalPrice.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
@@ -379,12 +402,34 @@ export default function Page() {
                             const variant = data.variants.find(
                               (v) => v.id === selectedVariant
                             );
+                            const itemOriginalPrice = Number(
+                              variant?.price ?? data.price
+                            );
+                            const itemFinalPrice = Number(
+                              variant?.finalPrice ??
+                                data.finalPrice ??
+                                itemOriginalPrice
+                            );
                             add({
                               image: data.images[0].url,
                               name: data.name,
                               sku: variant?.productUid ?? data.sku,
                               color: variant?.color ?? "",
-                              price: productPrice,
+                              price: itemFinalPrice,
+                              originalPrice:
+                                itemFinalPrice < itemOriginalPrice
+                                  ? itemOriginalPrice
+                                  : undefined,
+                              discountType: (variant?.discountType ??
+                                data.discountType) as
+                                | "percentage"
+                                | "fixed"
+                                | undefined,
+                              discountAmount: variant?.discountAmount
+                                ? Number(variant.discountAmount)
+                                : data.discountAmount
+                                  ? Number(data.discountAmount)
+                                  : undefined,
                               quantity: 1,
                               variantId: selectedVariant,
                               productId: data.id,

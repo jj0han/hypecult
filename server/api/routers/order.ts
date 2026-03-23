@@ -72,7 +72,40 @@ export const orderRouter = createTRPCRouter({
         (acc, item) => acc + item.item.quantity,
         0
       );
-      const total = subtotal + shipping.price;
+
+      // Resolve promotion if a code was provided
+      let promotion: {
+        id: string;
+        discountType: "percentage" | "fixed";
+        discountAmount: number;
+        freeShipping: boolean;
+      } | null = null;
+
+      if (input.promoCode) {
+        const promo = await ctx.prisma.promotion.findUnique({
+          where: { code: input.promoCode.toUpperCase().trim() },
+        });
+        if (promo?.active) {
+          promotion = {
+            id: promo.id,
+            discountType: promo.discountType as "percentage" | "fixed",
+            discountAmount: Number(promo.discountAmount),
+            freeShipping: promo.freeShipping,
+          };
+        }
+      }
+
+      const discountAmount = promotion
+        ? promotion.discountType === "percentage"
+          ? subtotal * (promotion.discountAmount / 100)
+          : promotion.discountAmount
+        : 0;
+
+      const effectiveShippingPrice = promotion?.freeShipping
+        ? 0
+        : shipping.price;
+
+      const total = subtotal - discountAmount + effectiveShippingPrice;
 
       const localOrder = await ctx.prisma.$transaction(async (tx) => {
         for (const { item, variant } of validatedItems) {
@@ -86,15 +119,35 @@ export const orderRouter = createTRPCRouter({
           });
         }
 
+        // Track per-user promotion usage
+        if (promotion) {
+          await tx.userPromotion.upsert({
+            where: {
+              userId_promotionId: {
+                userId: ctx.session.user.id,
+                promotionId: promotion.id,
+              },
+            },
+            update: { usageCount: { increment: 1 } },
+            create: {
+              userId: ctx.session.user.id,
+              promotionId: promotion.id,
+              usageCount: 1,
+            },
+          });
+        }
+
         return await tx.order.create({
           data: {
             userId: ctx.session.user.id,
             orderId: crypto.randomUUID(),
             paymentIntentId: input.paymentIntentId,
             subtotal,
+            discountAmount,
             totalQuantity,
-            shippingPrice: shipping.price,
+            shippingPrice: effectiveShippingPrice,
             total,
+            promotionId: promotion?.id ?? undefined,
             items: {
               createMany: {
                 data: validatedItems.map(({ item, variant, unitPrice }) => ({

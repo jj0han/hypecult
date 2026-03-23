@@ -34,6 +34,11 @@ enum ShirtSize {
   XGG
 }
 
+enum DiscountType {
+  percentage
+  fixed
+}
+
 // Necessary for Next auth
 model Account {
   id                       String  @id @default(cuid())
@@ -63,19 +68,21 @@ model Session {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  name          String
-  email         String     @unique
-  password      String?
-  image         String?
-  emailVerified DateTime?
-  addresses     Address[]
-  orders        Order[]
-  cartItems     CartItem[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password       String?
+  image          String?
+  emailVerified  DateTime?
+  cpf            String?
+  addresses      Address[]
+  orders         Order[]
+  cartItems      CartItem[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+  userPromotions UserPromotion[]
 }
 
 model VerificationToken {
@@ -104,21 +111,25 @@ model Address {
 }
 
 model Product {
-  id              String      @id @default(uuid())
-  gelatoProductId String?     @unique // Gelato store product ID (set when synced from Gelato)
+  id              String        @id @default(uuid())
+  gelatoProductId String?       @unique // Gelato store product ID (set when synced from Gelato)
   sku             String // Internal product reference code
   name            String
   description     String
   type            ProductType
   price           Decimal
-  active          Boolean     @default(true)
+  discountType    DiscountType? // percentage or fixed — null means no active discount
+  discountAmount  Decimal? // percentage (0–100) or fixed BRL amount
+  finalPrice      Decimal? // pre-computed price after applying product-level discount
+  active          Boolean       @default(true)
 
   images     ProductImage[]
   printFiles ProductPrintFile[]
   variants   ProductVariant[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  productPromotions ProductPromotion[]
 }
 
 model ProductVariant {
@@ -126,12 +137,15 @@ model ProductVariant {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  gelatoVariantId String?    @unique // Gelato store variant ID (set when synced from Gelato)
+  gelatoVariantId String?       @unique // Gelato store variant ID (set when synced from Gelato)
   productUid      String? // Gelato productUid (encodes size + color, used for fulfillment)
   color           String
   size            ShirtSize?
   stock           Int
   price           Decimal?
+  discountType    DiscountType? // overrides product-level discount for this specific variant
+  discountAmount  Decimal?
+  finalPrice      Decimal? // pre-computed price after applying variant-level discount (null → use product.finalPrice)
 
   createdAt DateTime @default(now())
 }
@@ -171,10 +185,14 @@ model Order {
   status          OrderStatus @default(pending)
   paymentIntentId String?     @unique
 
-  totalQuantity Int
-  subtotal      Decimal
-  shippingPrice Decimal
-  total         Decimal
+  totalQuantity  Int
+  subtotal       Decimal
+  discountAmount Decimal @default(0)
+  shippingPrice  Decimal
+  total          Decimal
+
+  promotionId String?
+  promotion   Promotion? @relation(fields: [promotionId], references: [id])
 
   shipping Shipping?
   address  OrderAddress?
@@ -240,19 +258,61 @@ model CartItem {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  productId String
-  variantId String
-  name      String
-  sku       String
-  color     String
-  image     String
-  price     Decimal
-  quantity  Int
-  size      String?
+  productId     String
+  variantId     String
+  name          String
+  sku           String
+  color         String
+  image         String
+  price         Decimal
+  originalPrice Decimal? // undiscounted price, for display purposes
+  quantity      Int
+  size          String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId, variantId])
   @@index([userId])
+}
+
+model Promotion {
+  id                     String             @id @default(uuid())
+  active                 Boolean            @default(true)
+  code                   String             @unique
+  description            String?
+  discountType           DiscountType
+  discountAmount         Decimal
+  freeShipping           Boolean            @default(false)
+  freeShippingMaxAmount  Decimal? // max shipping cost covered; null = fully free
+  allowOnDiscountedItems Boolean            @default(true) // if false, coupon skips items with product-level discounts
+  limit                  Int? // max total uses across all users
+  userLimit              Int? // max uses per user
+  minOrderAmount         Decimal?
+  maxOrderAmount         Decimal?
+  createdAt              DateTime           @default(now())
+  expiresAt              DateTime?
+  updatedAt              DateTime           @updatedAt
+  productPromotions      ProductPromotion[]
+  userPromotions         UserPromotion[]
+  orders                 Order[]
+}
+
+model ProductPromotion {
+  productId   String
+  promotionId String
+  product     Product   @relation(fields: [productId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@unique([productId, promotionId])
+}
+
+model UserPromotion {
+  userId      String
+  promotionId String
+  usageCount  Int       @default(0)
+  user        User      @relation(fields: [userId], references: [id])
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+
+  @@unique([userId, promotionId])
 }

@@ -21,6 +21,7 @@ export const createOrderSchema = z.object({
   shipping: shippingOptionSchema,
   paymentIntentId: z.string().optional(),
   cpf: z.string(),
+  promoCode: z.string().optional(),
 });
 
 export const orderSchema = createOrderSchema.extend({

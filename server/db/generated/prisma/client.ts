@@ -109,3 +109,18 @@ export type Shipping = Prisma.ShippingModel
  * 
  */
 export type CartItem = Prisma.CartItemModel
+/**
+ * Model Promotion
+ * 
+ */
+export type Promotion = Prisma.PromotionModel
+/**
+ * Model ProductPromotion
+ * 
+ */
+export type ProductPromotion = Prisma.ProductPromotionModel
+/**
+ * Model UserPromotion
+ * 
+ */
+export type UserPromotion = Prisma.UserPromotionModel

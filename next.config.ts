@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

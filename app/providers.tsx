@@ -10,9 +10,10 @@ import gsap from "gsap";
 import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
-import { Fragment, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
+import { Spinner } from "@/components/ui/spinner";
 import { AuthProvider } from "@/context/auth-context";
 import { CartProvider } from "@/context/cart-context";
 import { TRPCProvider } from "@/lib/trpc";
@@ -214,15 +215,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
           <CartProvider>
-            <AuthProvider>
-              <Fragment key="content">{children}</Fragment>
-              <AnimatePresence>
-                {intro && (
-                  <Intro key="intro" onComplete={() => setIntro(false)} />
-                )}
-              </AnimatePresence>
-              <Toaster richColors theme="light" position="bottom-center" />
-            </AuthProvider>
+            <Suspense
+              fallback={
+                <div className="h-screen w-screen flex items-center justify-center">
+                  <Spinner strokeWidth={2} />
+                </div>
+              }
+            >
+              <AuthProvider>
+                <Fragment key="content">{children}</Fragment>
+                <AnimatePresence>
+                  {intro && (
+                    <Intro key="intro" onComplete={() => setIntro(false)} />
+                  )}
+                </AnimatePresence>
+                <Toaster richColors theme="light" position="bottom-center" />
+              </AuthProvider>
+            </Suspense>
           </CartProvider>
         </TRPCProvider>
         <ReactQueryDevtools initialIsOpen={false} />

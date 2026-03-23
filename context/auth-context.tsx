@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { createContext, useContext } from "react";
 import { toast } from "sonner";
-import { useTRPC } from "@/lib/trpc";
+import { useTRPCClient } from "@/lib/trpc";
 import { useCart } from "./cart-context";
 
 type AuthContextType = {
@@ -34,7 +34,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const trpc = useTRPC();
+  const trpcClient = useTRPCClient();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect");
   const { clear } = useCart();
@@ -42,27 +42,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data, status, update } = useSession();
 
   const logIn = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => {
+    mutationFn: async (input: { email: string; password: string }) => {
       const result = await signIn("credentials", {
-        email,
-        password,
+        ...input,
         redirect: false,
       });
       if (!result || result.error) {
-        throw Error(result?.error ?? "Falha ao entrar");
+        throw new Error("Credenciais inválidas");
       }
       return result;
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       toast.success("Login realizado com sucesso!");
-      await update();
-      router.replace(redirectTo ?? "/");
+      // biome-ignore lint/suspicious/noExplicitAny: we need to use the redirectTo as a string
+      router.replace(redirectTo ?? ("/" as any));
     },
     onError: (error) => {
       toast.error(
@@ -71,19 +64,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const signUp = useMutation(
-    trpc.auth.signup.mutationOptions({
-      onSuccess: () => {
-        toast.success("Conta criada com sucesso!");
-        router.replace(redirectTo ?? "/");
-      },
-      onError: (error) => {
-        toast.error(
-          error instanceof Error ? error.message : "Erro ao criar conta"
+  const signUp = useMutation({
+    mutationFn: async (input: {
+      name: string;
+      email: string;
+      password: string;
+    }) => {
+      await trpcClient.auth.signup.mutate(input);
+      const result = await signIn("credentials", {
+        email: input.email,
+        password: input.password,
+        redirect: false,
+      });
+      if (!result || result.error) {
+        throw new Error(
+          "Conta criada, mas não foi possível fazer login automático."
         );
-      },
-    })
-  );
+      }
+      return result;
+    },
+    onSuccess: () => {
+      toast.success("Conta criada com sucesso!");
+      // biome-ignore lint/suspicious/noExplicitAny: we need to use the redirectTo as a string
+      router.replace(redirectTo ?? ("/" as any));
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao criar conta"
+      );
+    },
+  });
 
   const logOut = useMutation({
     mutationFn: async () => {

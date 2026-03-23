@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Fragment } from "react/jsx-runtime";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -25,6 +26,7 @@ import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/lib/trpc";
 import type {
+  DiscountType,
   ProductType,
   ShirtSize,
 } from "@/server/db/generated/prisma/client";
@@ -55,6 +57,9 @@ type ProductProps =
       description: string;
       type: ProductType;
       price: Decimal;
+      discountType: DiscountType | null;
+      discountAmount: Decimal | null;
+      finalPrice: Decimal | null;
       active: boolean;
       createdAt: Date;
       updatedAt: Date;
@@ -114,7 +119,6 @@ function ProductList({
   data,
   isPending,
   title,
-  category,
 }: {
   data: ProductProps;
   isPending: boolean;
@@ -126,10 +130,7 @@ function ProductList({
     <div className="space-y-4 py-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{title}</h1>
-        <Button
-          variant="link"
-          onClick={() => router.push(`/store?category=${category}`)}
-        >
+        <Button variant="link" onClick={() => router.push(`/`)}>
           Ver todos
           <HugeiconsIcon icon={ArrowRightIcon} strokeWidth={2} />
         </Button>
@@ -145,7 +146,22 @@ function ProductList({
             />
           ))}
         {data?.map((product) => {
-          const productPrice = Number(product.price);
+          const originalPrice = Number(product.price);
+          // finalPrice is pre-computed in DB; fall back to originalPrice when null
+          const finalPrice = product.finalPrice
+            ? Number(product.finalPrice)
+            : originalPrice;
+          const hasDiscount = Number(product.discountAmount ?? 0) > 0;
+
+          const discountLabel = hasDiscount
+            ? product.discountType === "percentage" && product.discountAmount
+              ? `${Number(product.discountAmount)}% OFF`
+              : `- ${(originalPrice - finalPrice).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}`
+            : null;
+
           return (
             <Link key={product.id} href={`/product/${product.id}`}>
               <Item variant={"default"} size={"xs"} className="items-start">
@@ -157,6 +173,11 @@ function ProductList({
                       fill
                       className="object-contain"
                     />
+                    {discountLabel && (
+                      <Badge className="absolute top-2 left-2 bg-green-600">
+                        {discountLabel}
+                      </Badge>
+                    )}
                   </div>
                 </ItemHeader>
                 <ItemContent className="space-y-2">
@@ -164,23 +185,23 @@ function ProductList({
                     <ItemTitle className="text-base font-bold">
                       {product.name}
                     </ItemTitle>
-                    {/* <ItemDescription className="text-base" dangerouslySetInnerHTML={{ __html: product.description }} /> */}
                   </div>
-                  <ItemTitle className="text-base font-bold">
-                    {productPrice.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                    {/* <span className="text-sm text-muted-foreground space-x-2">
-                            <span className="line-through font-normal">
-                              {productPrice.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </span>
-                            <span className="text-green-700">20% OFF</span>
-                          </span> */}
-                  </ItemTitle>
+                  <div className="flex items-baseline gap-2">
+                    <ItemTitle className="text-base font-bold">
+                      {finalPrice.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </ItemTitle>
+                    {hasDiscount && (
+                      <span className="text-sm text-muted-foreground line-through font-normal">
+                        {originalPrice.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                    )}
+                  </div>
                 </ItemContent>
               </Item>
             </Link>

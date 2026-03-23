@@ -32,7 +32,12 @@ export type CartItem = {
   name: string;
   sku: string;
   color: string;
+  /** Effective price after any product/variant discount (finalPrice). */
   price: number;
+  /** Original undiscounted price — set when the item has a product/variant discount. */
+  originalPrice?: number;
+  discountType?: "percentage" | "fixed";
+  discountAmount?: number;
   image: string;
   quantity: number;
   size?: string;
@@ -43,6 +48,7 @@ type CartContextType = {
   add: (item: CartItem) => void;
   remove: (variantId: string) => void;
   increment: (variantId: string, quantity: number) => void;
+  set: (items: CartItem[]) => void;
   clear: () => void;
   total: number | undefined;
   isPending: boolean;
@@ -188,7 +194,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (!prev) return null;
       return prev.filter((i) => i.variantId !== variantId);
     });
-    toast.success(`${variantId} removido do carrinho`);
   }
 
   function increment(variantId: string, quantity: number) {
@@ -205,6 +210,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
           : i;
       });
     });
+  }
+
+  function set(items: CartItem[]) {
+    setCart(items.length > 0 ? items : null);
   }
 
   function clear() {
@@ -268,6 +277,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         add,
         remove,
         increment,
+        set,
         clear,
         total,
         isPending: listServerCart.isPending,

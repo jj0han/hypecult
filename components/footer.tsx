@@ -21,29 +21,17 @@ export default function Footer() {
         </Link>
         <ul className="flex items-center gap-4">
           <li>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => router.push("/produtos")}
-            >
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Produtos
             </Button>
           </li>
           <li>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => router.push("/sobre")}
-            >
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Sobre
             </Button>
           </li>
           <li>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => router.push("/contato")}
-            >
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Contato
             </Button>
           </li>
@@ -60,7 +48,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push("/politica-de-privacidade")}
+                onClick={() => router.push("/")}
               >
                 Política de Privacidade
               </Button>
@@ -69,7 +57,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push("/termos-de-uso")}
+                onClick={() => router.push("/")}
               >
                 Termos de Uso
               </Button>
@@ -78,7 +66,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push("/politica-de-cookies")}
+                onClick={() => router.push("/")}
               >
                 Política de Cookies
               </Button>

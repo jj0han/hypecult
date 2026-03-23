@@ -111,7 +111,8 @@ function QuickAccessCard({
   className,
 }: QuickAccessCardProps) {
   return (
-    <Link href={href} className={className}>
+    // biome-ignore lint/suspicious/noExplicitAny: we need to use the href as a string
+    <Link href={href as any} className={className}>
       <Card className="h-full transition-colors hover:bg-muted/40">
         <CardHeader>
           <div className="flex items-center gap-2">

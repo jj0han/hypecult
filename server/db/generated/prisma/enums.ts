@@ -43,3 +43,11 @@ export const ShirtSize = {
 } as const
 
 export type ShirtSize = (typeof ShirtSize)[keyof typeof ShirtSize]
+
+
+export const DiscountType = {
+  percentage: 'percentage',
+  fixed: 'fixed'
+} as const
+
+export type DiscountType = (typeof DiscountType)[keyof typeof DiscountType]

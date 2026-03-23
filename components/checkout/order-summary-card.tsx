@@ -1,26 +1,32 @@
 import {
+  DiscountIcon,
   Minus,
-  Percent,
   Plus,
   ShoppingBag,
   Trash,
   X,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { useState } from "react";
 import type { CheckoutSummary } from "@/app/checkout/use-checkout-summary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Item,
   ItemActions,
   ItemContent,
+  ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/cart-context";
+import { useTRPC } from "@/lib/trpc";
+import { Spinner } from "../ui/spinner";
 
 type OrderItem = {
   id: string;
@@ -29,6 +35,7 @@ type OrderItem = {
   originalPrice?: number;
   image: string;
   quantity: number;
+  size?: string;
 };
 
 interface OrderSummaryCardProps {
@@ -36,6 +43,8 @@ interface OrderSummaryCardProps {
   currentStep: number;
   appliedPromo: string;
   summary: CheckoutSummary;
+  promoLoading?: boolean;
+  onApplyPromo: (code: string) => void;
   onRemovePromo: () => void;
 }
 
@@ -44,9 +53,30 @@ export function OrderSummaryCard({
   currentStep,
   appliedPromo,
   summary,
+  promoLoading,
+  onApplyPromo,
   onRemovePromo,
 }: OrderSummaryCardProps) {
-  const { remove, clear, increment, isUpdating } = useCart();
+  const { remove, increment, isUpdating } = useCart();
+  const [promoInput, setPromoInput] = useState("");
+
+  const trpc = useTRPC();
+
+  const { data } = useQuery(
+    trpc.promotion.byCode.queryOptions(appliedPromo, {
+      enabled: !!appliedPromo,
+    })
+  );
+
+  const handleApply = () => {
+    if (!promoInput.trim()) return;
+    onApplyPromo(promoInput.trim());
+    setPromoInput("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleApply();
+  };
 
   return (
     <Card>
@@ -60,14 +90,14 @@ export function OrderSummaryCard({
             />
             <span>Resumo do pedido</span>
           </div>
-          <Button
+          {/* <Button
             size={"icon-xs"}
             variant={"destructive"}
             onClick={() => clear()}
             disabled={currentStep > 3 || isUpdating}
           >
             <HugeiconsIcon icon={Trash} strokeWidth={2} />
-          </Button>
+          </Button> */}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -87,7 +117,14 @@ export function OrderSummaryCard({
               </div>
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center justify-between w-full gap-2">
-                  <p className="text-sm font-medium truncate">{item.name}</p>
+                  <div className="flex items-start gap-2 truncate">
+                    {item.size && (
+                      <p className="text-sm text-muted-foreground">
+                        {item.size}
+                      </p>
+                    )}
+                    <p className="text-sm font-medium truncate">{item.name}</p>
+                  </div>
                   <div className="text-sm font-semibold">
                     {(item.price * item.quantity).toLocaleString("pt-BR", {
                       style: "currency",
@@ -150,24 +187,47 @@ export function OrderSummaryCard({
           ))}
         </div>
 
+        {/* Promo code input — only shown when no promo is applied yet */}
+        {!appliedPromo && currentStep <= 3 && (
+          <div className="flex gap-2">
+            <Input
+              placeholder="Cupom de desconto"
+              value={promoInput}
+              onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+              onKeyDown={handleKeyDown}
+              disabled={promoLoading}
+              className="h-8 text-sm uppercase"
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleApply}
+              disabled={!promoInput.trim() || promoLoading}
+              className="shrink-0"
+            >
+              {promoLoading ? <Spinner /> : "Aplicar"}
+            </Button>
+          </div>
+        )}
+
         {appliedPromo && (
-          <Item
-            variant={"outline"}
-            size={"xs"}
-            className="border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950 dark:text-green-50"
-          >
-            <div className="flex items-center">
-              <HugeiconsIcon
-                icon={Percent}
-                strokeWidth={2}
-                className="size-4"
-              />
-            </div>
+          <Item variant={"muted"} size={"xs"}>
+            <HugeiconsIcon
+              icon={DiscountIcon}
+              strokeWidth={2}
+              className="size-5"
+            />
             <ItemContent>
-              <ItemTitle>{appliedPromo}</ItemTitle>
+              <ItemTitle>{data?.code}</ItemTitle>
+              <ItemDescription>{data?.description}</ItemDescription>
             </ItemContent>
             <ItemActions>
-              <Button variant="ghost" size="icon-xs" onClick={onRemovePromo}>
+              <Button
+                variant="outline"
+                size="icon-xs"
+                onClick={onRemovePromo}
+                disabled={currentStep > 3}
+              >
                 <HugeiconsIcon icon={X} strokeWidth={2} className="size-4" />
               </Button>
             </ItemActions>
@@ -199,12 +259,23 @@ export function OrderSummaryCard({
             )}
             <div className="flex justify-between text-sm">
               <span>Frete</span>
-              <span>
-                {summary.shipping.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </span>
+              <div>
+                {summary.shipping === 0 && data?.freeShipping ? (
+                  <span className="text-green-600 font-medium">Grátis</span>
+                ) : summary.shipping >= 0 && data?.freeShipping ? (
+                  <span className="text-green-600 font-medium">
+                    {summary.shipping.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                ) : (
+                  summary.shipping.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })
+                )}
+              </div>
             </div>
           </div>
           <Separator />

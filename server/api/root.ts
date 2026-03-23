@@ -5,6 +5,7 @@ import { gelatoOrderRouter } from "./routers/gelato.order";
 import { gelatoQuoteRouter } from "./routers/gelato.quote";
 import { orderRouter } from "./routers/order";
 import { productRouter } from "./routers/product";
+import { promotionRouter } from "./routers/promotion";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   gelatoOrder: gelatoOrderRouter,
   gelatoQuote: gelatoQuoteRouter,
   cart: cartRouter,
+  promotion: promotionRouter,
 });
 
 export type AppRouter = typeof appRouter;

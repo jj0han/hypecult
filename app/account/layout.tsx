@@ -114,7 +114,8 @@ export default function RootLayout({
                         variant={isActive ? "secondary" : "ghost"}
                         size="lg"
                         className="justify-start w-full"
-                        onClick={() => router.push(href)}
+                        // biome-ignore lint/suspicious/noExplicitAny: we need to use the href as a string
+                        onClick={() => router.push(href as any)}
                       >
                         <HugeiconsIcon icon={icon} strokeWidth={2} />
                         <span>{label}</span>

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { hashPassword, verifyPassword } from "../auth/password";
 import { prisma } from "../db/prisma";
 
@@ -13,7 +14,10 @@ export async function signUp({
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (user) {
-    throw new Error("EMAIL_ALREADY_EXISTS");
+    throw new TRPCError({
+      code: "CONFLICT",
+      message: "Email já está em uso",
+    });
   }
 
   const hashed = await hashPassword(password);
@@ -37,13 +41,19 @@ export async function logIn({
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user || !user.password) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Credenciais inválidas",
+    });
   }
 
   const valid = await verifyPassword(password, user.password);
 
   if (!valid) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Credenciais inválidas",
+    });
   }
 
   return user;

@@ -20,6 +20,7 @@ export const cartItemSchema = z.object({
   color: z.string().min(1),
   name: z.string().min(1),
   price: z.number().nonnegative(),
+  originalPrice: z.number().nonnegative().optional(),
   image: z.string().min(1),
   quantity: z.number().int().min(1),
   size: z.string().optional(),

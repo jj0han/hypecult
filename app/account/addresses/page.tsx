@@ -304,18 +304,20 @@ export default function Page() {
                             <HugeiconsIcon icon={Edit04Icon} strokeWidth={2} />
                             Atualizar
                           </Button>
-                          <AlertDialogTrigger>
-                            <Button
-                              variant="destructive"
-                              size="icon-xs"
-                              disabled={remove.isPending}
-                            >
-                              {remove.isPending ? (
-                                <Spinner />
-                              ) : (
-                                <HugeiconsIcon icon={Trash} strokeWidth={2} />
-                              )}
-                            </Button>
+                          <AlertDialogTrigger
+                            render={
+                              <Button
+                                variant="destructive"
+                                size="icon-xs"
+                                disabled={remove.isPending}
+                              />
+                            }
+                          >
+                            {remove.isPending ? (
+                              <Spinner />
+                            ) : (
+                              <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                            )}
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>

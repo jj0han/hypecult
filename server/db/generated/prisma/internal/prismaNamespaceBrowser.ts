@@ -64,7 +64,10 @@ export const ModelName = {
   OrderItem: 'OrderItem',
   OrderAddress: 'OrderAddress',
   Shipping: 'Shipping',
-  CartItem: 'CartItem'
+  CartItem: 'CartItem',
+  Promotion: 'Promotion',
+  ProductPromotion: 'ProductPromotion',
+  UserPromotion: 'UserPromotion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,6 +122,7 @@ export const UserScalarFieldEnum = {
   password: 'password',
   image: 'image',
   emailVerified: 'emailVerified',
+  cpf: 'cpf',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -160,6 +164,9 @@ export const ProductScalarFieldEnum = {
   description: 'description',
   type: 'type',
   price: 'price',
+  discountType: 'discountType',
+  discountAmount: 'discountAmount',
+  finalPrice: 'finalPrice',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -177,6 +184,9 @@ export const ProductVariantScalarFieldEnum = {
   size: 'size',
   stock: 'stock',
   price: 'price',
+  discountType: 'discountType',
+  discountAmount: 'discountAmount',
+  finalPrice: 'finalPrice',
   createdAt: 'createdAt'
 } as const
 
@@ -215,8 +225,10 @@ export const OrderScalarFieldEnum = {
   paymentIntentId: 'paymentIntentId',
   totalQuantity: 'totalQuantity',
   subtotal: 'subtotal',
+  discountAmount: 'discountAmount',
   shippingPrice: 'shippingPrice',
   total: 'total',
+  promotionId: 'promotionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -280,6 +292,7 @@ export const CartItemScalarFieldEnum = {
   color: 'color',
   image: 'image',
   price: 'price',
+  originalPrice: 'originalPrice',
   quantity: 'quantity',
   size: 'size',
   createdAt: 'createdAt',
@@ -287,6 +300,45 @@ export const CartItemScalarFieldEnum = {
 } as const
 
 export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
+
+
+export const PromotionScalarFieldEnum = {
+  id: 'id',
+  active: 'active',
+  code: 'code',
+  description: 'description',
+  discountType: 'discountType',
+  discountAmount: 'discountAmount',
+  freeShipping: 'freeShipping',
+  freeShippingMaxAmount: 'freeShippingMaxAmount',
+  allowOnDiscountedItems: 'allowOnDiscountedItems',
+  limit: 'limit',
+  userLimit: 'userLimit',
+  minOrderAmount: 'minOrderAmount',
+  maxOrderAmount: 'maxOrderAmount',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PromotionScalarFieldEnum = (typeof PromotionScalarFieldEnum)[keyof typeof PromotionScalarFieldEnum]
+
+
+export const ProductPromotionScalarFieldEnum = {
+  productId: 'productId',
+  promotionId: 'promotionId'
+} as const
+
+export type ProductPromotionScalarFieldEnum = (typeof ProductPromotionScalarFieldEnum)[keyof typeof ProductPromotionScalarFieldEnum]
+
+
+export const UserPromotionScalarFieldEnum = {
+  userId: 'userId',
+  promotionId: 'promotionId',
+  usageCount: 'usageCount'
+} as const
+
+export type UserPromotionScalarFieldEnum = (typeof UserPromotionScalarFieldEnum)[keyof typeof UserPromotionScalarFieldEnum]
 
 
 export const SortOrder = {

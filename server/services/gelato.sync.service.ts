@@ -5,6 +5,10 @@ import type {
 } from "@/server/db/generated/prisma/client";
 import * as gelatoEcommerceService from "@/server/integrations/gelato/gelato.ecommerce.service";
 import type { GelatoStoreProduct } from "@/server/integrations/gelato/gelato.ecommerce.types";
+import {
+  computeFinalPrice,
+  computeVariantFinalPrice,
+} from "@/server/lib/pricing";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -113,8 +117,21 @@ async function syncProduct(
   // New products start at price 0 and inactive — admin must set price to activate.
   const existing = await prisma.product.findUnique({
     where: { gelatoProductId: gProduct.id },
-    select: { price: true, active: true },
+    select: {
+      price: true,
+      discountType: true,
+      discountAmount: true,
+      active: true,
+    },
   });
+
+  const existingFinalPrice = existing
+    ? computeFinalPrice(
+        Number(existing.price),
+        existing.discountType,
+        existing.discountAmount ? Number(existing.discountAmount) : null
+      )
+    : 0;
 
   const product = await prisma.product.upsert({
     where: { gelatoProductId: gProduct.id },
@@ -125,11 +142,13 @@ async function syncProduct(
       description,
       type: productType,
       price: 0,
+      finalPrice: 0,
       active: false, // inactive until admin sets a price
     },
     update: {
       name: gProduct.title,
       description,
+      finalPrice: existingFinalPrice,
       // Preserve active state if price has been set; deactivate if Gelato unpublishes
       active:
         gProduct.status !== "created"
@@ -195,6 +214,27 @@ async function syncProduct(
 
     const { color, size: sizeStr } = parseVariantTitle(gVariant.title);
 
+    const existingVariant = await prisma.productVariant.findUnique({
+      where: { gelatoVariantId: gVariant.id },
+      select: { price: true, discountType: true, discountAmount: true },
+    });
+
+    // Compute variant finalPrice if variant has its own price; null otherwise (inherits product)
+    const variantFinalPrice = existingVariant?.price
+      ? computeVariantFinalPrice({
+          productPrice: Number(product.price),
+          productDiscountType: product.discountType,
+          productDiscountAmount: product.discountAmount
+            ? Number(product.discountAmount)
+            : null,
+          variantPrice: Number(existingVariant.price),
+          variantDiscountType: existingVariant.discountType,
+          variantDiscountAmount: existingVariant.discountAmount
+            ? Number(existingVariant.discountAmount)
+            : null,
+        })
+      : null;
+
     await prisma.productVariant.upsert({
       where: { gelatoVariantId: gVariant.id },
       create: {
@@ -204,11 +244,13 @@ async function syncProduct(
         color,
         size: mapSize(sizeStr),
         stock: 9999, // Print-on-demand: unlimited stock
+        finalPrice: null, // No price override at creation time
       },
       update: {
         productUid: gVariant.productUid,
         color,
         size: mapSize(sizeStr),
+        finalPrice: variantFinalPrice,
       },
     });
 

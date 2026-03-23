@@ -103,7 +103,7 @@ export default function Header() {
                   />
                   <DropdownMenuItem
                     render={
-                      <Link href="/favorites">
+                      <Link href="/">
                         <HugeiconsIcon icon={Heart} strokeWidth={2} />
                         Salvos
                       </Link>
@@ -217,7 +217,7 @@ export default function Header() {
             <Button
               variant="secondary"
               className="w-full"
-              onClick={() => router.push("/favorites")}
+              onClick={() => router.push("/")}
             >
               <HugeiconsIcon icon={Heart} strokeWidth={2} />
               Salvos

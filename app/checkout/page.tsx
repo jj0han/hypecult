@@ -5,7 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { City } from "@/app/api/ibge/estados/municipios/[uf]/route";
@@ -33,18 +33,22 @@ import { type CheckoutFormData, checkoutFormSchema } from "@/schemas/checkout";
 import type { GelatoCreateQuoteResponse } from "@/server/integrations/gelato/gelato.types";
 import { mapCartToCheckoutItems, mapCartToOrderItems } from "./cart-mappers";
 import { checkoutSteps } from "./constants";
-import { useCheckoutSummary } from "./use-checkout-summary";
+import { type PromotionData, useCheckoutSummary } from "./use-checkout-summary";
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { cart, clear, isLoading } = useCart();
+  const { cart, clear, set, isLoading } = useCart();
   const session = useSession();
   const [currentStep, setCurrentStep] = useState<number>(
     session.status === "authenticated" ? 1 : 0
   );
+  const hasRefreshed = useRef(false);
   const [gelatoQuoteData, setGelatoQuoteData] =
     useState<GelatoCreateQuoteResponse | null>(null);
+  const [promotionData, setPromotionData] = useState<PromotionData | null>(
+    null
+  );
 
   const form = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutFormSchema),
@@ -81,6 +85,19 @@ export default function Page() {
 
   const trpc = useTRPC();
 
+  const refreshCart = useMutation(
+    trpc.cart.refresh.mutationOptions({
+      onSuccess: ({ items, removedVariantIds }) => {
+        set(items);
+        if (removedVariantIds.length > 0) {
+          toast.warning(
+            `${removedVariantIds.length} produto(s) foram removidos do carrinho pois não estão mais disponíveis.`
+          );
+        }
+      },
+    })
+  );
+
   const listAddresses = useQuery(
     trpc.address.list.queryOptions(undefined, {
       enabled: session.status === "authenticated",
@@ -91,6 +108,15 @@ export default function Page() {
     trpc.gelatoQuote.create.mutationOptions({
       onSuccess: (data) => setGelatoQuoteData(data),
       onError: () => toast.error("Não foi possível calcular o frete"),
+    })
+  );
+
+  const updateUser = useMutation(
+    trpc.auth.update.mutationOptions({
+      onSuccess: () => {
+        toast.success("Usuário atualizado com sucesso");
+      },
+      onError: (error) => toast.error(error.message),
     })
   );
 
@@ -114,6 +140,20 @@ export default function Page() {
         router.push(`/checkout/success/${order.id}`);
       },
       onError: (error) => toast.error(error.message),
+    })
+  );
+
+  const validatePromo = useMutation(
+    trpc.promotion.validate.mutationOptions({
+      onSuccess: (data) => {
+        setPromotionData(data);
+        form.setValue("appliedPromo", data.code);
+        toast.success(`Cupom "${data.code}" aplicado com sucesso!`);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        removePromo();
+      },
     })
   );
 
@@ -251,6 +291,7 @@ export default function Page() {
 
   const removePromo = () => {
     form.setValue("appliedPromo", "");
+    setPromotionData(null);
   };
 
   // All available shipment methods flattened across quotes
@@ -259,13 +300,28 @@ export default function Page() {
 
   const summary = useCheckoutSummary({
     items: orderItems,
-    promoCode: watchedValues.appliedPromo,
+    promotion: promotionData,
     shippingMethodId: watchedValues.shippingMethod,
     shippingMethods: allShipmentMethods.map((m) => ({
       id: m.shipmentMethodUid,
       price: m.price,
     })),
+    onError: () => {
+      toast.error("Este cupom não pode ser aplicado a itens já com desconto");
+      removePromo();
+    },
   });
+
+  const applyPromo = (code: string) => {
+    validatePromo.mutate({
+      code,
+      orderAmount: summary.subtotal,
+      cartItems: orderItems.map((item) => ({
+        hasDiscount: item.hasDiscount ?? false,
+        subtotal: item.price * item.quantity,
+      })),
+    });
+  };
 
   async function onSubmit() {
     const selectedMethod = allShipmentMethods.find(
@@ -283,6 +339,7 @@ export default function Page() {
       items: checkoutItems,
       paymentIntentId,
       cpf: watchedValues.cpf.replace(/\D/g, ""),
+      promoCode: watchedValues.appliedPromo || undefined,
       address: {
         recipient:
           `${watchedValues.firstName} ${watchedValues.lastName}`.trim(),
@@ -312,10 +369,33 @@ export default function Page() {
     }
   }, [session.status, form.setValue, session.data]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: hasRefreshed guards against multiple fires
+  useEffect(() => {
+    if (isLoading || !cart || cart.length === 0 || hasRefreshed.current) return;
+    hasRefreshed.current = true;
+    refreshCart.mutate(
+      cart.map((i) => ({
+        variantId: i.variantId,
+        productId: i.productId,
+        quantity: i.quantity,
+      }))
+    );
+  }, [isLoading, cart]);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: we want to fetch quotes when the cart changes
   useEffect(() => {
     if (cart && cart.length > 0) {
       fetchQuote.mutate(buildQuoteRequest());
+      if (promotionData) {
+        validatePromo.mutate({
+          code: promotionData.code,
+          orderAmount: summary.subtotal,
+          cartItems: orderItems.map((item) => ({
+            hasDiscount: item.hasDiscount ?? false,
+            subtotal: item.price * item.quantity,
+          })),
+        });
+      }
     }
   }, [cart]);
 
@@ -377,7 +457,12 @@ export default function Page() {
                   }}
                   onCepLookup={async (cep) => viacep.mutateAsync(cep)}
                   cepLoading={viacep.isPending}
-                  onNext={nextStep}
+                  onNext={() => {
+                    updateUser.mutate({
+                      cpf: form.getValues("cpf"),
+                    });
+                    nextStep();
+                  }}
                 />
               )}
               {currentStep === 2 && (
@@ -422,6 +507,8 @@ export default function Page() {
                 currentStep={currentStep}
                 appliedPromo={watchedValues.appliedPromo}
                 summary={summary}
+                promoLoading={validatePromo.isPending}
+                onApplyPromo={applyPromo}
                 onRemovePromo={removePromo}
               />
               <Card>
