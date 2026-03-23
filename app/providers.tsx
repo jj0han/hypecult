@@ -14,6 +14,7 @@ import { Fragment, Suspense, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/auth-context";
 import { CartProvider } from "@/context/cart-context";
 import { TRPCProvider } from "@/lib/trpc";
@@ -223,13 +224,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
               }
             >
               <AuthProvider>
-                <Fragment key="content">{children}</Fragment>
-                <AnimatePresence>
-                  {intro && (
-                    <Intro key="intro" onComplete={() => setIntro(false)} />
-                  )}
-                </AnimatePresence>
-                <Toaster richColors theme="light" position="bottom-center" />
+                <TooltipProvider>
+                  <Fragment key="content">{children}</Fragment>
+                  <AnimatePresence>
+                    {intro && (
+                      <Intro key="intro" onComplete={() => setIntro(false)} />
+                    )}
+                  </AnimatePresence>
+                  <Toaster richColors theme="light" position="bottom-center" />
+                </TooltipProvider>
               </AuthProvider>
             </Suspense>
           </CartProvider>
