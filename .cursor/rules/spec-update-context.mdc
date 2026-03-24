@@ -1,0 +1,20 @@
+---
+description: "Update the project context file after major changes"
+alwaysApply: false
+---
+
+# Update Project Context
+
+When the user asks to refresh or update the project context:
+
+1. Read the current `.agents/CONTEXT.md`.
+2. Scan the codebase for changes since the context was last written:
+   - Check `package.json` for new/removed dependencies
+   - Check `prisma/schema.prisma` for model changes
+   - Check `server/api/root.ts` for new/removed tRPC routers
+   - Check `app/` for new routes or pages
+   - Check `server/env.ts` for new environment variables
+   - Check `components/` for significant new component groups
+3. Update only the sections that have changed in `.agents/CONTEXT.md`.
+4. Update the **Current State & Known Gaps** table to reflect what now works vs what is still pending.
+5. Do NOT rewrite sections that haven't changed.

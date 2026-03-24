@@ -1,0 +1,16 @@
+---
+description: "Implement a spec from the development tracker"
+alwaysApply: false
+---
+
+# Implement a Tracker Spec
+
+When the user asks to implement a tracker item (e.g. "implement FEAT-001"):
+
+1. Read `.agents/CONTEXT.md` for full project context (tech stack, architecture, conventions).
+2. Read `.agents/TRACKER.md` and locate the specified entry.
+3. Move the entry from **Backlog** to **In Progress** and update its status to `in-progress`.
+4. Follow the spec and acceptance criteria exactly. Use the **Files likely affected** as starting points.
+5. After implementation, check each acceptance criterion and mark completed ones with `[x]`.
+6. If the spec is ambiguous or incomplete, ask the user before proceeding.
+7. Follow all project conventions from `CONTEXT.md` (naming, formatting, pt-BR locale, pnpm, Biome, etc.).

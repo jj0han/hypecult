@@ -1,0 +1,22 @@
+---
+description: "Mark a tracker spec as done and move it to the Done section"
+alwaysApply: false
+---
+
+# Complete a Tracker Spec
+
+When the user says an item is done (e.g. "mark FEAT-001 as done"):
+
+1. Read `.agents/TRACKER.md`.
+2. Remove the entry from **Backlog** or **In Progress**.
+3. Add it to the **Done** section using this format:
+
+```markdown
+### [TYPE-NNN] Short title — DONE (YYYY-MM-DD)
+- **Summary:** Brief description of what was implemented and any key decisions made.
+- **Commits/PRs:** Reference any relevant commits or PRs if available.
+```
+
+4. Use today's date for the completion date.
+5. Write a concise summary based on what was actually implemented (not just the original spec).
+6. If the implementation deviated from the original spec, note the differences in the summary.

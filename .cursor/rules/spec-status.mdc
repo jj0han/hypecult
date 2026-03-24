@@ -1,0 +1,16 @@
+---
+description: "Review the current state of the development tracker"
+alwaysApply: false
+---
+
+# Review Tracker Status
+
+When the user asks for a status review:
+
+1. Read `.agents/TRACKER.md`.
+2. Present a summary grouped by section:
+   - **In Progress:** list items currently being worked on
+   - **Backlog:** list items sorted by priority (critical > high > medium > low), showing ID, title, and priority
+   - **Done:** count of completed items and the most recent ones
+3. Highlight any dependencies between items (noted in their **Notes** fields).
+4. If asked, suggest which item to work on next based on priority and dependency order.

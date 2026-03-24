@@ -1,0 +1,29 @@
+---
+description: "Add a new spec entry to the development tracker"
+alwaysApply: false
+---
+
+# Add Spec to Tracker
+
+When the user wants to add a new item to the tracker:
+
+1. Read `.agents/TRACKER.md` to find the current highest ID for the relevant prefix (`FEAT`, `FIX`, `REFACTOR`, `UPDATE`, `CHORE`).
+2. Ask the user (if not already provided): what is the title, type, priority, and what should the spec describe?
+3. Create a new entry in the **Backlog** section of `.agents/TRACKER.md` using this format:
+
+```markdown
+### [TYPE-NNN] Short title
+- **Type:** feature | fix | refactor | update | chore
+- **Priority:** critical | high | medium | low
+- **Status:** backlog
+- **Spec:** What needs to happen and why. Be specific.
+- **Acceptance criteria:**
+  - [ ] Criterion 1
+  - [ ] Criterion 2
+- **Files likely affected:** `path/to/file`
+- **Notes:** Any additional context.
+```
+
+4. Auto-increment the ID number based on the highest existing ID for that prefix.
+5. If the user gives a vague description, search the codebase first to write a precise spec with concrete file paths and acceptance criteria.
+6. Add a `---` separator after the entry.
