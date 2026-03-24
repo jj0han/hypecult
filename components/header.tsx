@@ -85,13 +85,15 @@ export default function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <Button variant="ghost">
-                      <HugeiconsIcon icon={User} strokeWidth={2} />
-                      {user.name?.split(" ")[0]}
-                      <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
-                    </Button>
+                    <Button variant="ghost" />
                   }
-                />
+                >
+                  <HugeiconsIcon icon={User} strokeWidth={2} />
+                  <span>
+                    {user.name?.split(" ")[0]}
+                  </span>
+                  <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
+                </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     render={

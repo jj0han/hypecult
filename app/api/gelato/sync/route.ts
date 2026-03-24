@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       productsUpserted: result.productsUpserted,
       variantsUpserted: result.variantsUpserted,
       imagesUpdated: result.imagesUpdated,
+      productsDeleted: result.productsDeleted,
+      variantsDeleted: result.variantsDeleted,
       errors: result.errors,
     });
   } catch (err) {

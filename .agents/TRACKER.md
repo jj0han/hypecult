@@ -70,9 +70,6 @@ Each entry uses a unique ID with a type prefix:
 
 ---
 
-
----
-
 ### [CHORE-002] Expand test coverage
 - **Type:** chore
 - **Priority:** medium
@@ -85,20 +82,6 @@ Each entry uses a unique ID with a type prefix:
   - [ ] All tests pass with `pnpm test:unit`
 - **Files likely affected:** `tests/` (new test files), potentially `server/api/routers/` if logic needs to be extracted for testability
 - **Notes:** Currently using `tsx --test` (Node built-in test runner). Evaluate if a framework like Vitest would be beneficial.
-
----
-
-### [REFACTOR-001] Make `Order.orderId` optional
-- **Type:** refactor
-- **Priority:** high
-- **Status:** backlog
-- **Spec:** `Order.orderId` (the Gelato order ID) is currently `String @unique` (required). Orders are created locally before being submitted to Gelato, so this field should be optional (`String?`) to avoid needing a placeholder value at creation time.
-- **Acceptance criteria:**
-  - [ ] `orderId` field is `String? @unique` in the Prisma schema
-  - [ ] Migration is created and applied
-  - [ ] Code that reads `orderId` handles the null case
-- **Files likely affected:** `prisma/schema.prisma`, `server/api/routers/order.ts`, `server/api/routers/gelato.order.ts`
-- **Notes:** Should be done before FEAT-001 to unblock local order creation.
 
 ---
 
@@ -136,6 +119,15 @@ _No items currently in progress._
 ---
 
 ## Done
+
+### [FIX-002] Floating-point rounding corrupts prices during Gelato sync — DONE (2026-03-24)
+- **Summary:** Added a `round2` helper (`Math.round(value * 100) / 100`) in `server/lib/pricing.ts` and applied it to every return path in `computeFinalPrice`. Because `computeVariantFinalPrice` delegates to `computeFinalPrice`, both functions now always return an exact two-decimal value. This prevents IEEE-754 drift from the `Number(prismaDecimal)` cast (e.g. `179.90` → `179.90000000000001`) from being written back to a `Decimal(10,2)` Postgres column as `179.91`.
+
+### [UPDATE-002] Non-destructive Gelato product sync — DONE (2026-03-24)
+- **Summary:** Removed all destructive `deleteMany` calls from `prisma/seed.ts` — the seed now runs purely via upserts. Promotions are upserted by `code` so re-runs are idempotent and existing promotions/`productPromotion` links are preserved. Added orphan cleanup to `gelato.sync.service.ts`: after processing all products, `deleteOrphanProducts` removes any local `Product` (+ child variants, images, print files, cart items, order items) whose `gelatoProductId` is no longer in the Gelato API response; after syncing each product's variants, any local `ProductVariant` not in the current active variant list is similarly deleted. `SyncResult` now includes `productsDeleted` and `variantsDeleted` counts, surfaced in both the seed output and the `POST /api/gelato/sync` response.
+
+### [REFACTOR-001] Make `Order.orderId` optional — DONE (2026-03-24)
+- **Summary:** Changed `Order.orderId` from `String @unique` (required) to `String? @unique` (optional) in the Prisma schema. Removed the `crypto.randomUUID()` placeholder that was being set at order creation time — the field now starts as `null` and is populated via a subsequent `order.update` call once the Gelato submission succeeds. Migration `20260324180839_make_order_order_id_optional` created and applied; Prisma client regenerated.
 
 ### [CHORE-001] Update README to match actual stack — DONE (2026-03-24)
 - **Summary:** Rewrote `README.md` to remove references to Stripe and Dimona. Now accurately reflects the tech stack (Next.js, Prisma, tRPC, Gelato), includes complete setup instructions with all required environment variables, a scripts reference, and a project status table.

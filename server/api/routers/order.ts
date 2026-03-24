@@ -140,7 +140,6 @@ export const orderRouter = createTRPCRouter({
         return await tx.order.create({
           data: {
             userId: ctx.session.user.id,
-            orderId: crypto.randomUUID(),
             paymentIntentId: input.paymentIntentId,
             subtotal,
             discountAmount,

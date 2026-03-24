@@ -7,14 +7,15 @@ export function computeFinalPrice(
   discountType: string | null | undefined,
   discountAmount: number | null | undefined
 ): number {
+  /** Rounds a price to exactly 2 decimal places, eliminating IEEE-754 drift. */
   if (!discountType || discountAmount == null || discountAmount === 0) {
     return price;
   }
   if (discountType === "percentage") {
-    return Math.max(0, price * (1 - discountAmount / 100));
+    return Math.round(price * (1 - discountAmount / 100) * 10) / 10;
   }
   if (discountType === "fixed") {
-    return Math.max(0, price - discountAmount);
+    return (Math.round(price - discountAmount) * 10) / 10;
   }
   return price;
 }

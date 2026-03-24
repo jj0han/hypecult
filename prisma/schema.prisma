@@ -178,7 +178,7 @@ model ProductPrintFile {
 
 model Order {
   id      String @id @default(uuid())
-  orderId String @unique // Gelato order ID (set after fulfillment submission)
+  orderId String? @unique // Gelato order ID (set after fulfillment submission)
   userId  String
   user    User   @relation(fields: [userId], references: [id])
 

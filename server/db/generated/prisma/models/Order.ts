@@ -245,7 +245,7 @@ export type OrderGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type OrderGroupByOutputType = {
   id: string
-  orderId: string
+  orderId: string | null
   userId: string
   status: $Enums.OrderStatus
   paymentIntentId: string | null
@@ -284,7 +284,7 @@ export type OrderWhereInput = {
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   id?: Prisma.StringFilter<"Order"> | string
-  orderId?: Prisma.StringFilter<"Order"> | string
+  orderId?: Prisma.StringNullableFilter<"Order"> | string | null
   userId?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -305,7 +305,7 @@ export type OrderWhereInput = {
 
 export type OrderOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  orderId?: Prisma.SortOrder
+  orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,7 +350,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  orderId?: Prisma.SortOrder
+  orderId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentIntentId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -374,7 +374,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   OR?: Prisma.OrderScalarWhereWithAggregatesInput[]
   NOT?: Prisma.OrderScalarWhereWithAggregatesInput | Prisma.OrderScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Order"> | string
-  orderId?: Prisma.StringWithAggregatesFilter<"Order"> | string
+  orderId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -390,7 +390,7 @@ export type OrderScalarWhereWithAggregatesInput = {
 
 export type OrderCreateInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -409,7 +409,7 @@ export type OrderCreateInput = {
 
 export type OrderUncheckedCreateInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -428,7 +428,7 @@ export type OrderUncheckedCreateInput = {
 
 export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -447,7 +447,7 @@ export type OrderUpdateInput = {
 
 export type OrderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -466,7 +466,7 @@ export type OrderUncheckedUpdateInput = {
 
 export type OrderCreateManyInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -482,7 +482,7 @@ export type OrderCreateManyInput = {
 
 export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -496,7 +496,7 @@ export type OrderUpdateManyMutationInput = {
 
 export type OrderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -721,7 +721,7 @@ export type OrderUncheckedUpdateManyWithoutPromotionNestedInput = {
 
 export type OrderCreateWithoutUserInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -739,7 +739,7 @@ export type OrderCreateWithoutUserInput = {
 
 export type OrderUncheckedCreateWithoutUserInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -786,7 +786,7 @@ export type OrderScalarWhereInput = {
   OR?: Prisma.OrderScalarWhereInput[]
   NOT?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
   id?: Prisma.StringFilter<"Order"> | string
-  orderId?: Prisma.StringFilter<"Order"> | string
+  orderId?: Prisma.StringNullableFilter<"Order"> | string | null
   userId?: Prisma.StringFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   paymentIntentId?: Prisma.StringNullableFilter<"Order"> | string | null
@@ -802,7 +802,7 @@ export type OrderScalarWhereInput = {
 
 export type OrderCreateWithoutItemsInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -820,7 +820,7 @@ export type OrderCreateWithoutItemsInput = {
 
 export type OrderUncheckedCreateWithoutItemsInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -854,7 +854,7 @@ export type OrderUpdateToOneWithWhereWithoutItemsInput = {
 
 export type OrderUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -872,7 +872,7 @@ export type OrderUpdateWithoutItemsInput = {
 
 export type OrderUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -890,7 +890,7 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
 
 export type OrderCreateWithoutAddressInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -908,7 +908,7 @@ export type OrderCreateWithoutAddressInput = {
 
 export type OrderUncheckedCreateWithoutAddressInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -942,7 +942,7 @@ export type OrderUpdateToOneWithWhereWithoutAddressInput = {
 
 export type OrderUpdateWithoutAddressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -960,7 +960,7 @@ export type OrderUpdateWithoutAddressInput = {
 
 export type OrderUncheckedUpdateWithoutAddressInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -978,7 +978,7 @@ export type OrderUncheckedUpdateWithoutAddressInput = {
 
 export type OrderCreateWithoutShippingInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -996,7 +996,7 @@ export type OrderCreateWithoutShippingInput = {
 
 export type OrderUncheckedCreateWithoutShippingInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -1030,7 +1030,7 @@ export type OrderUpdateToOneWithWhereWithoutShippingInput = {
 
 export type OrderUpdateWithoutShippingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1048,7 +1048,7 @@ export type OrderUpdateWithoutShippingInput = {
 
 export type OrderUncheckedUpdateWithoutShippingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1066,7 +1066,7 @@ export type OrderUncheckedUpdateWithoutShippingInput = {
 
 export type OrderCreateWithoutPromotionInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -1084,7 +1084,7 @@ export type OrderCreateWithoutPromotionInput = {
 
 export type OrderUncheckedCreateWithoutPromotionInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -1128,7 +1128,7 @@ export type OrderUpdateManyWithWhereWithoutPromotionInput = {
 
 export type OrderCreateManyUserInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
   totalQuantity: number
@@ -1143,7 +1143,7 @@ export type OrderCreateManyUserInput = {
 
 export type OrderUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1161,7 +1161,7 @@ export type OrderUpdateWithoutUserInput = {
 
 export type OrderUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1179,7 +1179,7 @@ export type OrderUncheckedUpdateWithoutUserInput = {
 
 export type OrderUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1194,7 +1194,7 @@ export type OrderUncheckedUpdateManyWithoutUserInput = {
 
 export type OrderCreateManyPromotionInput = {
   id?: string
-  orderId: string
+  orderId?: string | null
   userId: string
   status?: $Enums.OrderStatus
   paymentIntentId?: string | null
@@ -1209,7 +1209,7 @@ export type OrderCreateManyPromotionInput = {
 
 export type OrderUpdateWithoutPromotionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalQuantity?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1227,7 +1227,7 @@ export type OrderUpdateWithoutPromotionInput = {
 
 export type OrderUncheckedUpdateWithoutPromotionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1245,7 +1245,7 @@ export type OrderUncheckedUpdateWithoutPromotionInput = {
 
 export type OrderUncheckedUpdateManyWithoutPromotionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   paymentIntentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1392,7 +1392,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    orderId: string
+    orderId: string | null
     userId: string
     status: $Enums.OrderStatus
     paymentIntentId: string | null

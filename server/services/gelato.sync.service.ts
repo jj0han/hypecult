@@ -68,6 +68,8 @@ export interface SyncResult {
   productsUpserted: number;
   variantsUpserted: number;
   imagesUpdated: number;
+  productsDeleted: number;
+  variantsDeleted: number;
   errors: string[];
 }
 
@@ -80,10 +82,13 @@ export async function syncGelatoProducts(
     productsUpserted: 0,
     variantsUpserted: 0,
     imagesUpdated: 0,
+    productsDeleted: 0,
+    variantsDeleted: 0,
     errors: [],
   };
 
   const products = await gelatoEcommerceService.listProducts();
+  const activeGelatoProductIds = products.map((p) => p.id);
 
   for (const gProduct of products) {
     try {
@@ -100,7 +105,64 @@ export async function syncGelatoProducts(
     }
   }
 
+  // Remove local products whose gelatoProductId is no longer returned by the API
+  await deleteOrphanProducts(prisma, activeGelatoProductIds, result);
+
   return result;
+}
+
+// ─── Orphan cleanup ───────────────────────────────────────────────────────────
+
+/**
+ * Delete any local Product records whose gelatoProductId is not in
+ * `activeIds` (i.e. the product was removed from the Gelato store).
+ * Cascade order: cartItem/orderItem → productVariant → productImage/productPrintFile → product.
+ */
+async function deleteOrphanProducts(
+  prisma: PrismaClient,
+  activeIds: string[],
+  result: SyncResult
+) {
+  const orphanProducts = await prisma.product.findMany({
+    where: {
+      gelatoProductId: { not: null, notIn: activeIds },
+    },
+    select: { id: true },
+  });
+
+  if (orphanProducts.length === 0) return;
+
+  const orphanProductIds = orphanProducts.map((p) => p.id);
+
+  const orphanVariants = await prisma.productVariant.findMany({
+    where: { productId: { in: orphanProductIds } },
+    select: { id: true },
+  });
+  const orphanVariantIds = orphanVariants.map((v) => v.id);
+
+  if (orphanVariantIds.length > 0) {
+    await prisma.cartItem.deleteMany({
+      where: { variantId: { in: orphanVariantIds } },
+    });
+    await prisma.orderItem.deleteMany({
+      where: { variantId: { in: orphanVariantIds } },
+    });
+    await prisma.productVariant.deleteMany({
+      where: { id: { in: orphanVariantIds } },
+    });
+  }
+
+  await prisma.productImage.deleteMany({
+    where: { productId: { in: orphanProductIds } },
+  });
+  await prisma.productPrintFile.deleteMany({
+    where: { productId: { in: orphanProductIds } },
+  });
+  await prisma.product.deleteMany({
+    where: { id: { in: orphanProductIds } },
+  });
+
+  result.productsDeleted += orphanProducts.length;
 }
 
 // ─── Per-product sync ─────────────────────────────────────────────────────────
@@ -209,8 +271,12 @@ async function syncProduct(
   }
 
   // Sync variants (skip "ignored" ones)
+  const activeGelatoVariantIds: string[] = [];
+
   for (const gVariant of gProduct.variants) {
     if (gVariant.connectionStatus === "ignored" || gVariant.isHidden) continue;
+
+    activeGelatoVariantIds.push(gVariant.id);
 
     const { color, size: sizeStr } = parseVariantTitle(gVariant.title);
 
@@ -255,5 +321,28 @@ async function syncProduct(
     });
 
     result.variantsUpserted++;
+  }
+
+  // Remove local variants for this product that are no longer active in Gelato
+  const orphanVariants = await prisma.productVariant.findMany({
+    where: {
+      productId: product.id,
+      gelatoVariantId: { notIn: activeGelatoVariantIds },
+    },
+    select: { id: true },
+  });
+
+  if (orphanVariants.length > 0) {
+    const orphanVariantIds = orphanVariants.map((v) => v.id);
+    await prisma.cartItem.deleteMany({
+      where: { variantId: { in: orphanVariantIds } },
+    });
+    await prisma.orderItem.deleteMany({
+      where: { variantId: { in: orphanVariantIds } },
+    });
+    await prisma.productVariant.deleteMany({
+      where: { id: { in: orphanVariantIds } },
+    });
+    result.variantsDeleted += orphanVariants.length;
   }
 }
