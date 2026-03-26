@@ -10,6 +10,7 @@ import {
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -83,15 +84,9 @@ export default function Header() {
             </Button>
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <Button variant="ghost" />
-                  }
-                >
+                <DropdownMenuTrigger render={<Button variant="ghost" />}>
                   <HugeiconsIcon icon={User} strokeWidth={2} />
-                  <span>
-                    {user.name?.split(" ")[0]}
-                  </span>
+                  <span>{user.name?.split(" ")[0]}</span>
                   <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -168,29 +163,57 @@ export default function Header() {
           </div>
         </div>
       </header>
-      <SheetContent>
+      <SheetContent showCloseButton={!!user}>
         <SheetHeader>
-          <Avatar className="size-10">
-            <AvatarImage src={user?.image ?? undefined} />
-            <AvatarFallback>
-              <HugeiconsIcon icon={User} strokeWidth={2} />
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col w-full">
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="w-2/3 h-4" />
-                <Skeleton className="w-3/4 h-4" />
+          {user ? (
+            <>
+              <Avatar className="size-10">
+                <AvatarImage src={user?.image ?? undefined} />
+                <AvatarFallback>
+                  <HugeiconsIcon icon={User} strokeWidth={2} />
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col w-full">
+                {isLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="w-2/3 h-4" />
+                    <Skeleton className="w-3/4 h-4" />
+                  </div>
+                ) : (
+                  <>
+                    <SheetTitle>{user?.name}</SheetTitle>
+                    <SheetDescription>{user?.email}</SheetDescription>
+                  </>
+                )}
               </div>
-            ) : (
-              <>
-                <SheetTitle>{user?.name}</SheetTitle>
-                <SheetDescription>{user?.email}</SheetDescription>
-              </>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="space-y-4 flex flex-col">
+              <div className="flex flex-col w-full">
+                <div className={"sm:h-9 h-8 py-2 z-10 w-fit"}>
+                  <Image
+                    src="/HYPECULT.svg"
+                    alt="Hypecult"
+                    width={300}
+                    height={300}
+                    className="object-contain dark:brightness-[0.2] dark:grayscale h-full w-full"
+                  />
+                </div>
+                <SheetDescription>
+                  Entre com sua conta para acessar o seu carrinho e muito mais!
+                </SheetDescription>
+              </div>
+              <Button
+                disabled={isLoading}
+                variant="default"
+                onClick={() => router.push("/log-in")}
+              >
+                {isLoading ? <Spinner strokeWidth={3} /> : "Entrar"}
+              </Button>
+            </div>
+          )}
         </SheetHeader>
-        <div className="flex flex-col gap-6 no-scrollbar overflow-y-auto px-4">
+        <div className="flex flex-col gap-6 no-scrollbar overflow-y-auto px-6">
           <InputGroup className="w-full">
             <InputGroupInput placeholder="Pesquisar" />
             <InputGroupAddon>
@@ -232,14 +255,16 @@ export default function Header() {
               <HugeiconsIcon icon={ShoppingCart02Icon} strokeWidth={2} />
               Carrinho
             </Button>
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={() => logOut.mutate()}
-            >
-              <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
-              Sair
-            </Button>
+            {user && (
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={() => logOut.mutate()}
+              >
+                <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                Sair
+              </Button>
+            )}
           </div>
         </div>
         <SheetFooter>

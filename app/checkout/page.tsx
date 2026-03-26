@@ -114,7 +114,7 @@ export default function Page() {
   const updateUser = useMutation(
     trpc.auth.update.mutationOptions({
       onSuccess: () => {
-        toast.success("Usuário atualizado com sucesso");
+        // toast.success("Usuário atualizado com sucesso");
       },
       onError: (error) => toast.error(error.message),
     })

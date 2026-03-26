@@ -7,10 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
 import gsap from "gsap";
-import { AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
-import { Fragment, Suspense, useState } from "react";
+import { Fragment, Suspense, useEffect, useRef, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
 import { Spinner } from "@/components/ui/spinner";
@@ -69,100 +68,110 @@ function getTrpcClient() {
 }
 
 function Intro({ onComplete }: { onComplete: () => void }) {
-  // const session = sessionStorage.getItem("intro-completed");
+  const introRootRef = useRef<HTMLDivElement>(null);
+  const logoAnimRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    const stagger = 0.08;
-    const scaleFactor = 1.515;
+  useGSAP(
+    () => {
+      const stagger = 0.08;
+      const scaleFactor = 1.515;
 
-    const headerLogo = document.getElementById("header-logo");
-    const logoAnimEl = document.querySelector<HTMLElement>(".logo-animation");
+      const headerLogo = document.getElementById("header-logo");
+      const logoAnimEl = logoAnimRef.current;
 
-    let targetX = 0,
-      targetY = 0,
-      targetW = 0,
-      targetH = 0;
+      let targetX = 0,
+        targetY = 0,
+        targetW = 0,
+        targetH = 0;
 
-    if (headerLogo && logoAnimEl) {
-      const hRect = headerLogo.getBoundingClientRect();
-      const lRect = logoAnimEl.getBoundingClientRect();
-      targetX = hRect.left + hRect.width / 2 - (lRect.left + lRect.width / 2);
-      targetY = hRect.top + hRect.height / 2 - (lRect.top + lRect.height / 2);
-      targetW = hRect.width;
-      targetH = hRect.height;
-    }
+      if (headerLogo && logoAnimEl) {
+        const hRect = headerLogo.getBoundingClientRect();
+        const lRect = logoAnimEl.getBoundingClientRect();
+        targetX = hRect.left + hRect.width / 2 - (lRect.left + lRect.width / 2);
+        targetY = hRect.top + hRect.height / 2 - (lRect.top + lRect.height / 2);
+        targetW = hRect.width;
+        targetH = hRect.height;
+      }
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        onComplete();
-        // sessionStorage.setItem("intro-completed", "true");
-      },
-    });
-    tl.fromTo(
-      ".stroke-logo-animation",
-      { opacity: 0 },
-      { opacity: 1, duration: 0.4, ease: "power2.inOut", stagger }
-    )
-      .to(
-        ".stroke-logo-animation",
-        { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
-        "-=0.1"
-      )
-      .to(gsap.utils.toArray(".stroke-logo-animation").slice(0, 3), {
-        opacity: 1,
-        duration: 0.4,
-        ease: "power2.inOut",
-        stagger,
-      })
-      .to(
-        gsap.utils.toArray(".stroke-logo-animation").slice(0, 3),
-        { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
-        "-=0.1"
-      )
-      .fromTo(
-        ".logo-animation",
-        { opacity: 0 },
-        { opacity: 1, duration: 0.4 },
-        "-=0.7"
-      )
-      .fromTo(
-        ".logo-animation",
-        { scale: 1 },
-        { scale: 1.05, duration: 1, delay: 0.1, ease: "sine.out" },
-        "-=0.2"
-      )
-      .to(".logo-animation", { scale: 1, ease: "sine.in", duration: 0.5 })
-      .to(
-        ".logo-animation",
-        {
-          x: targetX,
-          y: targetY,
-          scale: 1,
-          width: targetW * scaleFactor,
-          height: targetH * scaleFactor,
-          duration: 0.8,
-          ease: "sine.inOut",
+      const tl = gsap.timeline({
+        onComplete: () => {
+          onComplete();
+          sessionStorage.setItem("intro-completed", "true");
         },
-        "-=0.1"
+      });
+      tl.fromTo(
+        ".stroke-logo-animation",
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: "power2.inOut", stagger }
       )
-      .fromTo(
-        ".background-animation",
-        { y: 0 },
-        {
-          y: "-100%",
-          duration: 0.5,
-          stagger: { each: 0.15, from: "end" },
+        .to(
+          ".stroke-logo-animation",
+          { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
+          "-=0.1"
+        )
+        .to(gsap.utils.toArray(".stroke-logo-animation").slice(0, 3), {
+          opacity: 1,
+          duration: 0.4,
           ease: "power2.inOut",
-        }
-      );
-  });
+          stagger,
+        })
+        .to(
+          gsap.utils.toArray(".stroke-logo-animation").slice(0, 3),
+          { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
+          "-=0.1"
+        )
+        .fromTo(
+          logoAnimEl,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4 },
+          "-=0.7"
+        )
+        .fromTo(
+          logoAnimEl,
+          { scale: 1 },
+          { scale: 1.05, duration: 1, delay: 0.1, ease: "sine.out" },
+          "-=0.2"
+        )
+        .to(logoAnimEl, { scale: 1, ease: "sine.in", duration: 0.5 })
+        .to(
+          logoAnimEl,
+          {
+            x: targetX,
+            y: targetY,
+            scale: 1,
+            width: targetW * scaleFactor,
+            height: targetH * scaleFactor,
+            duration: 0.8,
+            ease: "sine.inOut",
+          },
+          "-=0.1"
+        )
+        .fromTo(
+          ".background-animation",
+          { y: 0 },
+          {
+            y: "-100%",
+            duration: 0.5,
+            stagger: { each: 0.15, from: "end" },
+            ease: "power2.inOut",
+          }
+        );
+    },
+    { scope: introRootRef }
+  );
 
-  // if (session) {
-  //   return null;
-  // }
+  if (typeof window === "undefined") return null;
+  const session = sessionStorage.getItem("intro-completed");
+
+  if (session) {
+    return null;
+  }
 
   return (
-    <div className="fixed h-screen inset-0 z-50 flex flex-col items-center justify-center overflow-hidden">
+    <div
+      ref={introRootRef}
+      className="fixed h-screen inset-0 z-50 flex flex-col items-center justify-center overflow-hidden"
+    >
       {/* background animated layers */}
       <div className="absolute inset-0 bg-background background-animation" />
       <div className="absolute inset-0 bg-primary background-animation" />
@@ -172,6 +181,7 @@ function Intro({ onComplete }: { onComplete: () => void }) {
         <div className="flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center gap-16 w-full absolute inset-0">
             <div
+              ref={logoAnimRef}
               className="w-full px-16 z-50 logo-animation"
               style={{ opacity: 0 }}
             >
@@ -209,7 +219,13 @@ function Intro({ onComplete }: { onComplete: () => void }) {
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   const trpcClient = getTrpcClient();
-  const [intro, setIntro] = useState(true);
+  const [intro, setIntro] = useState(false);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("intro-completed")) {
+      setIntro(true);
+    }
+  }, []);
 
   return (
     <SessionProvider>
@@ -226,11 +242,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
               <AuthProvider>
                 <TooltipProvider>
                   <Fragment key="content">{children}</Fragment>
-                  <AnimatePresence>
-                    {intro && (
-                      <Intro key="intro" onComplete={() => setIntro(false)} />
-                    )}
-                  </AnimatePresence>
+                  {intro && (
+                    <Intro key="intro" onComplete={() => setIntro(false)} />
+                  )}
                   <Toaster richColors theme="light" position="bottom-center" />
                 </TooltipProvider>
               </AuthProvider>

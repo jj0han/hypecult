@@ -1,10 +1,8 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: template */
 import {
-  Edit04Icon,
   Mail,
   MapPin,
   Phone,
-  Plus,
   Search,
   Trash,
   User,
@@ -246,10 +244,10 @@ export function StepShippingInfo({
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-center">
               <Label>Endereço de entrega</Label>
-              <Button variant="outline" size="xs">
+              {/* <Button variant="outline" size="xs">
                 <HugeiconsIcon icon={Plus} strokeWidth={2} />
                 Adicionar endereço
-              </Button>
+              </Button> */}
             </div>
             <div className="flex flex-col gap-4">
               <RadioGroup
@@ -284,10 +282,10 @@ export function StepShippingInfo({
                         </FieldDescription>
                       </FieldContent>
                       <FieldContent className="flex flex-col sm:flex-row justify-end items-end gap-2">
-                        <Button variant="outline" size="xs">
+                        {/* <Button variant="outline" size="xs">
                           <HugeiconsIcon icon={Edit04Icon} strokeWidth={2} />
                           Atualizar
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="destructive"
                           size="icon-xs"
