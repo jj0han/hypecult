@@ -16,6 +16,7 @@ export const orderCartSchema = z.array(orderCartItemSchema);
 export const cartItemSchema = z.object({
   productId: z.uuid(),
   variantId: z.uuid(),
+  productUid: z.union([z.string().min(1), z.null()]).optional(),
   sku: z.string().min(1),
   color: z.string().min(1),
   name: z.string().min(1),

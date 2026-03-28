@@ -5,6 +5,7 @@ import {
   ChemistryIcon,
   ChevronDown,
   ChevronRight,
+  ClipboardCopy,
   Clock01Icon,
   Clothes,
   Fire03Icon,
@@ -150,13 +151,41 @@ export default function Page() {
   });
 
   async function handleShare() {
+    const shareData = {
+      title: data?.name,
+      text: "Confira este produto incrível na Hypecult!",
+      url: `${window.location.origin}/product/${slug}`,
+      files:
+        data?.images
+          .slice(0, 1)
+          .map(
+            (image) => new File([image.url], image.id, { type: "image/png" })
+          ) ?? [],
+    };
+
     try {
       await navigator.clipboard.writeText(
         `${window.location.origin}/product/${slug}`
       );
-      toast.success("Link copiado para a área de transferência");
+      toast("Link copiado para a área de transferência", {
+        icon: (
+          <HugeiconsIcon
+            icon={ClipboardCopy}
+            strokeWidth={2}
+            className="size-4 text-primary"
+          />
+        ),
+      });
     } catch {
-      toast.error("Erro ao copiar link");
+      toast.error("Erro ao copiar link. Tente novamente.");
+    }
+
+    try {
+      if (navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -397,25 +426,31 @@ export default function Page() {
                         <Button
                           size={"lg"}
                           className="w-full"
-                          disabled={!selectedVariant}
+                          disabled={
+                            !selectedVariant ||
+                            !data.variants.find((v) => v.id === selectedVariant)
+                              ?.productUid
+                          }
                           onClick={() => {
                             if (!selectedVariant) return;
                             const variant = data.variants.find(
                               (v) => v.id === selectedVariant
                             );
+                            if (!variant?.productUid) return;
                             const itemOriginalPrice = Number(
-                              variant?.price ?? data.price
+                              variant.price ?? data.price
                             );
                             const itemFinalPrice = Number(
-                              variant?.finalPrice ??
+                              variant.finalPrice ??
                                 data.finalPrice ??
                                 itemOriginalPrice
                             );
                             add({
                               image: data.images[0].url,
                               name: data.name,
-                              sku: variant?.productUid ?? data.sku,
-                              color: variant?.color ?? "",
+                              productUid: variant.productUid,
+                              sku: data.sku,
+                              color: variant.color,
                               price: itemFinalPrice,
                               originalPrice:
                                 itemFinalPrice < itemOriginalPrice
@@ -761,100 +796,24 @@ export default function Page() {
                             <CollapsibleContent className="space-y-2">
                               <Item variant="muted">
                                 <ItemContent className="gap-3">
-                                  <ItemDescription className="text-foreground space-y-3 text-sm leading-relaxed line-clamp-none">
-                                    <p>
-                                      <strong className="font-medium text-foreground">
-                                        Fonte da política:
-                                      </strong>{" "}
-                                      Os pedidos são produzidos e enviados via{" "}
-                                      <strong className="font-medium text-foreground">
-                                        Gelato
-                                      </strong>{" "}
-                                      (print-on-demand). As regras abaixo
-                                      espelham a{" "}
-                                      <a
-                                        href="https://support.gelato.com/en/articles/8996072-what-is-your-return-policy-and-quality-guarantee"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline underline-offset-2 hover:text-foreground"
-                                      >
-                                        política oficial de devoluções e
-                                        garantia de qualidade da Gelato
-                                      </a>
-                                      , que é a base operacional desta loja.
-                                    </p>
-                                    <p>
-                                      <strong className="font-medium text-foreground">
-                                        Sem devoluções de produto cumprido:
-                                      </strong>{" "}
-                                      A Gelato não fornece endereço de devolução
-                                      nem aceita devolução de itens já
-                                      produzidos sob encomenda.{" "}
-                                      <strong className="font-medium text-foreground">
-                                        Esta loja não aceita devoluções
-                                      </strong>{" "}
-                                      por troca de ideia, tamanho ou preferência
-                                      após o pedido ter sido fabricado. Novo
-                                      pedido, se aplicável, é tratado como
-                                      compra nova (custos conforme caso).
-                                    </p>
-                                    <p>
-                                      <strong className="font-medium text-foreground">
-                                        Garantia de qualidade (Gelato):
-                                      </strong>{" "}
-                                      Defeito de fabricação, dano no transporte
-                                      ou quantidade incorreta — quando não
-                                      decorrentes de arquivo ou conteúdo enviado
-                                      pelo cliente — devem ser reportados{" "}
-                                      <strong className="font-medium text-foreground">
-                                        em até 30 dias
-                                      </strong>{" "}
-                                      após o recebimento, com evidência (ex.{" "}
-                                      fotos). Se a análise da Gelato validar a
-                                      reclamação, a resolução segue o fluxo do
-                                      parceiro:{" "}
-                                      <strong className="font-medium text-foreground">
-                                        reposição
-                                      </strong>{" "}
-                                      ou, se inviável,{" "}
-                                      <strong className="font-medium text-foreground">
-                                        reembolso
-                                      </strong>
-                                      . Variações de cor dentro da tolerância do
-                                      processo de impressão não são cobertas.
-                                      Extravio, devolução ao remetente e casos
-                                      de endereço/recusa/retirada seguem as
-                                      regras da transportadora e da documentação
-                                      da Gelato.
-                                    </p>
-                                    <p className="border-border text-muted-foreground border-l-2 pl-3 text-xs leading-relaxed">
-                                      <strong className="text-foreground">
-                                        Orientação Gelato para donos de loja
-                                        (print-on-demand):
-                                      </strong>{" "}
-                                      A Gelato informa que, como parceira POD,
-                                      não fornece endereço de devolução nem
-                                      aceita devolução de pedidos já cumpridos;
-                                      cabe à loja definir a política exibida ao
-                                      cliente, podendo espelhar a da Gelato ou
-                                      adaptar conforme a operação.{" "}
-                                      <strong className="text-foreground">
-                                        A Hypecult® adota o mesmo recorte da
-                                        Gelato: sem devoluções de itens já
-                                        produzidos, com garantia de qualidade
-                                        conforme descrito acima e na
-                                        documentação do parceiro.
-                                      </strong>{" "}
-                                      <a
-                                        href="https://www.gelato.com"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline underline-offset-2 hover:text-foreground"
-                                      >
-                                        gelato.com
-                                      </a>
-                                      .
-                                    </p>
+                                  <ItemDescription className="text-foreground text-sm leading-relaxed line-clamp-none">
+                                    Os pedidos são produzidos sob demanda
+                                    (print-on-demand) e enviados via Gelato. Não
+                                    há devolução por desistência após a
+                                    fabricação do pedido personalizado; defeitos
+                                    ou inconformidades devem ser comunicados em
+                                    até 30 dias do recebimento.{" "}
+                                    <Link
+                                      href={{
+                                        pathname: "/policies/refund-policy",
+                                        query: { redirect: `/product/${slug}` },
+                                      }}
+                                      className="font-medium text-foreground underline underline-offset-2 hover:opacity-90"
+                                    >
+                                      Leia a política completa de trocas,
+                                      devoluções e reembolsos
+                                    </Link>
+                                    .
                                   </ItemDescription>
                                 </ItemContent>
                               </Item>

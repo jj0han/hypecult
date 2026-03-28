@@ -15,6 +15,7 @@ function normalizeCartItems(input: Cart) {
     byVariant.set(item.variantId, {
       ...existing,
       quantity: existing.quantity + item.quantity,
+      productUid: existing.productUid ?? item.productUid ?? null,
     });
   }
 
@@ -51,6 +52,7 @@ export const cartRouter = createTRPCRouter({
       const items: {
         productId: string;
         variantId: string;
+        productUid: string | null;
         name: string;
         sku: string;
         color: string;
@@ -64,7 +66,7 @@ export const cartRouter = createTRPCRouter({
       for (const cartInput of input) {
         const variant = variantMap.get(cartInput.variantId);
 
-        if (!variant || !variant.product.active) {
+        if (!variant || !variant.product.active || !variant.productUid) {
           removedVariantIds.push(cartInput.variantId);
           continue;
         }
@@ -79,6 +81,7 @@ export const cartRouter = createTRPCRouter({
         items.push({
           productId: product.id,
           variantId: variant.id,
+          productUid: variant.productUid,
           name: product.name,
           sku: product.sku,
           color: variant.color,
@@ -102,6 +105,7 @@ export const cartRouter = createTRPCRouter({
     return items.map((item) => ({
       productId: item.productId,
       variantId: item.variantId,
+      productUid: item.productUid,
       sku: item.sku,
       color: item.color,
       name: item.name,
@@ -133,6 +137,7 @@ export const cartRouter = createTRPCRouter({
             userId: ctx.session.user.id,
             productId: item.productId,
             variantId: item.variantId,
+            productUid: item.productUid ?? null,
             sku: item.sku,
             color: item.color,
             name: item.name,

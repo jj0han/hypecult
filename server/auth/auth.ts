@@ -9,6 +9,7 @@ import {
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { prisma } from "../db/prisma";
+import { env } from "../env";
 
 /**
  * Module augmentation for `next-auth` types.
@@ -21,20 +22,23 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      cpf: string | null;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    cpf: string | null;
+    // ...other properties
+    // role: UserRole;
+  }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
+    cpf?: string | null;
   }
 }
 
@@ -50,15 +54,38 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
       }
+
+      const userId =
+        user?.id ??
+        (typeof token.id === "string" ? token.id : undefined) ??
+        (typeof token.sub === "string" ? token.sub : undefined);
+
+      // `user.cpf` is often missing for OAuth (profile/adapter user shape). Stale
+      // JWTs may also lack `cpf` — load from DB on sign-in and once to backfill.
+      // `trigger === "update"` runs when the client calls `useSession().update()`.
+      const needsCpfFromDb =
+        user != null ||
+        trigger === "update" ||
+        (userId != null && token.cpf === undefined);
+
+      if (userId && needsCpfFromDb) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { cpf: true },
+        });
+        token.cpf = dbUser?.cpf ?? null;
+      }
+
       return token;
     },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id ?? "";
+        session.user.cpf = token.cpf ?? null;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
@@ -66,12 +93,12 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
     Credentials({
       name: "credentials",
-      credentials: { email: {}, password: {} },
+      credentials: { email: {}, password: {}, cpf: {} },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -93,7 +120,12 @@ export const authOptions: NextAuthOptions = {
 
         if (!passwordMatch) return null;
 
-        return { id: user.id, name: user.name, email: user.email };
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          cpf: user.cpf,
+        };
       },
     }),
     /**

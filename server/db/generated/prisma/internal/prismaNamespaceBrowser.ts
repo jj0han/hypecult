@@ -287,6 +287,7 @@ export const CartItemScalarFieldEnum = {
   userId: 'userId',
   productId: 'productId',
   variantId: 'variantId',
+  productUid: 'productUid',
   name: 'name',
   sku: 'sku',
   color: 'color',

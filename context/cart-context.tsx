@@ -28,6 +28,8 @@ import { mergeCartItems } from "./cart-merge";
 
 export type CartItem = {
   productId: string;
+  /** Gelato product UID from the variant; null if legacy row or missing in DB. */
+  productUid: string | null;
   variantId: string;
   name: string;
   sku: string;
@@ -61,15 +63,20 @@ const CartContext = createContext<CartContextType | null>(null);
 function normalizeCartItems(input: CartItem[]) {
   const byVariant = new Map<string, CartItem>();
   for (const item of input) {
-    const existing = byVariant.get(item.variantId);
+    const row: CartItem = {
+      ...item,
+      productUid: item.productUid ?? null,
+    };
+    const existing = byVariant.get(row.variantId);
     if (!existing) {
-      byVariant.set(item.variantId, item);
+      byVariant.set(row.variantId, row);
       continue;
     }
 
-    byVariant.set(item.variantId, {
+    byVariant.set(row.variantId, {
       ...existing,
-      quantity: existing.quantity + item.quantity,
+      quantity: existing.quantity + row.quantity,
+      productUid: existing.productUid ?? row.productUid ?? null,
     });
   }
 
@@ -94,6 +101,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const trpc = useTRPC();
   const { status } = useSession();
   const isAuthenticated = status === "authenticated";
+  /** Session refresh (`update()`) uses `loading` — must not treat as logged out */
+  const isGuest = status === "unauthenticated";
   const localStorageKey = "cart";
   const didHydrateAuthenticatedCart = useRef(false);
   const lastSyncedHash = useRef<string | null>(null);
@@ -227,11 +236,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isGuest) {
       didHydrateAuthenticatedCart.current = false;
       lastSyncedHash.current = null;
       return;
     }
+    if (status !== "authenticated") return;
     if (didHydrateAuthenticatedCart.current) return;
     if (!listServerCart.data) return;
 
@@ -243,10 +253,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.removeItem(localStorageKey);
     }
-  }, [isAuthenticated, listServerCart.data, cart]);
+  }, [isGuest, status, listServerCart.data, cart]);
 
   useEffect(() => {
-    if (!isAuthenticated || !didHydrateAuthenticatedCart.current) return;
+    if (status !== "authenticated" || !didHydrateAuthenticatedCart.current)
+      return;
     const normalizedCart = normalizeCartItems(cart ?? []);
     const currentHash = getCartHash(normalizedCart);
     if (currentHash === lastSyncedHash.current) return;
@@ -258,17 +269,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         lastSyncedHash.current = null;
       },
     });
-  }, [isAuthenticated, cart, replaceServerCart]);
+  }, [status, cart, replaceServerCart]);
 
   useEffect(() => {
-    if (isAuthenticated) return;
+    if (status !== "unauthenticated") return;
     if (typeof window === "undefined") return;
     if (cart && cart.length > 0) {
       localStorage.setItem(localStorageKey, JSON.stringify(cart));
     } else {
       localStorage.removeItem(localStorageKey);
     }
-  }, [cart, isAuthenticated]);
+  }, [cart, status]);
 
   return (
     <CartContext.Provider

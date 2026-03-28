@@ -40,7 +40,7 @@ The project is **under active development** — some integrations are partially 
 ```
 hypecult/
 ├── app/                    # Next.js App Router
-│   ├── (store)/            # Public storefront (home, product/[slug])
+│   ├── (store)/            # Public storefront (home, product/[slug], refund-policy)
 │   ├── (auth)/             # Auth pages (log-in, sign-up, forgot-password)
 │   ├── account/            # Authenticated user area (orders, addresses)
 │   ├── checkout/           # Multi-step checkout flow + success page

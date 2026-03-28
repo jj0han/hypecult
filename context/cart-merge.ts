@@ -17,6 +17,7 @@ export function mergeCartItems(local: CartItem[], remote: CartItem[]) {
     merged.set(item.variantId, {
       ...existing,
       quantity: existing.quantity + item.quantity,
+      productUid: existing.productUid ?? item.productUid ?? null,
     });
   }
 

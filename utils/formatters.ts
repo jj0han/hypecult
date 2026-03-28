@@ -14,3 +14,12 @@ export const formatCurrency = (value: number) => {
     currency: "BRL",
   }).format(value);
 };
+
+export const formatCpf = (cpf: string) => {
+  const digits = cpf.replace(/\D/g, "").slice(0, 11);
+  const formatted = digits
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  return formatted;
+};

@@ -1,8 +1,15 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Shield, ShoppingBag } from "@hugeicons/core-free-icons";
+import {
+  ChevronDown,
+  ChevronRight,
+  PolicyIcon,
+  Shield,
+  ShoppingBag,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Fragment, useEffect, useRef, useState } from "react";
@@ -27,10 +34,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
 import { type CheckoutFormData, checkoutFormSchema } from "@/schemas/checkout";
-import type { GelatoCreateQuoteResponse } from "@/server/integrations/gelato/gelato.types";
+import type {
+  GelatoCreateQuoteRequest,
+  GelatoCreateQuoteResponse,
+} from "@/server/integrations/gelato/gelato.types";
+import { formatCpf } from "@/utils/formatters";
 import { mapCartToCheckoutItems, mapCartToOrderItems } from "./cart-mappers";
 import { checkoutSteps } from "./constants";
 import { type PromotionData, useCheckoutSummary } from "./use-checkout-summary";
@@ -39,10 +63,8 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cart, clear, set, isLoading } = useCart();
-  const session = useSession();
-  const [currentStep, setCurrentStep] = useState<number>(
-    session.status === "authenticated" ? 1 : 0
-  );
+  const { data: session, status, update: updateSession } = useSession();
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const hasRefreshed = useRef(false);
   const [gelatoQuoteData, setGelatoQuoteData] =
     useState<GelatoCreateQuoteResponse | null>(null);
@@ -100,7 +122,7 @@ export default function Page() {
 
   const listAddresses = useQuery(
     trpc.address.list.queryOptions(undefined, {
-      enabled: session.status === "authenticated",
+      enabled: status === "authenticated",
     })
   );
 
@@ -113,8 +135,8 @@ export default function Page() {
 
   const updateUser = useMutation(
     trpc.auth.update.mutationOptions({
-      onSuccess: () => {
-        // toast.success("Usuário atualizado com sucesso");
+      onSuccess: async () => {
+        await updateSession();
       },
       onError: (error) => toast.error(error.message),
     })
@@ -126,12 +148,14 @@ export default function Page() {
       onError: (error) => toast.error(error.message),
     })
   );
+
   const removeAddress = useMutation(
     trpc.address.remove.mutationOptions({
       onSuccess: () => listAddresses.refetch(),
       onError: (error) => toast.error(error.message),
     })
   );
+
   const createOrder = useMutation(
     trpc.order.create.mutationOptions({
       onSuccess: (order) => {
@@ -164,12 +188,14 @@ export default function Page() {
       return await response.json();
     },
   });
+
   const citiesByState = useMutation<City[] | undefined, Error, string>({
     mutationFn: async (uf: string) => {
       const response = await fetch(`/api/ibge/estados/municipios/${uf}`);
       return await response.json();
     },
   });
+
   const viacep = useMutation<ViaCEPResponse | undefined, Error, string>({
     mutationFn: async (cep: string) => {
       const response = await fetch(`/api/viacep/${cep}`);
@@ -177,12 +203,23 @@ export default function Page() {
     },
   });
 
-  // Build the Gelato quote request from current form values
-  function buildQuoteRequest() {
+  /** Gelato quote payload, or null if the cart is missing productUid on any line. */
+  function buildQuoteRequest(): GelatoCreateQuoteRequest | null {
+    if (!cart?.length) return null;
+    const products: GelatoCreateQuoteRequest["products"] = [];
+    for (const item of cart) {
+      if (!item.productUid) return null;
+      products.push({
+        itemReferenceId: item.variantId,
+        productUid: item.productUid,
+        quantity: item.quantity,
+      });
+    }
+
     const normalizedZip = watchedValues.zipCode.replace(/\D/g, "");
     return {
       orderReferenceId: crypto.randomUUID(),
-      customerReferenceId: session.data?.user?.id ?? "guest",
+      customerReferenceId: session?.user?.id ?? "guest",
       currency: "BRL",
       allowMultipleQuotes: false,
       recipient: {
@@ -196,13 +233,7 @@ export default function Page() {
         email: watchedValues.email,
         phone: watchedValues.phone || undefined,
       },
-      products:
-        cart?.map((item) => ({
-          itemReferenceId: item.variantId,
-          productUid:
-            "apparel_product_gca_t-shirt_gsc_crewneck_gcu_unisex_gqa_heavy-weight_gsi_s_gco_white_gpr_4-0_gildan_5000",
-          quantity: item.quantity,
-        })) ?? [],
+      products,
     };
   }
 
@@ -277,9 +308,27 @@ export default function Page() {
 
     const next = Math.min(currentStep + 1, checkoutSteps.length - 1);
 
+    if (
+      next === 2 &&
+      status === "authenticated" &&
+      form.getValues("cpf").replace(/\D/g, "") !== session?.user?.cpf
+    ) {
+      // Update user CPF if it has changed
+      await updateUser.mutateAsync({
+        cpf: form.getValues("cpf").replace(/\D/g, ""),
+      });
+    }
+
     // Fetch Gelato quotes when moving into the shipping method step
     if (next === 2 && cart && cart.length > 0) {
-      fetchQuote.mutate(buildQuoteRequest());
+      const quoteReq = buildQuoteRequest();
+      if (quoteReq) {
+        fetchQuote.mutate(quoteReq);
+      } else {
+        toast.error(
+          "Alguns itens não têm identificador de envio. Atualize o carrinho ou escolha outra variante."
+        );
+      }
     }
 
     setCurrentStep(next);
@@ -360,14 +409,19 @@ export default function Page() {
     });
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: we want to set the current step when the page mounts
   useEffect(() => {
-    if (session.status === "authenticated") {
-      setCurrentStep(1);
-      form.setValue("firstName", session.data?.user?.name?.split(" ")[0] ?? "");
-      form.setValue("lastName", session.data?.user?.name?.split(" ")[1] ?? "");
-      form.setValue("email", session.data?.user?.email ?? "");
+    setCurrentStep(status === "authenticated" ? 1 : 0);
+  }, []);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      form.setValue("firstName", session?.user?.name?.split(" ")[0] ?? "");
+      form.setValue("lastName", session?.user?.name?.split(" ")[1] ?? "");
+      form.setValue("email", session?.user?.email ?? "");
+      form.setValue("cpf", formatCpf(session?.user?.cpf ?? ""));
     }
-  }, [session.status, form.setValue, session.data]);
+  }, [status, form.setValue, session]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: hasRefreshed guards against multiple fires
   useEffect(() => {
@@ -385,7 +439,10 @@ export default function Page() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: we want to fetch quotes when the cart changes
   useEffect(() => {
     if (cart && cart.length > 0) {
-      fetchQuote.mutate(buildQuoteRequest());
+      const quoteReq = buildQuoteRequest();
+      if (quoteReq) {
+        fetchQuote.mutate(quoteReq);
+      }
       if (promotionData) {
         validatePromo.mutate({
           code: promotionData.code,
@@ -447,7 +504,7 @@ export default function Page() {
                   addressesLoading={listAddresses.isPending}
                   onAddressRemove={(id) => removeAddress.mutate({ id })}
                   removeAddressPending={removeAddress.isPending}
-                  createAddressPending={createAddress.isPending}
+                  isPending={updateUser.isPending || createAddress.isPending}
                   states={listStates.data}
                   statesLoading={listStates.isPending}
                   cities={citiesByState.data}
@@ -457,12 +514,7 @@ export default function Page() {
                   }}
                   onCepLookup={async (cep) => viacep.mutateAsync(cep)}
                   cepLoading={viacep.isPending}
-                  onNext={() => {
-                    updateUser.mutate({
-                      cpf: form.getValues("cpf"),
-                    });
-                    nextStep();
-                  }}
+                  onNext={nextStep}
                 />
               )}
               {currentStep === 2 && (
@@ -516,7 +568,7 @@ export default function Page() {
                   <HugeiconsIcon
                     icon={Shield}
                     strokeWidth={2}
-                    className="size-5 text-green-600"
+                    className="text-green-600"
                   />
                   <div>
                     <CardTitle>Seguro e encriptado</CardTitle>
@@ -526,6 +578,65 @@ export default function Page() {
                   </div>
                 </CardHeader>
               </Card>
+              <Collapsible className="space-y-2">
+                <Item variant="outline">
+                  <ItemMedia>
+                    <HugeiconsIcon icon={PolicyIcon} strokeWidth={2} />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>Devoluções e garantia</ItemTitle>
+                  </ItemContent>
+                  <ItemActions>
+                    <CollapsibleTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 group"
+                        >
+                          <HugeiconsIcon
+                            icon={ChevronRight}
+                            strokeWidth={2}
+                            className="group-aria-expanded:hidden"
+                          />
+                          <HugeiconsIcon
+                            icon={ChevronDown}
+                            strokeWidth={2}
+                            className="group-aria-[expanded=false]:hidden"
+                          />
+                          <span className="sr-only">
+                            Alternar detalhes da política
+                          </span>
+                        </Button>
+                      }
+                    />
+                  </ItemActions>
+                </Item>
+                <CollapsibleContent className="space-y-2">
+                  <Item variant="muted">
+                    <ItemContent className="gap-3">
+                      <ItemDescription className="text-foreground text-sm leading-relaxed line-clamp-none">
+                        Os pedidos são produzidos sob demanda (print-on-demand)
+                        e enviados via Gelato. Não há devolução por desistência
+                        após a fabricação do pedido personalizado; defeitos ou
+                        inconformidades devem ser comunicados em até 30 dias do
+                        recebimento.{" "}
+                        <Link
+                          href={{
+                            pathname: "/policies/refund-policy",
+                            query: { redirect: "/checkout" },
+                          }}
+                          className="font-medium text-foreground underline underline-offset-2 hover:opacity-90"
+                        >
+                          Leia a política completa de trocas, devoluções e
+                          reembolsos
+                        </Link>
+                        .
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
         </>

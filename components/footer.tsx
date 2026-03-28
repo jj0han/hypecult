@@ -1,4 +1,5 @@
 "use client";
+import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,7 +51,7 @@ export default function Footer() {
                 size="sm"
                 onClick={() => router.push("/")}
               >
-                Política de Privacidade
+                Privacidade
               </Button>
             </li>
             <li>
@@ -66,9 +67,9 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push("/")}
+                onClick={() => router.push("/policies/refund-policy" as Route)}
               >
-                Política de Cookies
+                Trocas, devoluções e reembolsos
               </Button>
             </li>
           </ul>

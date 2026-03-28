@@ -1,6 +1,6 @@
 "use client";
 import {
-  ArrowDown01Icon,
+  ArrowRight01Icon,
   Heart,
   Home01Icon,
   Logout01Icon,
@@ -13,6 +13,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Sheet,
   SheetClose,
@@ -48,7 +49,11 @@ import { Spinner } from "./ui/spinner";
 export default function Header() {
   const router = useRouter();
   const { cart } = useCart();
-  const { user, isLoading, logOut } = useAuth();
+  const { logOut } = useAuth();
+  const { status, data } = useSession();
+
+  const user = data?.user;
+  const isLoading = status === "loading";
 
   return (
     <Sheet>
@@ -84,10 +89,16 @@ export default function Header() {
             </Button>
             {user ? (
               <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="ghost" />}>
-                  <HugeiconsIcon icon={User} strokeWidth={2} />
+                <DropdownMenuTrigger
+                  render={<Button variant="ghost" />}
+                  className={"group"}
+                >
                   <span>{user.name?.split(" ")[0]}</span>
-                  <HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    strokeWidth={2}
+                    className="group-aria-expanded:rotate-90 transition-transform duration-300 ease-out"
+                  />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem

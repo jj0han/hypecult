@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
+import type { Metadata } from "next";
 import { Providers } from "./providers";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
@@ -13,6 +14,11 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: "Hypecult. Vista a sua personalidade.",
+  description: "Se vista sempre no hype.",
+};
 
 export default function RootLayout({
   children,

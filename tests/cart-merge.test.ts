@@ -8,7 +8,10 @@ test("mergeCartItems sums quantities by variantId", () => {
       {
         productId: "1ec6de18-d840-4d58-b615-f0079f632742",
         variantId: "3f892614-c5ee-40f6-b59a-f2f2d0e0dcd7",
+        productUid: "uid-a",
         name: "Camiseta A",
+        sku: "SKU-A",
+        color: "Branco",
         price: 79.9,
         image: "/a.png",
         quantity: 2,
@@ -19,7 +22,10 @@ test("mergeCartItems sums quantities by variantId", () => {
       {
         productId: "1ec6de18-d840-4d58-b615-f0079f632742",
         variantId: "3f892614-c5ee-40f6-b59a-f2f2d0e0dcd7",
+        productUid: "uid-a",
         name: "Camiseta A",
+        sku: "SKU-A",
+        color: "Branco",
         price: 79.9,
         image: "/a.png",
         quantity: 1,
@@ -28,7 +34,10 @@ test("mergeCartItems sums quantities by variantId", () => {
       {
         productId: "5a2f7b6d-c9ef-4f2d-b8ee-7f48eefe3ca1",
         variantId: "7ca2a98f-4fd2-44fc-9482-66856f75608b",
+        productUid: "uid-b",
         name: "Camiseta B",
+        sku: "SKU-B",
+        color: "Preto",
         price: 89.9,
         image: "/b.png",
         quantity: 1,

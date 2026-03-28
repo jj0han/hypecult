@@ -1,7 +1,6 @@
 import {
   Check,
   ChevronLeft,
-  CircleAlert,
   LockKeyhole,
   Wallet,
 } from "@hugeicons/core-free-icons";
@@ -167,11 +166,7 @@ export function StepReview({
           <HugeiconsIcon icon={ChevronLeft} strokeWidth={2} />
           Voltar
         </Button>
-        <Button size="lg" className="w-full sm:w-auto">
-          <HugeiconsIcon icon={CircleAlert} strokeWidth={2} />
-          Em desenvolvimento
-        </Button>
-        {/* <Button
+        <Button
           size="lg"
           onClick={onValidateAndSubmit}
           disabled={orderPending}
@@ -189,7 +184,7 @@ export function StepReview({
               })}
             </>
           )}
-        </Button> */}
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -60,7 +60,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { formatPhone, formatZipCode } from "@/utils/formatters";
+import { formatCpf, formatPhone, formatZipCode } from "@/utils/formatters";
 
 interface StepShippingInfoProps {
   form: UseFormReturn<CheckoutFormData>;
@@ -68,7 +68,7 @@ interface StepShippingInfoProps {
   addressesLoading: boolean;
   onAddressRemove: (id: string) => void;
   removeAddressPending: boolean;
-  createAddressPending: boolean;
+  isPending: boolean;
   states: State[] | undefined;
   statesLoading: boolean;
   cities: City[] | undefined;
@@ -85,7 +85,7 @@ export function StepShippingInfo({
   addressesLoading,
   onAddressRemove,
   removeAddressPending,
-  createAddressPending,
+  isPending,
   states,
   statesLoading,
   cities,
@@ -96,6 +96,10 @@ export function StepShippingInfo({
   onNext,
 }: StepShippingInfoProps) {
   const watchedValues = form.watch();
+
+  const selectedAddress =
+    addresses?.find((address) => address.zipCode === watchedValues.zipCode)
+      ?.id ?? "";
 
   return (
     <Card className="flex flex-col gap-6">
@@ -222,14 +226,7 @@ export function StepShippingInfo({
                   aria-invalid={fieldState.invalid}
                   maxLength={14}
                   onChange={(e) => {
-                    const digits = e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 11);
-                    const formatted = digits
-                      .replace(/(\d{3})(\d)/, "$1.$2")
-                      .replace(/(\d{3})(\d)/, "$1.$2")
-                      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-                    field.onChange(formatted);
+                    field.onChange(formatCpf(e.target.value));
                   }}
                 />
                 {fieldState.invalid && (
@@ -251,11 +248,8 @@ export function StepShippingInfo({
             </div>
             <div className="flex flex-col gap-4">
               <RadioGroup
-                value={
-                  addresses.find(
-                    (address) => address.zipCode === watchedValues.zipCode
-                  )?.id
-                }
+                defaultValue={undefined}
+                value={selectedAddress}
                 onValueChange={(value) => {
                   const address = addresses.find((a) => a.id === value);
                   if (address) {
@@ -511,11 +505,11 @@ export function StepShippingInfo({
       <CardFooter>
         <Button
           onClick={onNext}
-          disabled={createAddressPending || statesLoading}
+          disabled={isPending || statesLoading}
           size="lg"
           className="w-full sm:w-auto ml-auto"
         >
-          {createAddressPending ? <Spinner /> : "Continuar"}
+          {isPending ? <Spinner /> : "Continuar"}
         </Button>
       </CardFooter>
     </Card>

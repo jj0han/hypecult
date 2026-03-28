@@ -260,6 +260,7 @@ model CartItem {
 
   productId     String
   variantId     String
+  productUid    String? // Gelato productUid (from ProductVariant), for quotes / fulfillment
   name          String
   sku           String
   color         String
