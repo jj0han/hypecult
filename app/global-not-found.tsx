@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "404 - Página não encontrada",
+  title: "404 - Página não encontrada | Hypecult",
   description: "A página que você está procurando não existe.",
 };
 

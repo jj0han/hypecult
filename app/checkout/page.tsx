@@ -591,25 +591,25 @@ export default function Page() {
                       render={
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className="size-8 group"
-                        >
-                          <HugeiconsIcon
-                            icon={ChevronRight}
-                            strokeWidth={2}
-                            className="group-aria-expanded:hidden"
-                          />
-                          <HugeiconsIcon
-                            icon={ChevronDown}
-                            strokeWidth={2}
-                            className="group-aria-[expanded=false]:hidden"
-                          />
-                          <span className="sr-only">
-                            Alternar detalhes da política
-                          </span>
-                        </Button>
+                          size="icon-sm"
+                          className="group"
+                        />
                       }
-                    />
+                    >
+                      <HugeiconsIcon
+                        icon={ChevronRight}
+                        strokeWidth={2}
+                        className="group-aria-expanded:hidden"
+                      />
+                      <HugeiconsIcon
+                        icon={ChevronDown}
+                        strokeWidth={2}
+                        className="group-aria-[expanded=false]:hidden"
+                      />
+                      <span className="sr-only">
+                        Alternar detalhes da política
+                      </span>
+                    </CollapsibleTrigger>
                   </ItemActions>
                 </Item>
                 <CollapsibleContent className="space-y-2">

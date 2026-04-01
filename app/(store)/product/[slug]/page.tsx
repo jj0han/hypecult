@@ -322,15 +322,15 @@ export default function Page() {
                   // variant.finalPrice > product.finalPrice > original price (fallback when no discount)
                   const effectiveFinalPrice = Number(
                     selectedVariantData?.finalPrice ??
-                      data.finalPrice ??
-                      originalPrice
+                    data.finalPrice ??
+                    originalPrice
                   );
 
                   const hasDiscount =
                     Number(
                       selectedVariantData?.discountAmount ??
-                        data.discountAmount ??
-                        0
+                      data.discountAmount ??
+                      0
                     ) > 0;
 
                   return (
@@ -407,9 +407,9 @@ export default function Page() {
                                     <FieldTitle
                                       className={cn(
                                         variant?.id === selectedVariant &&
-                                          "text-primary",
+                                        "text-primary",
                                         !variant &&
-                                          "text-muted-foreground line-through"
+                                        "text-muted-foreground line-through"
                                       )}
                                     >
                                       {size}
@@ -442,8 +442,8 @@ export default function Page() {
                             );
                             const itemFinalPrice = Number(
                               variant.finalPrice ??
-                                data.finalPrice ??
-                                itemOriginalPrice
+                              data.finalPrice ??
+                              itemOriginalPrice
                             );
                             add({
                               image: data.images[0].url,
@@ -630,25 +630,25 @@ export default function Page() {
                                   render={
                                     <Button
                                       variant="ghost"
-                                      size="icon"
-                                      className="size-8 group"
-                                    >
-                                      <HugeiconsIcon
-                                        icon={ChevronRight}
-                                        strokeWidth={2}
-                                        className="group-aria-expanded:hidden"
-                                      />
-                                      <HugeiconsIcon
-                                        icon={ChevronDown}
-                                        strokeWidth={2}
-                                        className="group-aria-[expanded=false]:hidden"
-                                      />
-                                      <span className="sr-only">
-                                        Toggle details
-                                      </span>
-                                    </Button>
+                                      size="icon-sm"
+                                      className="group"
+                                    />
                                   }
-                                />
+                                >
+                                  <HugeiconsIcon
+                                    icon={ChevronRight}
+                                    strokeWidth={2}
+                                    className="group-aria-expanded:hidden"
+                                  />
+                                  <HugeiconsIcon
+                                    icon={ChevronDown}
+                                    strokeWidth={2}
+                                    className="group-aria-[expanded=false]:hidden"
+                                  />
+                                  <span className="sr-only">
+                                    Toggle details
+                                  </span>
+                                </CollapsibleTrigger>
                               </ItemActions>
                             </Item>
                             <CollapsibleContent className="space-y-2">
@@ -718,25 +718,25 @@ export default function Page() {
                                   render={
                                     <Button
                                       variant="ghost"
-                                      size="icon"
-                                      className="size-8 group"
-                                    >
-                                      <HugeiconsIcon
-                                        icon={ChevronRight}
-                                        strokeWidth={2}
-                                        className="group-aria-expanded:hidden"
-                                      />
-                                      <HugeiconsIcon
-                                        icon={ChevronDown}
-                                        strokeWidth={2}
-                                        className="group-aria-[expanded=false]:hidden"
-                                      />
-                                      <span className="sr-only">
-                                        Toggle details
-                                      </span>
-                                    </Button>
+                                      size="icon-sm"
+                                      className="group"
+                                    />
                                   }
-                                />
+                                >
+                                  <HugeiconsIcon
+                                    icon={ChevronRight}
+                                    strokeWidth={2}
+                                    className="group-aria-expanded:hidden"
+                                  />
+                                  <HugeiconsIcon
+                                    icon={ChevronDown}
+                                    strokeWidth={2}
+                                    className="group-aria-[expanded=false]:hidden"
+                                  />
+                                  <span className="sr-only">
+                                    Toggle details
+                                  </span>
+                                </CollapsibleTrigger>
                               </ItemActions>
                             </Item>
 
@@ -772,25 +772,25 @@ export default function Page() {
                                   render={
                                     <Button
                                       variant="ghost"
-                                      size="icon"
-                                      className="size-8 group"
-                                    >
-                                      <HugeiconsIcon
-                                        icon={ChevronRight}
-                                        strokeWidth={2}
-                                        className="group-aria-expanded:hidden"
-                                      />
-                                      <HugeiconsIcon
-                                        icon={ChevronDown}
-                                        strokeWidth={2}
-                                        className="group-aria-[expanded=false]:hidden"
-                                      />
-                                      <span className="sr-only">
-                                        Alternar detalhes da política
-                                      </span>
-                                    </Button>
+                                      size="icon-sm"
+                                      className="group"
+                                    />
                                   }
-                                />
+                                >
+                                  <HugeiconsIcon
+                                    icon={ChevronRight}
+                                    strokeWidth={2}
+                                    className="group-aria-expanded:hidden"
+                                  />
+                                  <HugeiconsIcon
+                                    icon={ChevronDown}
+                                    strokeWidth={2}
+                                    className="group-aria-[expanded=false]:hidden"
+                                  />
+                                  <span className="sr-only">
+                                    Alternar detalhes da política
+                                  </span>
+                                </CollapsibleTrigger>
                               </ItemActions>
                             </Item>
                             <CollapsibleContent className="space-y-2">
@@ -870,7 +870,7 @@ function ProductImageSkeleton() {
           key={`skeleton-${
             // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
             index
-          }`}
+            }`}
           className="aspect-square rounded-lg size-full"
         />
       ))}
