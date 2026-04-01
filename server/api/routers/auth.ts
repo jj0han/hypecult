@@ -1,8 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
-import { signUp } from "@/server/services/auth.service";
-import { signUpSchema } from "../../schemas/auth";
+import { hashPassword } from "@/server/auth/password";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+
+export const signUpSchema = z.object({
+  name: z.string().min(2),
+  email: z.email(),
+  password: z.string().min(8),
+});
 
 const updateSchema = z.object({
   name: z.string().optional(),
@@ -13,10 +18,30 @@ const updateSchema = z.object({
 });
 
 export const authRouter = createTRPCRouter({
-  signup: publicProcedure.input(signUpSchema).mutation(async ({ input }) => {
-    const user = await signUp(input);
-    return { user };
-  }),
+  signup: publicProcedure
+    .input(signUpSchema)
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (user) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Email já está em uso",
+        });
+      }
+
+      const hashed = await hashPassword(input.password);
+
+      return await ctx.prisma.user.create({
+        data: {
+          name: input.name,
+          email: input.email,
+          password: hashed,
+        },
+      });
+    }),
   update: protectedProcedure
     .input(updateSchema)
     .mutation(async ({ input, ctx }) => {

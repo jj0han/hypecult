@@ -226,49 +226,50 @@ async function syncProduct(
   // Prefer productImages (permanent hosted URLs added via the Gelato dashboard) over
   // previewUrl, which is a signed S3 URL that expires after 24 hours.
   // Use || (not ??) so empty strings are treated as missing.
-  const dashboardImages = gProduct.productImages ?? [];
 
-  if (dashboardImages.length > 0) {
-    await prisma.productImage.deleteMany({ where: { productId: product.id } });
-    await prisma.$transaction(
-      dashboardImages
-        .filter((img) => !(img.productVariantIds.length > 0))
-        .map((img, i) =>
-          prisma.productImage.create({
-            data: {
-              productId: product.id,
-              url: img.fileUrl,
-              alt: gProduct.title,
-              order: i + 1,
-            },
-          })
-        )
-    );
-    result.imagesUpdated++;
-  } else {
-    // Fall back to the auto-generated previewUrl when no dashboard images exist.
-    // Re-sync at least every 24h to keep this signed URL fresh.
-    const previewUrl =
-      gProduct.previewUrl ||
-      gProduct.externalPreviewUrl ||
-      gProduct.externalThumbnailUrl ||
-      null;
+  // const dashboardImages = gProduct.productImages ?? [];
 
-    if (previewUrl) {
-      await prisma.productImage.deleteMany({
-        where: { productId: product.id },
-      });
-      await prisma.productImage.create({
-        data: {
-          productId: product.id,
-          url: previewUrl,
-          alt: gProduct.title,
-          order: 1,
-        },
-      });
-      result.imagesUpdated++;
-    }
-  }
+  // if (dashboardImages.length > 0) {
+  //   await prisma.productImage.deleteMany({ where: { productId: product.id } });
+  //   await prisma.$transaction(
+  //     dashboardImages
+  //       .filter((img) => !(img.productVariantIds.length > 0))
+  //       .map((img, i) =>
+  //         prisma.productImage.create({
+  //           data: {
+  //             productId: product.id,
+  //             url: img.fileUrl,
+  //             alt: gProduct.title,
+  //             order: i + 1,
+  //           },
+  //         })
+  //       )
+  //   );
+  //   result.imagesUpdated++;
+  // } else {
+  //   // Fall back to the auto-generated previewUrl when no dashboard images exist.
+  //   // Re-sync at least every 24h to keep this signed URL fresh.
+  //   const previewUrl =
+  //     gProduct.previewUrl ||
+  //     gProduct.externalPreviewUrl ||
+  //     gProduct.externalThumbnailUrl ||
+  //     null;
+
+  //   if (previewUrl) {
+  //     await prisma.productImage.deleteMany({
+  //       where: { productId: product.id },
+  //     });
+  //     await prisma.productImage.create({
+  //       data: {
+  //         productId: product.id,
+  //         url: previewUrl,
+  //         alt: gProduct.title,
+  //         order: 1,
+  //       },
+  //     });
+  //     result.imagesUpdated++;
+  //   }
+  // }
 
   // Sync variants (skip "ignored" ones)
   const activeGelatoVariantIds: string[] = [];

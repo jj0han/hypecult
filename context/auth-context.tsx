@@ -1,5 +1,6 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { TRPCError } from "@trpc/server";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { createContext, useContext } from "react";
@@ -48,7 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirect: false,
       });
       if (!result || result.error) {
-        throw new Error("Credenciais inválidas");
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Credenciais inválidas",
+        });
       }
       return result;
     },

@@ -1,8 +1,13 @@
-import {
-  listProductsSchema,
-  productByIdSchema,
-} from "@/server/schemas/product";
+import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
+
+export const listProductsSchema = z.object({
+  search: z.string().optional(),
+});
+
+export const productByIdSchema = z.object({
+  id: z.uuid(),
+});
 
 export const productRouter = createTRPCRouter({
   list: publicProcedure

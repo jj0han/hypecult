@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  admin
+  user
+}
+
 enum OrderStatus {
   pending
   paid
@@ -69,6 +74,7 @@ model Session {
 
 model User {
   id             String          @id @default(uuid())
+  role           UserRole        @default(user)
   name           String
   email          String          @unique
   password       String?
@@ -177,10 +183,10 @@ model ProductPrintFile {
 }
 
 model Order {
-  id      String @id @default(uuid())
+  id      String  @id @default(uuid())
   orderId String? @unique // Gelato order ID (set after fulfillment submission)
   userId  String
-  user    User   @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
 
   status          OrderStatus @default(pending)
   paymentIntentId String?     @unique
