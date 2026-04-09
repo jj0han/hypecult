@@ -64,6 +64,7 @@ export const createTRPCContext = async () => {
  */
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
+import { UserRole } from "../db/generated/prisma/enums";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -124,6 +125,35 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   });
 });
 
+const enforceAdmin = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session || ctx.session.user?.role !== UserRole.admin) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const user = await ctx.prisma.user.findUnique({
+    where: { id: ctx.session.user.id },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Session is no longer valid. Please sign in again.",
+    });
+  }
+
+  return next({
+    ctx: {
+      session: {
+        ...ctx.session,
+        user: {
+          ...ctx.session?.user,
+        },
+      },
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -134,3 +164,5 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const adminProcedure = t.procedure.use(enforceAdmin);

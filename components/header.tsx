@@ -3,6 +3,7 @@ import {
   ArrowRight01Icon,
   Heart,
   Home01Icon,
+  LockKeyIcon,
   Logout01Icon,
   Menu11Icon,
   SearchIcon,
@@ -10,6 +11,7 @@ import {
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -101,33 +103,22 @@ export default function Header() {
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    render={
-                      <Link href="/account">
-                        <HugeiconsIcon icon={User} strokeWidth={2} />
-                        Conta
-                      </Link>
-                    }
-                  />
-                  <DropdownMenuItem
-                    render={
-                      <Link href="/">
-                        <HugeiconsIcon icon={Heart} strokeWidth={2} />
-                        Salvos
-                      </Link>
-                    }
-                  />
-                  <DropdownMenuItem
-                    render={
-                      <Link href="/checkout">
-                        <HugeiconsIcon
-                          icon={ShoppingCart02Icon}
-                          strokeWidth={2}
-                        />
-                        Carrinho
-                      </Link>
-                    }
-                  />
+                  <DropdownMenuItem render={<Link href={"/admin" as Route} />}>
+                    <HugeiconsIcon icon={LockKeyIcon} strokeWidth={2} />
+                    Admin
+                  </DropdownMenuItem>
+                  <DropdownMenuItem render={<Link href="/account" />}>
+                    <HugeiconsIcon icon={User} strokeWidth={2} />
+                    Conta
+                  </DropdownMenuItem>
+                  <DropdownMenuItem render={<Link href="/" />}>
+                    <HugeiconsIcon icon={Heart} strokeWidth={2} />
+                    Salvos
+                  </DropdownMenuItem>
+                  <DropdownMenuItem render={<Link href="/checkout" />}>
+                    <HugeiconsIcon icon={ShoppingCart02Icon} strokeWidth={2} />
+                    Carrinho
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     variant="destructive"
@@ -166,11 +157,11 @@ export default function Header() {
             </Button>
             <SheetTrigger
               render={
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <HugeiconsIcon icon={Menu11Icon} strokeWidth={2} />
-                </Button>
+                <Button variant="ghost" size="icon" className="md:hidden" />
               }
-            />
+            >
+              <HugeiconsIcon icon={Menu11Icon} strokeWidth={2} />
+            </SheetTrigger>
           </div>
         </div>
       </header>
@@ -279,13 +270,9 @@ export default function Header() {
           </div>
         </div>
         <SheetFooter>
-          <SheetClose
-            render={
-              <Button variant="ghost" className="w-full">
-                Fechar
-              </Button>
-            }
-          />
+          <SheetClose render={<Button variant="ghost" className="w-full" />}>
+            Fechar
+          </SheetClose>
         </SheetFooter>
       </SheetContent>
     </Sheet>

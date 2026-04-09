@@ -1,9 +1,9 @@
 "use client";
 import {
   ArrowLeft01Icon,
+  DiscountIcon,
   GridViewIcon,
   Logout01Icon,
-  MapPin,
   ShoppingBag,
   User,
 } from "@hugeicons/core-free-icons";
@@ -26,19 +26,19 @@ import { useAuth } from "@/context/auth-context";
 
 const accountLinks = [
   {
-    href: "/account",
+    href: "/admin",
     label: "Visão geral",
     icon: GridViewIcon,
   },
   {
-    href: "/account/orders",
-    label: "Meus pedidos",
+    href: "/admin/products",
+    label: "Produtos",
     icon: ShoppingBag,
   },
   {
-    href: "/account/addresses",
-    label: "Meus endereços",
-    icon: MapPin,
+    href: "/admin/promotions",
+    label: "Promoções",
+    icon: DiscountIcon,
   },
 ];
 
@@ -60,9 +60,9 @@ export default function RootLayout({
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
-              <h1 className="text-2xl font-bold">Minha conta</h1>
+              <h1 className="text-2xl font-bold">Administração</h1>
               <p className="text-sm text-muted-foreground">
-                Gerencie seus pedidos, endereços e dados de compra.
+                Gerencie produtos, pedidos, endereços e dados de compra.
               </p>
             </div>
             <div className="lg:col-span-2 flex items-end gap-2 w-full">
@@ -105,7 +105,7 @@ export default function RootLayout({
                 <CardContent className="space-y-2">
                   {accountLinks.map(({ href, label, icon }) => {
                     const isActive =
-                      href === "/account"
+                      href === "/admin"
                         ? pathname === href
                         : pathname.startsWith(href);
 

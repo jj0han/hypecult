@@ -1,6 +1,6 @@
 import { prisma } from "@/server/db/prisma";
 import { env } from "@/server/env";
-import { syncGelatoProducts } from "@/server/services/gelato.sync.service";
+import { syncGelatoProducts } from "@/server/integrations/gelato/gelato.sync.service";
 
 /**
  * POST /api/gelato/sync

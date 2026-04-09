@@ -29,6 +29,7 @@ The project is **under active development** — some integrations are partially 
 | Component library | shadcn/ui (Base UI variant, Hugeicons) | ^4.1.0 |
 | Forms | React Hook Form + @hookform/resolvers | ^7.71 |
 | Animation | GSAP, Motion (Framer Motion) | ^3.14, ^12.33 |
+| Charts | recharts | 3.8.0 |
 | Formatting/Linting | Biome | 2.3.13 |
 | Package manager | pnpm | — |
 | Fulfillment | Gelato API | — |
@@ -40,7 +41,8 @@ The project is **under active development** — some integrations are partially 
 ```
 hypecult/
 ├── app/                    # Next.js App Router
-│   ├── (store)/            # Public storefront (home, product/[slug], refund-policy)
+│   ├── (store)/            # Public storefront (home, product/[slug], policies/refund-policy)
+│   ├── admin/              # Admin shell (role-gated); quick-access overview; `/admin/products` list+filters; `/admin/products/[id]` edit
 │   ├── (auth)/             # Auth pages (log-in, sign-up, forgot-password)
 │   ├── account/            # Authenticated user area (orders, addresses)
 │   ├── checkout/           # Multi-step checkout flow + success page
@@ -106,6 +108,8 @@ Browser ──> Next.js App Router ──> tRPC HTTP Handler ──> tRPC Router
 | `gelatoOrder` | Submit orders to Gelato for fulfillment |
 | `gelatoQuote` | Get shipping quotes from Gelato |
 
+**Auth**: NextAuth supports **credentials** (email/password) and **Google** OAuth; session JWT includes `user.id`, `user.cpf`, and `user.role`.
+
 **Client providers** are composed in `app/providers.tsx`: SessionProvider > AuthProvider > CartProvider > tRPC + TanStack Query > ThemeProvider.
 
 ---
@@ -127,7 +131,7 @@ Product ──< ProductPrintFile
 Product ──< ProductPromotion >── Promotion
 ```
 
-- **User**: name, email, optional password, cpf (Brazilian tax ID), emailVerified
+- **User**: `role` (`UserRole`: `user` | `admin`), name, email, optional password, cpf (Brazilian tax ID), emailVerified, optional OAuth `image`
 - **Product**: sku, name, description, type (tshirt/hoodie/mug/sticker/other), price with optional discount (percentage or fixed), finalPrice, optional gelatoProductId
 - **ProductVariant**: color, optional size (PP–XGG), stock, optional variant-level pricing/discount, optional Gelato IDs
 - **Order**: status (pending/paid/production/shipped/delivered/cancelled), totals, optional Gelato orderId, optional promotionId
@@ -155,7 +159,8 @@ Product ──< ProductPromotion >── Promotion
 | Area | Status | Notes |
 |------|--------|-------|
 | Product listing & detail | Working | Products seeded; storefront pages render |
-| Auth (login/register) | Working | NextAuth with credentials + Prisma adapter |
+| Auth (login/register) | Working | NextAuth: credentials + Google OAuth; Prisma adapter; JWT includes `role` |
+| Admin area | Partial | `/admin`, `/admin/products`, `/admin/products/[id]` implemented (tRPC `product.adminList`, `product.adminSummary`, `product.update`); `/admin/promotions` still missing |
 | Cart | Working | Server-side cart with merge on login |
 | Checkout UI | Partial | Multi-step form exists; payment step not integrated with a PSP |
 | Payments | Not wired | `paymentIntentId` field exists on Order but no Stripe (or other PSP) integration in code |
@@ -179,5 +184,7 @@ Defined in `server/env.ts`:
 | `GELATO_ECOMMERCE_STORE_ID` | Gelato store identifier |
 | `GELATO_API_KEY` | Gelato API authentication key |
 | `GELATO_SYNC_SECRET` | Secret for the Gelato sync webhook endpoint |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID (NextAuth Google provider) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 
 NextAuth also requires `NEXTAUTH_URL` and `NEXTAUTH_SECRET` (configured in `server/auth/`).

@@ -8,6 +8,7 @@ import {
 } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import type { UserRole } from "../db/generated/prisma/enums";
 import { prisma } from "../db/prisma";
 import { env } from "../env";
 
@@ -23,6 +24,7 @@ declare module "next-auth" {
     user: {
       id: string;
       cpf: string | null;
+      role: UserRole;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -30,6 +32,7 @@ declare module "next-auth" {
 
   interface User {
     cpf: string | null;
+    role: UserRole;
     // ...other properties
     // role: UserRole;
   }
@@ -39,6 +42,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     cpf?: string | null;
+    role?: UserRole;
   }
 }
 
@@ -75,9 +79,10 @@ export const authOptions: NextAuthOptions = {
       if (userId && needsCpfFromDb) {
         const dbUser = await prisma.user.findUnique({
           where: { id: userId },
-          select: { cpf: true },
+          select: { cpf: true, role: true },
         });
         token.cpf = dbUser?.cpf ?? null;
+        token.role = dbUser?.role;
       }
 
       return token;
@@ -86,6 +91,9 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id ?? "";
         session.user.cpf = token.cpf ?? null;
+        if (token.role) {
+          session.user.role = token.role;
+        }
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
@@ -125,6 +133,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           email: user.email,
           cpf: user.cpf,
+          role: user.role,
         };
       },
     }),

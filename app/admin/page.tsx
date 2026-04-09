@@ -1,7 +1,7 @@
 "use client";
 import {
   ArrowRight01Icon,
-  MapPin,
+  DiscountIcon,
   ShoppingBag,
   Store01Icon,
 } from "@hugeicons/core-free-icons";
@@ -25,25 +25,22 @@ import { useTRPC } from "@/lib/trpc";
 
 export default function Page() {
   const trpc = useTRPC();
-  const session = useSession();
-  const orders = useQuery(trpc.order.list.queryOptions());
-  const addresses = useQuery(trpc.address.list.queryOptions());
-
-  const firstName = session.data?.user?.name?.split(" ")[0] ?? "Cliente";
+  const summary = useQuery(trpc.product.adminSummary.queryOptions());
+  const { status } = useSession();
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Olá, {firstName}</CardTitle>
+          <CardTitle className="text-xl">Painel administrativo</CardTitle>
           <CardDescription>
-            Acesse rapidamente os recursos mais importantes da sua conta.
+            Acesse rapidamente catálogo, promoções e outras áreas de gestão.
           </CardDescription>
         </CardHeader>
       </Card>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {session.status === "loading" ? (
+        {status === "loading" ? (
           <>
             <Skeleton className="h-36" />
             <Skeleton className="h-36" />
@@ -52,37 +49,41 @@ export default function Page() {
         ) : (
           <>
             <QuickAccessCard
-              href="/account/orders"
-              title="Meus pedidos"
-              description="Acompanhe status e detalhes dos seus pedidos."
+              href="/admin/products"
+              title="Produtos"
+              description="Listar e editar produtos sincronizados com a Gelato."
               icon={ShoppingBag}
               badgeLabel={
-                orders.isPending ? <Spinner /> : `${orders.data?.length ?? 0}`
+                summary.isPending ? (
+                  <Spinner />
+                ) : (
+                  `${summary.data?.products ?? 0}`
+                )
               }
-              cta="Ver pedidos"
+              cta="Ver produtos"
             />
 
             <QuickAccessCard
-              href="/account/addresses"
-              title="Meus endereços"
-              description="Gerencie seus endereços de entrega salvos."
-              icon={MapPin}
+              href="/admin/promotions"
+              title="Promoções"
+              description="Gerencie cupons e campanhas promocionais."
+              icon={DiscountIcon}
               badgeLabel={
-                addresses.isPending ? (
+                summary.isPending ? (
                   <Spinner />
                 ) : (
-                  `${addresses.data?.length ?? 0}`
+                  `${summary.data?.promotions ?? 0}`
                 )
               }
-              cta="Gerenciar endereços"
+              cta="Ver promoções"
             />
 
             <QuickAccessCard
               href="/"
-              title="Continuar comprando"
-              description="Veja os últimos lançamentos da loja."
+              title="Ver loja"
+              description="Abrir a vitrine como cliente."
               icon={Store01Icon}
-              cta="Ir para loja"
+              cta="Ir para a loja"
               className="sm:col-span-2"
             />
           </>
@@ -120,7 +121,7 @@ function QuickAccessCard({
               <HugeiconsIcon icon={icon} strokeWidth={2} className="size-5" />
               {title}
             </CardTitle>
-            {badgeLabel && (
+            {badgeLabel !== undefined && badgeLabel !== null && (
               <Badge variant="secondary" className="size-5 p-0">
                 {badgeLabel}
               </Badge>

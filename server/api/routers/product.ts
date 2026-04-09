@@ -1,15 +1,96 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import type { Prisma } from "@/server/db/generated/prisma/client";
+import { ProductType } from "@/server/db/generated/prisma/enums";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 
 export const listProductsSchema = z.object({
   search: z.string().optional(),
+});
+
+export const adminListProductsSchema = z.object({
+  search: z.string().optional(),
+  status: z.enum(["all", "active", "inactive"]).default("all"),
+  type: z.nativeEnum(ProductType).optional(),
+  gelato: z.enum(["all", "synced", "not_synced"]).default("all"),
 });
 
 export const productByIdSchema = z.object({
   id: z.uuid(),
 });
 
+export const productUpdateSchema = z.object({
+  id: z.uuid(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
 export const productRouter = createTRPCRouter({
+  adminSummary: adminProcedure.query(async ({ ctx }) => {
+    const [products, promotions] = await Promise.all([
+      ctx.prisma.product.count(),
+      ctx.prisma.promotion.count(),
+    ]);
+    return { products, promotions };
+  }),
+
+  adminList: adminProcedure
+    .input(adminListProductsSchema.optional())
+    .query(async ({ ctx, input }) => {
+      const i = adminListProductsSchema.parse(input ?? {});
+      const search = i.search?.trim();
+
+      const where: Prisma.ProductWhereInput = {};
+
+      if (i.status === "active") {
+        where.active = true;
+      } else if (i.status === "inactive") {
+        where.active = false;
+      }
+
+      if (i.type) {
+        where.type = i.type;
+      }
+
+      if (i.gelato === "synced") {
+        where.gelatoProductId = { not: null };
+      } else if (i.gelato === "not_synced") {
+        where.gelatoProductId = null;
+      }
+
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: "insensitive" } },
+          { sku: { contains: search, mode: "insensitive" } },
+        ];
+      }
+
+      return ctx.prisma.product.findMany({
+        where,
+        select: {
+          id: true,
+          gelatoProductId: true,
+          sku: true,
+          name: true,
+          type: true,
+          price: true,
+          finalPrice: true,
+          active: true,
+          updatedAt: true,
+          images: {
+            orderBy: { order: "asc" },
+            take: 1,
+            select: { url: true, alt: true },
+          },
+          variants: {
+            select: { id: true },
+          },
+        },
+        orderBy: { updatedAt: "desc" },
+      });
+    }),
+
   list: publicProcedure
     .input(listProductsSchema.optional())
     .query(async ({ ctx, input }) => {
@@ -37,10 +118,8 @@ export const productRouter = createTRPCRouter({
   byId: publicProcedure
     .input(productByIdSchema)
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.product.findUnique({
-        where: {
-          id: input.id,
-        },
+      const product = await ctx.prisma.product.findUnique({
+        where: { id: input.id },
         include: {
           images: {
             orderBy: {
@@ -49,6 +128,44 @@ export const productRouter = createTRPCRouter({
           },
           variants: true,
         },
+      });
+
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+
+      return product;
+    }),
+  update: adminProcedure
+    .input(productUpdateSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...data } = input;
+
+      const product = await ctx.prisma.product.findUnique({
+        where: { id },
+        include: {
+          images: {
+            orderBy: {
+              order: "asc",
+            },
+          },
+          variants: true,
+        },
+      });
+
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+
+      return await ctx.prisma.product.update({
+        where: { id: product.id },
+        data: { ...data, updatedAt: new Date() },
       });
     }),
 });

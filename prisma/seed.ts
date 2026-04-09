@@ -2,7 +2,7 @@ import { PrismaClient } from "@/server/db/generated/prisma/client";
 import { env } from "@/server/env";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import { syncGelatoProducts } from "@/server/services/gelato.sync.service";
+import { syncGelatoProducts } from "@/server/integrations/gelato/gelato.sync.service";
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 const adapter = new PrismaPg(pool);

@@ -120,6 +120,12 @@ _No items currently in progress._
 
 ## Done
 
+### [FEAT-004] Admin promotions/coupons management page — DONE (2026-04-08)
+- **Summary:** Added `promotion.adminList` (filters: search, status, discountType; returns `_count.orders` as usage), `promotion.adminById`, and `promotion.adminUpdate` (id-based partial update, admin-only) to `server/api/routers/promotion.ts`. Created `/admin/promotions` (filter card + table with Code, Type, Amount, Free Shipping, Usage, Expires At, Status columns; DropdownMenu/ContextMenu row actions with Editar link and inline active Switch), `/admin/promotions/[id]` (full edit form for all Promotion model fields via `adminUpdate`), and `/admin/promotions/new` (create form via `promotion.create`). All pages protected via `adminProcedure` on the backend.
+
+### [FEAT-003] Admin Gelato product catalog (list + edit) — DONE (2026-04-06)
+- **Summary:** `/admin` now uses `QuickAccessCard`-style links with counts from `product.adminSummary`. Added `product.adminList` (filters: search, status, type, Gelato sync) and `product.adminSummary`; fixed `product.update` to omit `id` from Prisma `data`. New pages: `/admin/products` (filter row + table) and `/admin/products/[id]` (form for name, description, active). Corrected admin sidebar active state (`/admin` vs `/account`).
+
 ### [FIX-002] Floating-point rounding corrupts prices during Gelato sync — DONE (2026-03-24)
 - **Summary:** Added a `round2` helper (`Math.round(value * 100) / 100`) in `server/lib/pricing.ts` and applied it to every return path in `computeFinalPrice`. Because `computeVariantFinalPrice` delegates to `computeFinalPrice`, both functions now always return an exact two-decimal value. This prevents IEEE-754 drift from the `Number(prismaDecimal)` cast (e.g. `179.90` → `179.90000000000001`) from being written back to a `Decimal(10,2)` Postgres column as `179.91`.
 
