@@ -12,8 +12,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 import { useDeferredValue } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -273,13 +273,12 @@ export default function Page() {
               </div>
 
               <Field orientation={"horizontal"} className="lg:w-fit">
-                <Button type="submit" disabled={list.isFetching}>
+                <Button size="icon" type="submit" disabled={list.isFetching}>
                   {list.isFetching ? (
                     <Spinner />
                   ) : (
                     <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
                   )}
-                  Buscar
                 </Button>
               </Field>
             </FieldGroup>
@@ -327,7 +326,7 @@ export default function Page() {
               </TableHeader>
               <TableBody>
                 {(list.data ?? []).map((p) => {
-                  const thumb = p.images[0];
+                  const thumb = p.images?.[0];
                   return (
                     <ContextMenu key={p.id}>
                       <ContextMenuTrigger render={<TableRow />}>
@@ -347,15 +346,6 @@ export default function Page() {
                                   {p.name}
                                 </DropdownMenuLabel>
                                 <DropdownMenuItem
-                                  render={<Link href={`/product/${p.id}`} />}
-                                >
-                                  <HugeiconsIcon
-                                    icon={ExternalLink}
-                                    strokeWidth={2}
-                                  />
-                                  Ver no Store
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
                                   render={
                                     <Link
                                       href={`/admin/products/${p.id}` as Route}
@@ -364,6 +354,15 @@ export default function Page() {
                                 >
                                   <HugeiconsIcon icon={Edit} strokeWidth={2} />
                                   Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  render={<Link href={`/product/${p.id}`} />}
+                                >
+                                  <HugeiconsIcon
+                                    icon={ExternalLink}
+                                    strokeWidth={2}
+                                  />
+                                  Ver na loja
                                 </DropdownMenuItem>
                               </DropdownMenuGroup>
                               <DropdownMenuGroup>
@@ -375,7 +374,7 @@ export default function Page() {
                                     </span>
                                     <Switch
                                       checked={p.active}
-                                      onCheckedChange={() => { }}
+                                      onCheckedChange={() => {}}
                                     />
                                   </div>
                                 </DropdownMenuItem>
@@ -385,15 +384,17 @@ export default function Page() {
                         </TableCell>
                         <TableCell>
                           <div className="relative size-10 overflow-hidden rounded-md bg-muted">
-                            {thumb?.url ? (
-                              <Image
-                                src={thumb.url}
-                                alt={thumb.alt ?? p.name}
-                                fill
-                                className="object-cover"
-                                sizes="40px"
-                              />
-                            ) : null}
+                            <CldImage
+                              src={
+                                thumb?.publicId ?? thumb?.url ?? "placeholder"
+                              }
+                              alt={thumb?.alt ?? ""}
+                              fill
+                              crop="fill"
+                              gravity="auto"
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              style={{ objectFit: "cover" }}
+                            />
                           </div>
                         </TableCell>
                         <TableCell className="font-medium max-w-[220px] truncate">
@@ -431,21 +432,21 @@ export default function Page() {
                             {p.name}
                           </ContextMenuLabel>
                           <ContextMenuItem
-                            render={<Link href={`/product/${p.id}`} />}
-                          >
-                            <HugeiconsIcon
-                              icon={ExternalLink}
-                              strokeWidth={2}
-                            />
-                            Ver no Store
-                          </ContextMenuItem>
-                          <ContextMenuItem
                             render={
                               <Link href={`/admin/products/${p.id}` as Route} />
                             }
                           >
                             <HugeiconsIcon icon={Edit} strokeWidth={2} />
                             Editar
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            render={<Link href={`/product/${p.id}`} />}
+                          >
+                            <HugeiconsIcon
+                              icon={ExternalLink}
+                              strokeWidth={2}
+                            />
+                            Ver na loja
                           </ContextMenuItem>
                         </ContextMenuGroup>
                         <ContextMenuGroup>
@@ -455,7 +456,7 @@ export default function Page() {
                               <span>{p.active ? "Ativo" : "Inativo"}</span>
                               <Switch
                                 checked={p.active}
-                                onCheckedChange={() => { }}
+                                onCheckedChange={() => {}}
                               />
                             </div>
                           </ContextMenuItem>

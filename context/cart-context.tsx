@@ -2,9 +2,9 @@
 import { ArrowRightIcon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { CldImage } from "next-cloudinary";
 import {
   createContext,
   type ReactNode,
@@ -162,11 +162,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
             variant="image"
             className="rounded-lg border aspect-square size-full relative"
           >
-            <Image
-              src={item.image}
+            <CldImage
+              src={item.image ?? "placeholder"}
               alt={item.name}
               fill
-              className="object-contain"
+              crop="fill"
+              gravity="auto"
+              sizes="(max-width: 768px) 100vw, 33vw"
+              style={{ objectFit: "cover" }}
             />
           </ItemMedia>
           <ItemContent>

@@ -1828,6 +1828,7 @@ export type ProductVariantScalarFieldEnum = (typeof ProductVariantScalarFieldEnu
 export const ProductImageScalarFieldEnum = {
   id: 'id',
   productId: 'productId',
+  publicId: 'publicId',
   url: 'url',
   alt: 'alt',
   order: 'order',

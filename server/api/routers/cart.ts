@@ -78,6 +78,8 @@ export const cartRouter = createTRPCRouter({
         );
         const hasDiscount = finalPrice < basePrice;
 
+        const image = product.images?.[0];
+
         items.push({
           productId: product.id,
           variantId: variant.id,
@@ -87,7 +89,7 @@ export const cartRouter = createTRPCRouter({
           color: variant.color,
           price: finalPrice,
           originalPrice: hasDiscount ? basePrice : undefined,
-          image: product.images[0]?.url ?? "",
+          image: image?.publicId ?? image?.url ?? "placeholder",
           quantity: cartInput.quantity,
           size: variant.size ?? undefined,
         });

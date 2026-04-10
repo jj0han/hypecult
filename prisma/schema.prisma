@@ -162,9 +162,10 @@ model ProductImage {
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
-  url   String
-  alt   String?
-  order Int
+  publicId String? // Cloudinary public_id — null for images seeded from Gelato
+  url      String
+  alt      String?
+  order    Int
 
   createdAt DateTime @default(now())
 }

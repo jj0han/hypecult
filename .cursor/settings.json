@@ -8,6 +8,9 @@
     },
     "prisma": {
       "enabled": true
+    },
+    "cloudinary": {
+      "enabled": true
     }
   }
 }

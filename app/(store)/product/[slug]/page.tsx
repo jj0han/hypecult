@@ -21,9 +21,9 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { CldImage } from "next-cloudinary";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -167,7 +167,7 @@ export default function Page() {
       await navigator.clipboard.writeText(
         `${window.location.origin}/product/${slug}`
       );
-      toast("Link copiado para a área de transferência", {
+      toast("Link copiado", {
         icon: (
           <HugeiconsIcon
             icon={ClipboardCopy}
@@ -268,12 +268,15 @@ export default function Page() {
                       key={image.id}
                       className="relative aspect-square border rounded-lg overflow-hidden size-full!"
                     >
-                      <Image
+                      <CldImage
                         key={image.id}
                         src={image.url}
                         alt={data.name}
                         fill
-                        objectFit="cover"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        crop="fill"
+                        gravity="auto"
+                        style={{ objectFit: "cover" }}
                       />
                     </div>
                   </DialogTrigger>
@@ -287,11 +290,14 @@ export default function Page() {
                         key={image.id}
                         className="aspect-square size-full relative"
                       >
-                        <Image
+                        <CldImage
                           src={image.url}
                           alt={data.name}
                           fill
-                          objectFit="cover"
+                          sizes="(max-width: 1024px) 100vw, 896px"
+                          crop="fill"
+                          gravity="auto"
+                          style={{ objectFit: "cover" }}
                         />
                       </CarouselItem>
                     ))}
@@ -445,8 +451,10 @@ export default function Page() {
                                 data.finalPrice ??
                                 itemOriginalPrice
                             );
+                            const image = data.images?.[0];
                             add({
-                              image: data.images[0].url,
+                              image:
+                                image?.publicId ?? image?.url ?? "placeholder",
                               name: data.name,
                               productUid: variant.productUid,
                               sku: data.sku,

@@ -120,6 +120,11 @@ _No items currently in progress._
 
 ## Done
 
+### [FEAT-005] Product image management via Cloudinary — DONE (2026-04-09)
+- **Summary:** Added `publicId String?` to `ProductImage` in `prisma/schema.prisma` (migration `20260409170415_add_product_image_public_id` applied, client regenerated). Added two `adminProcedure` mutations to `server/api/routers/product.ts`: `product.addImage` (persists the Cloudinary upload result, auto-increments `order`, enforces 6-image cap server-side) and `product.removeImage` (deletes the DB row; asset is kept in Cloudinary). Updated `app/admin/products/[id]/page.tsx`: replaced plain `Image` with `CldImage` (`crop="fill" gravity="auto"` for optimized delivery), wired `CldUploadWidget.onSuccess` to `addImage` so uploads persist immediately, added per-image hover delete button via `removeImage`, dynamic `maxFiles` on the widget, disabled "Adicionar imagens" button at the 6-image limit, and an empty-state message when no images exist.
+
+---
+
 ### [FEAT-004] Admin promotions/coupons management page — DONE (2026-04-08)
 - **Summary:** Added `promotion.adminList` (filters: search, status, discountType; returns `_count.orders` as usage), `promotion.adminById`, and `promotion.adminUpdate` (id-based partial update, admin-only) to `server/api/routers/promotion.ts`. Created `/admin/promotions` (filter card + table with Code, Type, Amount, Free Shipping, Usage, Expires At, Status columns; DropdownMenu/ContextMenu row actions with Editar link and inline active Switch), `/admin/promotions/[id]` (full edit form for all Promotion model fields via `adminUpdate`), and `/admin/promotions/new` (create form via `promotion.create`). All pages protected via `adminProcedure` on the backend.
 

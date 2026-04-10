@@ -6,6 +6,7 @@ import {
   CopyIcon,
   Edit,
   MoreVertical,
+  Plus,
   SearchIcon,
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
@@ -166,8 +167,11 @@ export default function Page() {
           </ItemDescription>
         </ItemContent>
         <ItemActions>
-          <Button render={<Link href={"/admin/promotions/new" as Route} />}>
-            Novo cupom
+          <Button
+            size="icon"
+            render={<Link href={"/admin/promotions/new" as Route} />}
+          >
+            <HugeiconsIcon icon={Plus} strokeWidth={2} />
           </Button>
         </ItemActions>
       </Item>
@@ -288,13 +292,12 @@ export default function Page() {
               </div>
 
               <Field orientation="horizontal" className="lg:w-fit">
-                <Button type="submit" disabled={list.isFetching}>
+                <Button size="icon" type="submit" disabled={list.isFetching}>
                   {list.isFetching ? (
                     <Spinner />
                   ) : (
                     <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
                   )}
-                  Buscar
                 </Button>
               </Field>
             </FieldGroup>

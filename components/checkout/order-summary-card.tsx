@@ -8,7 +8,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import { useState } from "react";
 import type { CheckoutSummary } from "@/app/checkout/use-checkout-summary";
 import { Badge } from "@/components/ui/badge";
@@ -105,11 +105,15 @@ export function OrderSummaryCard({
           {orderItems?.map((item) => (
             <div key={item.id} className="flex gap-3">
               <div className="relative w-12 h-12 shrink-0 border rounded-md">
-                <Image
-                  src={item.image}
+                <CldImage
+                  src={item.image ?? "placeholder"}
                   alt={item.name}
-                  className="object-cover rounded-md"
                   fill
+                  crop="fill"
+                  gravity="auto"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  style={{ objectFit: "cover" }}
+                  className="rounded-md"
                 />
                 <Badge className="absolute -top-1 -right-1 size-4 p-0 flex items-center justify-center">
                   {item.quantity}

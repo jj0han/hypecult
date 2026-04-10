@@ -184,13 +184,6 @@ export default function AdminPromotionEditPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold">Editar cupom</h2>
-        <p className="text-sm text-muted-foreground">
-          Atualize as configurações do cupom de desconto.
-        </p>
-      </div>
-
       <form onSubmit={onSubmit}>
         <div className="space-y-4">
           <Card>

@@ -1,14 +1,31 @@
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: we need to use the index as a key */
 "use client";
-import { ArrowRightIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowRightIcon,
+  ClipboardCopy,
+  Edit01Icon,
+  Share04Icon,
+  Share08Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Decimal } from "@prisma/client/runtime/client";
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { CldImage } from "next-cloudinary";
 import { Fragment } from "react/jsx-runtime";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import {
   Item,
   ItemContent,
@@ -27,29 +44,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/lib/trpc";
 import type {
   DiscountType,
+  ProductImage,
   ProductType,
-  ShirtSize,
+  ProductVariant,
 } from "@/server/db/generated/prisma/client";
 
 type ProductProps =
   | ({
-      images: {
-        id: string;
-        createdAt: Date;
-        order: number;
-        productId: string;
-        url: string;
-        alt: string | null;
-      }[];
-      variants: {
-        id: string;
-        price: Decimal | null;
-        createdAt: Date;
-        productId: string;
-        color: string;
-        size: ShirtSize | null;
-        stock: number;
-      }[];
+      images: ProductImage[];
+      variants: ProductVariant[];
     } & {
       id: string;
       sku: string;
@@ -82,7 +85,6 @@ export default function Page() {
         <MarqueeContent speed={50} pauseOnHover={false}>
           {new Array(4).fill(null).map((_, index) => (
             <MarqueeItem
-              // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
               key={index}
               className="h-14 sm:h-24 lg:h-36 sm:mx-16 mx-8"
             >
@@ -125,7 +127,20 @@ function ProductList({
   title: string;
   category: string;
 }) {
+  const { data: session } = useSession();
   const router = useRouter();
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+    toast("Link copiado", {
+      icon: (
+        <HugeiconsIcon
+          icon={ClipboardCopy}
+          strokeWidth={2}
+          className="size-4 text-primary"
+        />
+      ),
+    });
+  }
   return (
     <div className="space-y-4 py-4">
       <div className="flex items-center justify-between">
@@ -138,12 +153,7 @@ function ProductList({
       <ItemGroup className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {isPending &&
           Array.from({ length: 4 }).map((_, index) => (
-            <ItemSkeleton
-              key={`skeleton-${
-                // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
-                index
-              }`}
-            />
+            <ItemSkeleton key={index} />
           ))}
         {data?.map((product) => {
           const originalPrice = Number(product.price);
@@ -162,49 +172,94 @@ function ProductList({
                 })}`
             : null;
 
+          const image = product.images?.[0];
+
           return (
-            <Link key={product.id} href={`/product/${product.id}`}>
-              <Item variant={"default"} size={"xs"} className="items-start">
-                <ItemHeader>
-                  <div className="relative aspect-square border rounded-lg overflow-hidden size-full!">
-                    <Image
-                      src={product.images[0].url}
-                      alt={product.name}
-                      fill
-                      className="object-contain"
-                    />
-                    {discountLabel && (
-                      <Badge className="absolute top-2 left-2 bg-green-600">
-                        {discountLabel}
-                      </Badge>
-                    )}
-                  </div>
-                </ItemHeader>
-                <ItemContent className="space-y-2">
-                  <div>
-                    <ItemTitle className="text-base font-bold">
-                      {product.name}
-                    </ItemTitle>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <ItemTitle className="text-base font-bold">
-                      {finalPrice.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </ItemTitle>
-                    {hasDiscount && (
-                      <span className="text-sm text-muted-foreground line-through font-normal">
-                        {originalPrice.toLocaleString("pt-BR", {
+            <ContextMenu key={product.id}>
+              <ContextMenuTrigger
+                render={
+                  <Link key={product.id} href={`/product/${product.id}`} />
+                }
+              >
+                <Item variant={"default"} size={"xs"} className="items-start">
+                  <ItemHeader>
+                    <div className="relative aspect-square border rounded-lg overflow-hidden size-full!">
+                      <CldImage
+                        src={image?.publicId ?? image?.url ?? "placeholder"}
+                        alt={image?.alt ?? ""}
+                        fill
+                        crop="fill"
+                        gravity="auto"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        style={{ objectFit: "cover" }}
+                      />
+                      {discountLabel && (
+                        <Badge className="absolute top-2 left-2 bg-green-600">
+                          {discountLabel}
+                        </Badge>
+                      )}
+                    </div>
+                  </ItemHeader>
+                  <ItemContent className="space-y-2">
+                    <div>
+                      <ItemTitle className="text-base font-bold">
+                        {product.name}
+                      </ItemTitle>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <ItemTitle className="text-base font-bold">
+                        {finalPrice.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
                         })}
-                      </span>
-                    )}
-                  </div>
-                </ItemContent>
-              </Item>
-            </Link>
+                      </ItemTitle>
+                      {hasDiscount && (
+                        <span className="text-sm text-muted-foreground line-through font-normal">
+                          {originalPrice.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </span>
+                      )}
+                    </div>
+                  </ItemContent>
+                </Item>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-56">
+                <ContextMenuGroup>
+                  <ContextMenuLabel>{product.name}</ContextMenuLabel>
+                  <ContextMenuItem
+                    onClick={() =>
+                      copyToClipboard(
+                        `${window.location.origin}/product/${product.id}`
+                      )
+                    }
+                  >
+                    <HugeiconsIcon icon={Share08Icon} strokeWidth={2} />
+                    Compartilhar
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    render={
+                      <Link href={`/product/${product.id}`} target="_blank" />
+                    }
+                  >
+                    <HugeiconsIcon icon={Share04Icon} strokeWidth={2} />
+                    Abrir em nova aba
+                  </ContextMenuItem>
+                </ContextMenuGroup>
+                {session?.user?.role === "admin" && (
+                  <ContextMenuGroup>
+                    <ContextMenuLabel>Admin</ContextMenuLabel>
+                    <ContextMenuItem
+                      render={<Link href={`/admin/products/${product.id}`} />}
+                    >
+                      <HugeiconsIcon icon={Edit01Icon} strokeWidth={2} />
+                      Editar
+                    </ContextMenuItem>
+                  </ContextMenuGroup>
+                )}
+              </ContextMenuContent>
+            </ContextMenu>
           );
         })}
       </ItemGroup>
