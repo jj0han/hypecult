@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Cloud,
   ExternalLink,
+  Info,
   Plus,
   Trash2,
 } from "@hugeicons/core-free-icons";
@@ -17,7 +18,7 @@ import { useParams } from "next/navigation";
 import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -52,13 +53,35 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useTRPC } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import type { ProductType } from "@/server/db/generated/prisma/enums";
+import { computeFinalPrice } from "@/server/lib/pricing";
 import { formatCurrency } from "@/utils/formatters";
 
 const productTypeLabel: Record<ProductType, string> = {
@@ -69,10 +92,32 @@ const productTypeLabel: Record<ProductType, string> = {
   other: "Outro",
 };
 
+const discountTypeLabel: Record<string, string> = {
+  none: "Sem desconto",
+  percentage: "Percentual (%)",
+  fixed: "Fixo (R$)",
+};
+
+const variantSchema = z.object({
+  id: z.string(),
+  color: z.string(),
+  size: z.string().nullable(),
+  stock: z.number().int().min(0, "Estoque deve ser ≥ 0"),
+  price: z.number().positive("Preço deve ser > 0").nullable(),
+  discountType: z.enum(["percentage", "fixed"]).nullable(),
+  discountAmount: z.number().min(0, "Desconto deve ser ≥ 0").nullable(),
+  finalPrice: z.number().min(0, "Preço final deve ser ≥ 0").nullable(),
+});
+
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string(),
   active: z.boolean(),
+  price: z.number().positive("Preço deve ser > 0"),
+  discountType: z.enum(["percentage", "fixed"]).nullable(),
+  discountAmount: z.number().min(0, "Desconto deve ser ≥ 0").nullable(),
+  finalPrice: z.number().min(0, "Preço final deve ser ≥ 0"),
+  variants: z.array(variantSchema),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -90,17 +135,70 @@ export default function AdminProductEditPage() {
       name: "",
       description: "",
       active: true,
+      price: 0,
+      discountType: null,
+      discountAmount: null,
+      finalPrice: 0,
+      variants: [],
     },
+  });
+
+  const { fields } = useFieldArray({
+    control: form.control,
+    name: "variants",
+    keyName: "_key",
   });
 
   useEffect(() => {
     if (!product.data) return;
+    const p = product.data;
     form.reset({
-      name: product.data.name,
-      description: product.data.description,
-      active: product.data.active,
+      name: p.name,
+      description: p.description,
+      active: p.active,
+      price: Number(p.price),
+      discountType: p.discountType ?? null,
+      discountAmount: p.discountAmount ? Number(p.discountAmount) : null,
+      finalPrice: Number(p.finalPrice ?? p.price),
+      variants: p.variants.map((v) => ({
+        id: v.id,
+        color: v.color,
+        size: v.size ?? null,
+        stock: v.stock,
+        price: v.price ? Number(v.price) : null,
+        discountType: v.discountType ?? null,
+        discountAmount: v.discountAmount ? Number(v.discountAmount) : null,
+        finalPrice: v.finalPrice ? Number(v.finalPrice) : null,
+      })),
     });
   }, [product.data, form]);
+
+  // Auto-compute product-level finalPrice when price or discount fields change
+  const watchedPrice = form.watch("price");
+  const watchedDiscountType = form.watch("discountType");
+  const watchedDiscountAmount = form.watch("discountAmount");
+
+  useEffect(() => {
+    const computed = computeFinalPrice(
+      watchedPrice ?? 0,
+      watchedDiscountType,
+      watchedDiscountAmount
+    );
+    form.setValue("finalPrice", computed, { shouldValidate: false });
+  }, [watchedPrice, watchedDiscountType, watchedDiscountAmount, form]);
+
+  const recomputeVariantFinalPrice = (index: number) => {
+    const variant = form.getValues(`variants.${index}`);
+    const basePrice = variant.price ?? form.getValues("price") ?? 0;
+    const computed = computeFinalPrice(
+      basePrice,
+      variant.discountType,
+      variant.discountAmount
+    );
+    form.setValue(`variants.${index}.finalPrice`, computed, {
+      shouldValidate: false,
+    });
+  };
 
   const update = useMutation(
     trpc.product.update.mutationOptions({
@@ -167,6 +265,18 @@ export default function AdminProductEditPage() {
       name: values.name,
       description: values.description,
       active: values.active,
+      price: values.price,
+      discountType: values.discountType,
+      discountAmount: values.discountAmount,
+      finalPrice: values.finalPrice,
+      variants: values.variants.map((v) => ({
+        id: v.id,
+        stock: v.stock,
+        price: v.price,
+        discountType: v.discountType,
+        discountAmount: v.discountAmount,
+        finalPrice: v.finalPrice,
+      })),
     });
   });
 
@@ -185,6 +295,38 @@ export default function AdminProductEditPage() {
         id: image.id,
         order: index,
       })),
+    });
+  };
+
+  const applyDiscountToAllVariants = () => {
+    const { discountType, discountAmount, price } = form.getValues();
+    const variants = form.getValues("variants");
+    variants.forEach((variant, index) => {
+      const basePrice = variant.price ?? price ?? 0;
+      const computed = computeFinalPrice(
+        basePrice,
+        discountType,
+        discountAmount
+      );
+      form.setValue(`variants.${index}.discountType`, discountType, {
+        shouldDirty: true,
+      });
+      form.setValue(`variants.${index}.discountAmount`, discountAmount, {
+        shouldDirty: true,
+      });
+      form.setValue(`variants.${index}.finalPrice`, computed, {
+        shouldDirty: true,
+      });
+    });
+    toast("Desconto aplicado a todas as variantes", {
+      description: "Salve antes de sair da página",
+      icon: (
+        <HugeiconsIcon
+          icon={Info}
+          strokeWidth={2}
+          className="size-4 text-primary"
+        />
+      ),
     });
   };
 
@@ -390,7 +532,8 @@ export default function AdminProductEditPage() {
         </CardContent>
       </Card>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="space-y-6">
+        {/* Storefront content */}
         <Card>
           <CardHeader>
             <CardTitle>Conteúdo da vitrine</CardTitle>
@@ -454,6 +597,371 @@ export default function AdminProductEditPage() {
               />
             </FieldGroup>
           </CardContent>
+        </Card>
+
+        {/* Product-level pricing */}
+        <Card>
+          <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="space-y-2">
+              <CardTitle>Preços do produto</CardTitle>
+              <CardDescription>
+                Defina o preço base, desconto e preço final. O preço final é
+                calculado automaticamente mas pode ser editado manualmente.
+              </CardDescription>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={applyDiscountToAllVariants}
+              disabled={fields.length === 0}
+            >
+              Aplicar a todas as variantes
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <FieldGroup>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <Controller
+                  name="price"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="product-price">
+                        Preço base
+                      </FieldLabel>
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <InputGroupText>R$</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput
+                          id="product-price"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                        />
+                      </InputGroup>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="discountType"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>Tipo de desconto</FieldLabel>
+                      <Select
+                        value={field.value ?? "none"}
+                        onValueChange={(val) =>
+                          field.onChange(val === "none" ? null : val)
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue>
+                            {discountTypeLabel[field.value ?? "none"]}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Sem desconto</SelectItem>
+                          <SelectItem value="percentage">
+                            Percentual (%)
+                          </SelectItem>
+                          <SelectItem value="fixed">Fixo (R$)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="discountAmount"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="product-discount-amount">
+                        Valor do desconto
+                      </FieldLabel>
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <InputGroupText>
+                            {form.watch("discountType") === "percentage"
+                              ? "%"
+                              : form.watch("discountType") === "fixed"
+                                ? "R$"
+                                : ""}
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput
+                          id="product-discount-amount"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          disabled={!watchedDiscountType}
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === ""
+                                ? null
+                                : Number(e.target.value)
+                            )
+                          }
+                        />
+                      </InputGroup>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="finalPrice"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="product-final-price">
+                        Preço final
+                      </FieldLabel>
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <InputGroupText>R$</InputGroupText>
+                        </InputGroupAddon>
+                        <InputGroupInput
+                          id="product-final-price"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                        />
+                      </InputGroup>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </div>
+            </FieldGroup>
+          </CardContent>
+        </Card>
+
+        {/* Per-variant editing */}
+        {fields.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Variantes</CardTitle>
+              <CardDescription>
+                Edite estoque, preço e desconto por variante. O preço final é
+                calculado automaticamente. Deixe o preço vazio para herdar o
+                preço do produto.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Cor</TableHead>
+                    <TableHead>Tamanho</TableHead>
+                    <TableHead>Estoque</TableHead>
+                    <TableHead>Preço (R$)</TableHead>
+                    <TableHead>Tipo desconto</TableHead>
+                    <TableHead>Valor desconto</TableHead>
+                    <TableHead>Preço final (R$)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {fields.map((field, index) => (
+                    <TableRow key={field._key}>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {field.color}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {field.size ?? "—"}
+                      </TableCell>
+
+                      {/* Stock */}
+                      <TableCell>
+                        <Controller
+                          name={`variants.${index}.stock`}
+                          control={form.control}
+                          render={({ field: f, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <Input
+                                type="number"
+                                step="1"
+                                min="0"
+                                className="w-24"
+                                aria-label="Estoque"
+                                value={f.value ?? ""}
+                                onChange={(e) =>
+                                  f.onChange(
+                                    e.target.value === ""
+                                      ? 0
+                                      : Math.floor(Number(e.target.value))
+                                  )
+                                }
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
+                      </TableCell>
+
+                      {/* Price */}
+                      <TableCell>
+                        <Controller
+                          name={`variants.${index}.price`}
+                          control={form.control}
+                          render={({ field: f, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                className="w-28"
+                                aria-label="Preço"
+                                placeholder={String(
+                                  form.getValues("price") ?? ""
+                                )}
+                                value={f.value ?? ""}
+                                onChange={(e) => {
+                                  f.onChange(
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value)
+                                  );
+                                  recomputeVariantFinalPrice(index);
+                                }}
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
+                      </TableCell>
+
+                      {/* Discount type */}
+                      <TableCell>
+                        <Controller
+                          name={`variants.${index}.discountType`}
+                          control={form.control}
+                          render={({ field: f }) => (
+                            <Select
+                              value={f.value ?? "none"}
+                              onValueChange={(val) => {
+                                f.onChange(val === "none" ? null : val);
+                                recomputeVariantFinalPrice(index);
+                              }}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue>
+                                  {discountTypeLabel[f.value ?? "none"]}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">
+                                  Sem desconto
+                                </SelectItem>
+                                <SelectItem value="percentage">
+                                  Percentual (%)
+                                </SelectItem>
+                                <SelectItem value="fixed">Fixo (R$)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </TableCell>
+
+                      {/* Discount amount */}
+                      <TableCell>
+                        <Controller
+                          name={`variants.${index}.discountAmount`}
+                          control={form.control}
+                          render={({ field: f, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                className="w-28"
+                                aria-label="Valor do desconto"
+                                disabled={
+                                  !form.watch(`variants.${index}.discountType`)
+                                }
+                                value={f.value ?? ""}
+                                onChange={(e) => {
+                                  f.onChange(
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value)
+                                  );
+                                  recomputeVariantFinalPrice(index);
+                                }}
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
+                      </TableCell>
+
+                      {/* Final price */}
+                      <TableCell>
+                        <Controller
+                          name={`variants.${index}.finalPrice`}
+                          control={form.control}
+                          render={({ field: f, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                className="w-28"
+                                aria-label="Preço final"
+                                value={f.value ?? ""}
+                                onChange={(e) =>
+                                  f.onChange(
+                                    e.target.value === ""
+                                      ? null
+                                      : Number(e.target.value)
+                                  )
+                                }
+                              />
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
+                            </Field>
+                          )}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
           <CardFooter className="flex flex-wrap gap-2 justify-between">
             <Link
               href={"/admin/products" as Route}

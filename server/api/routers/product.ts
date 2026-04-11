@@ -32,12 +32,28 @@ export const productUpdateSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   active: z.boolean().optional(),
+  price: z.number().positive().optional(),
+  discountType: z.enum(["percentage", "fixed"]).nullable().optional(),
+  discountAmount: z.number().nonnegative().nullable().optional(),
+  finalPrice: z.number().nonnegative().nullable().optional(),
   images: z
     .array(
       z.object({
         id: z.uuid(),
         alt: z.string().optional(),
         order: z.number().nonnegative(),
+      })
+    )
+    .optional(),
+  variants: z
+    .array(
+      z.object({
+        id: z.uuid(),
+        stock: z.number().int().nonnegative().optional(),
+        price: z.number().positive().nullable().optional(),
+        discountType: z.enum(["percentage", "fixed"]).nullable().optional(),
+        discountAmount: z.number().nonnegative().nullable().optional(),
+        finalPrice: z.number().nonnegative().nullable().optional(),
       })
     )
     .optional(),
@@ -170,7 +186,7 @@ export const productRouter = createTRPCRouter({
   update: adminProcedure
     .input(productUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
+      const { id, images, variants, ...productData } = input;
 
       const product = await ctx.prisma.product.findUnique({
         where: { id },
@@ -187,12 +203,12 @@ export const productRouter = createTRPCRouter({
         });
       }
 
-      return await ctx.prisma.product.update({
+      const updated = await ctx.prisma.product.update({
         where: { id: product.id },
         data: {
-          ...data,
+          ...productData,
           images: {
-            updateMany: data.images?.map((image) => ({
+            updateMany: images?.map((image) => ({
               where: { id: image.id },
               data: {
                 order: image.order,
@@ -203,6 +219,19 @@ export const productRouter = createTRPCRouter({
           updatedAt: new Date(),
         },
       });
+
+      if (variants?.length) {
+        await Promise.all(
+          variants.map(({ id: variantId, ...variantData }) =>
+            ctx.prisma.productVariant.update({
+              where: { id: variantId },
+              data: variantData,
+            })
+          )
+        );
+      }
+
+      return updated;
     }),
 
   addImage: adminProcedure
