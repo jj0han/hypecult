@@ -59,6 +59,7 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import {
   Select,
   SelectContent,
@@ -77,7 +78,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { useTRPC } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
 import type { ProductType } from "@/server/db/generated/prisma/enums";
@@ -563,10 +563,13 @@ export default function AdminProductEditPage() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-description">
-                      Descrição
-                    </FieldLabel>
-                    <Textarea id="product-description" rows={6} {...field} />
+                    <FieldLabel>Descrição</FieldLabel>
+                    <RichTextEditor
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                      placeholder="Descreva o produto…"
+                      disabled={field.disabled}
+                    />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}

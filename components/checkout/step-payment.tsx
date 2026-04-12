@@ -215,7 +215,7 @@ export function StepPayment({
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>
-                      Código de segurança *
+                      CVV *
                     </FieldLabel>
                     <InputGroup>
                       <InputGroupAddon>
