@@ -8,6 +8,7 @@ import {
   ExternalLink,
   Info,
   Plus,
+  Share04Icon,
   Trash2,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -365,10 +366,18 @@ export default function AdminProductEditPage() {
               Somente leitura (definidos na sincronização).
             </CardDescription>
           </div>
-          <Button render={<Link href={`/product/${p.id}`} />}>
-            Ver na loja
-            <HugeiconsIcon icon={ExternalLink} strokeWidth={2} />
-          </Button>
+          <div className="flex gap-2">
+            <ButtonGroup>
+              <Button render={<Link href={"https://dashboard.gelato.com/home/dashboard"} target="_blank" />} variant="ghost">
+                Gelato
+                <HugeiconsIcon icon={Share04Icon} strokeWidth={2} />
+              </Button>
+              <Button render={<Link href={`/product/${p.id}`} />} variant="link">
+                Ver na loja
+                <HugeiconsIcon icon={ExternalLink} strokeWidth={2} />
+              </Button>
+            </ButtonGroup>
+          </div>
         </CardHeader>
         <CardContent className="grid gap-2 text-sm">
           <div className="flex justify-between gap-4">

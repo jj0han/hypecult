@@ -40,6 +40,24 @@ Each entry uses a unique ID with a type prefix:
 
 ## Backlog
 
+### [UPDATE-004] Footer — links reais para páginas de políticas
+- **Type:** update
+- **Priority:** medium
+- **Status:** backlog
+- **Spec:** Os botões de rodapé em `components/footer.tsx` atualmente apontam para `"/"` (placeholder) ou usam `router.push`. Atualizar para usar `<Link>` do Next.js apontando para as rotas corretas: `/policies/privacy-policy`, `/policies/terms-of-use`, `/policies/refund-policy`, `/policies/shipping-policy` e `/policies/cookie-policy`. Remover dependência desnecessária do `useRouter` se não for mais usada. Adicionar os dois novos links (envio e cookies) à lista existente.
+- **Acceptance criteria:**
+  - [ ] "Privacidade" aponta para `/policies/privacy-policy`
+  - [ ] "Termos de Uso" aponta para `/policies/terms-of-use`
+  - [ ] "Trocas, devoluções e reembolsos" aponta para `/policies/refund-policy`
+  - [ ] "Envio e entrega" aponta para `/policies/shipping-policy`
+  - [ ] "Política de cookies" aponta para `/policies/cookie-policy`
+  - [ ] Todos os links usam `<Link href="...">` em vez de `router.push`
+  - [ ] Sem erros de lint (Biome)
+- **Files likely affected:** `components/footer.tsx`
+- **Notes:** Depende de FEAT-007 estar implementado para que os links não resultem em 404.
+
+---
+
 ### [FEAT-001] Payment integration (PSP)
 - **Type:** feature
 - **Priority:** critical
@@ -119,6 +137,11 @@ _No items currently in progress._
 ---
 
 ## Done
+
+### [FEAT-007] Policy pages — privacy, terms of use, shipping & cookies — DONE (2026-04-12)
+- **Summary:** Criadas as 4 páginas de políticas legais em `app/(store)/policies/`: `privacy-policy/page.tsx` (LGPD — dados coletados incluindo CPF e OAuth Google, bases legais em tabela, compartilhamento com Gelato, direitos do titular, retenção), `terms-of-use/page.tsx` (elegibilidade, regras de conta, uso permitido, propriedade intelectual, limitação de responsabilidade conforme CDC, foro, referências cruzadas às demais políticas), `shipping-policy/page.tsx` (modelo PoD via Gelato, prazos de produção 2–5 dias úteis + prazos de entrega por modalidade, áreas atendidas, rastreamento, ausência do destinatário, extravio), `cookie-policy/page.tsx` (três categorias: necessários, preferências e analíticos com bases legais LGPD, cookies de terceiros Google, links de instruções por navegador). Todas as páginas seguem o mesmo layout de `refund-policy/page.tsx` (max-w-3xl, header com data de atualização, article com secções numeradas, texto em pt-BR). Cada página exporta `metadata` com `title` e `description`. Sem erros de lint (Biome).
+
+---
 
 ### [FEAT-006] TipTap rich text editor component — DONE (2026-04-12)
 - **Summary:** Installed `@tiptap/react`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-link`, `@tiptap/extension-placeholder`, `@tiptap/extension-typography`, and `@tiptap/extension-underline` (added for Underline toolbar button). Created `components/ui/rich-text-editor.tsx`: a controlled `"use client"` component accepting `value`, `onChange`, `placeholder`, and `disabled` props. Toolbar uses the project's `Button` (`variant="ghost"`, `size="icon-sm"`) and `ButtonGroup`/`ButtonGroupSeparator` primitives with Hugeicons (`TextBoldFreeIcons`, `TextItalicFreeIcons`, `TextUnderlineFreeIcons`, `Heading02FreeIcons`, `Heading03FreeIcons`, `LeftToRightListBulletFreeIcons`, `LeftToRightListNumberFreeIcons`, `LinkFreeIcons`, `CodeSimpleIcon`) for groups: Bold, Italic, Underline | H2, H3 | Bullet list, Ordered list | Link | HTML source toggle. The HTML source toggle switches the editor area to a monospace `Textarea` showing raw HTML; switching back re-parses and syncs the HTML back into the TipTap editor and calls `onChange`. Border/focus-ring styling matches other project inputs (`border-input`, `focus-within:ring-ring/50`). Integrated with `react-hook-form` via `Controller` (`field.value`/`field.onChange`). The product description `Textarea` in `app/admin/products/[id]/page.tsx` was replaced with `<RichTextEditor />`. No TypeScript or lint errors.

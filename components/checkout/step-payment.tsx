@@ -214,9 +214,7 @@ export function StepPayment({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={field.name}>
-                      CVV *
-                    </FieldLabel>
+                    <FieldLabel htmlFor={field.name}>CVV *</FieldLabel>
                     <InputGroup>
                       <InputGroupAddon>
                         <HugeiconsIcon

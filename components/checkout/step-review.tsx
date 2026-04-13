@@ -5,6 +5,8 @@ import {
   Wallet,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { Route } from "next";
+import Link from "next/link";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { paymentMethods } from "@/app/checkout/constants";
@@ -141,11 +143,29 @@ export function StepReview({
                   className="text-sm leading-relaxed inline"
                 >
                   <span>Concordo com os </span>
-                  <Button variant="link" className="p-0 h-auto text-sm">
-                    Termos de serviço
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-sm"
+                    render={
+                      <Link
+                        href={"/policies/terms-of-use" as Route}
+                        target="_blank"
+                      />
+                    }
+                  >
+                    Termos de uso
                   </Button>{" "}
                   e{" "}
-                  <Button variant="link" className="p-0 h-auto text-sm">
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-sm"
+                    render={
+                      <Link
+                        href={"/policies/privacy-policy" as Route}
+                        target="_blank"
+                      />
+                    }
+                  >
                     Política de privacidade
                   </Button>
                 </Label>

@@ -328,15 +328,15 @@ export default function Page() {
                   // variant.finalPrice > product.finalPrice > original price (fallback when no discount)
                   const effectiveFinalPrice = Number(
                     selectedVariantData?.finalPrice ??
-                    data.finalPrice ??
-                    originalPrice
+                      data.finalPrice ??
+                      originalPrice
                   );
 
                   const hasDiscount =
                     Number(
                       selectedVariantData?.discountAmount ??
-                      data.discountAmount ??
-                      0
+                        data.discountAmount ??
+                        0
                     ) > 0;
 
                   return (
@@ -413,9 +413,9 @@ export default function Page() {
                                     <FieldTitle
                                       className={cn(
                                         variant?.id === selectedVariant &&
-                                        "text-primary",
+                                          "text-primary",
                                         (!variant || variant.stock <= 0) &&
-                                        "text-muted-foreground line-through"
+                                          "text-muted-foreground line-through"
                                       )}
                                     >
                                       {size}
@@ -448,8 +448,8 @@ export default function Page() {
                             );
                             const itemFinalPrice = Number(
                               variant.finalPrice ??
-                              data.finalPrice ??
-                              itemOriginalPrice
+                                data.finalPrice ??
+                                itemOriginalPrice
                             );
                             const image = data.images?.[0];
                             add({
@@ -878,7 +878,7 @@ function ProductImageSkeleton() {
           key={`skeleton-${
             // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
             index
-            }`}
+          }`}
           className="aspect-square rounded-lg size-full"
         />
       ))}
