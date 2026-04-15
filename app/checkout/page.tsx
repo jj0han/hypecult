@@ -481,7 +481,7 @@ export default function Page() {
         </Card>
       ) : (
         <>
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-2">
             <h1 className="text-2xl font-bold">Checkout</h1>
             <p className="text-muted-foreground text-sm">
               Complete sua compra de forma segura

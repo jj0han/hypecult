@@ -14,6 +14,10 @@ cloudinary.config({
 
 export const listProductsSchema = z.object({
   search: z.string().optional(),
+  type: z.enum(ProductType).optional(),
+  sort: z
+    .enum(["newest", "price_asc", "price_desc", "name_asc"])
+    .default("newest"),
 });
 
 export const adminListProductsSchema = z.object({
@@ -138,9 +142,25 @@ export const productRouter = createTRPCRouter({
   list: publicProcedure
     .input(listProductsSchema.optional())
     .query(async ({ ctx, input }) => {
+      const sort = input?.sort ?? "newest";
+
+      const orderBy: Prisma.ProductOrderByWithRelationInput = (() => {
+        switch (sort) {
+          case "price_asc":
+            return { finalPrice: "asc" };
+          case "price_desc":
+            return { finalPrice: "desc" };
+          case "name_asc":
+            return { name: "asc" };
+          default:
+            return { createdAt: "desc" };
+        }
+      })();
+
       return ctx.prisma.product.findMany({
         where: {
           active: true,
+          type: input?.type ?? undefined,
           name: input?.search
             ? { contains: input.search, mode: "insensitive" }
             : undefined,
@@ -153,10 +173,7 @@ export const productRouter = createTRPCRouter({
           },
           variants: true,
         },
-
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
       });
     }),
   byId: publicProcedure

@@ -8,6 +8,7 @@ import {
   MoreVertical,
   Plus,
   SearchIcon,
+  SearchRemoveIcon,
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -25,7 +26,6 @@ import { useDeferredValue } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,6 +45,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Field,
   FieldError,
@@ -312,22 +319,30 @@ export default function Page() {
           <Skeleton className="h-10 w-full" />
         </div>
       ) : list.isError ? (
-        <Alert variant="destructive">
-          <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
-          <AlertTitle>Erro</AlertTitle>
-          <AlertDescription>
-            Não foi possível carregar os cupons. Tente novamente mais tarde.
-          </AlertDescription>
-        </Alert>
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
+            </EmptyMedia>
+            <EmptyTitle>Erro!</EmptyTitle>
+            <EmptyDescription>
+              Não foi possível carregar os produtos. Tente novamente mais tarde.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (list.data?.length ?? 0) === 0 ? (
-        <Alert>
-          <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
-          <AlertTitle>Ops!</AlertTitle>
-          <AlertDescription>
-            Nenhum cupom encontrado com esses filtros. Tente novamente com
-            outros filtros.
-          </AlertDescription>
-        </Alert>
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon icon={SearchRemoveIcon} strokeWidth={2} />
+            </EmptyMedia>
+            <EmptyTitle>Ops!</EmptyTitle>
+            <EmptyDescription>
+              Nenhum produto encontrado com esses filtros. Tente novamente com
+              outros filtros.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
         <Card className="p-0">
           <CardContent className="p-0">

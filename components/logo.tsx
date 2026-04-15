@@ -16,7 +16,7 @@ export default function Logo({
       id={id}
       layoutId="logo-motion"
       layout="position"
-      className={cn("sm:h-9 h-8 p-2 z-10", className)}
+      className={cn("sm:h-9 h-8 py-2 z-10", className)}
     >
       <Link href={"/"}>
         <Image
