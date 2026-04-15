@@ -14,7 +14,7 @@ export default function Footer() {
             alt="Hypecult"
             width={150}
             height={150}
-            className="object-contain dark:brightness-[0.2] dark:grayscale"
+            className="object-contain"
           />
         </Link>
         <ul className="flex items-center gap-4">

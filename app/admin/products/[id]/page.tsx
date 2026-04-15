@@ -368,11 +368,22 @@ export default function AdminProductEditPage() {
           </div>
           <div className="flex gap-2">
             <ButtonGroup>
-              <Button render={<Link href={"https://dashboard.gelato.com/home/dashboard"} target="_blank" />} variant="ghost">
+              <Button
+                render={
+                  <Link
+                    href={"https://dashboard.gelato.com/home/dashboard"}
+                    target="_blank"
+                  />
+                }
+                variant="ghost"
+              >
                 Gelato
                 <HugeiconsIcon icon={Share04Icon} strokeWidth={2} />
               </Button>
-              <Button render={<Link href={`/product/${p.id}`} />} variant="link">
+              <Button
+                render={<Link href={`/product/${p.id}`} />}
+                variant="link"
+              >
                 Ver na loja
                 <HugeiconsIcon icon={ExternalLink} strokeWidth={2} />
               </Button>

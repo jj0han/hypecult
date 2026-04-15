@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import type { ComponentProps, ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,14 +20,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { Switch } from "@/components/ui/switch";
 import { useTRPC } from "@/lib/trpc";
 
 export default function Page() {
   const trpc = useTRPC();
   const summary = useQuery(trpc.product.adminSummary.queryOptions());
   const { status } = useSession();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="space-y-4">
@@ -86,6 +96,26 @@ export default function Page() {
               cta="Ir para a loja"
               className="sm:col-span-2"
             />
+
+            <FieldLabel htmlFor="switch-share">
+              <Field orientation="horizontal">
+                <FieldContent>
+                  <FieldTitle>
+                    Tema {theme === "dark" ? "Escuro" : "Claro"}
+                  </FieldTitle>
+                  <FieldDescription>
+                    Alterna entre o tema claro e escuro.
+                  </FieldDescription>
+                </FieldContent>
+                <Switch
+                  id="switch-share"
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) =>
+                    setTheme(checked ? "dark" : "light")
+                  }
+                />
+              </Field>
+            </FieldLabel>
           </>
         )}
       </div>

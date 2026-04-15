@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
+      suppressHydrationWarning
       className={`${outfit.variable} no-scrollbar scroll-smooth`}
     >
       <body

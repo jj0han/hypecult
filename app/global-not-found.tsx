@@ -38,7 +38,7 @@ export default function GlobalNotFound() {
                   alt="Hypecult"
                   width={300}
                   height={300}
-                  className="object-contain dark:brightness-[0.2] dark:grayscale h-full w-full"
+                  className="object-contain h-full w-full"
                 />
               </Link>
               <div className="flex flex-col items-center justify-center">

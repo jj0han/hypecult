@@ -24,7 +24,7 @@ export default function Logo({
           alt="Hypecult"
           width={300}
           height={300}
-          className="object-contain dark:brightness-[0.2] dark:grayscale h-full w-full"
+          className="object-contain h-full w-full"
         />
       </Link>
     </motion.div>

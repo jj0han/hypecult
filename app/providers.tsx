@@ -9,6 +9,7 @@ import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
 import gsap from "gsap";
 import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 import { Fragment, Suspense, useEffect, useRef, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
@@ -232,23 +233,29 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
           <CartProvider>
-            <Suspense
-              fallback={
-                <div className="h-screen w-screen flex items-center justify-center">
-                  <Spinner strokeWidth={2} />
-                </div>
-              }
-            >
-              <AuthProvider>
-                <TooltipProvider>
-                  <Fragment key="content">{children}</Fragment>
-                  {intro && (
-                    <Intro key="intro" onComplete={() => setIntro(false)} />
-                  )}
-                  <Toaster richColors theme="light" position="bottom-center" />
-                </TooltipProvider>
-              </AuthProvider>
-            </Suspense>
+            <ThemeProvider attribute="class" defaultTheme="light">
+              <Suspense
+                fallback={
+                  <div className="h-screen w-screen flex items-center justify-center">
+                    <Spinner strokeWidth={2} />
+                  </div>
+                }
+              >
+                <AuthProvider>
+                  <TooltipProvider>
+                    <Fragment key="content">{children}</Fragment>
+                    {intro && (
+                      <Intro key="intro" onComplete={() => setIntro(false)} />
+                    )}
+                    <Toaster
+                      richColors
+                      theme="light"
+                      position="bottom-center"
+                    />
+                  </TooltipProvider>
+                </AuthProvider>
+              </Suspense>
+            </ThemeProvider>
           </CartProvider>
         </TRPCProvider>
         <ReactQueryDevtools initialIsOpen={false} />

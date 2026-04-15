@@ -27,9 +27,11 @@ The project is **under active development** — some integrations are partially 
 | Validation | Zod | ^4.3.6 |
 | Styling | Tailwind CSS | ^4 |
 | Component library | shadcn/ui (Base UI variant, Hugeicons) | ^4.1.0 |
-| Forms | React Hook Form + @hookform/resolvers | ^7.71 |
+| Forms | React Hook Form + @hookform/resolvers | ^7.71, ^5.2.2 |
+| Rich text (admin) | TipTap | ^3.22 |
 | Animation | GSAP, Motion (Framer Motion) | ^3.14, ^12.33 |
 | Charts | recharts | 3.8.0 |
+| Media | Cloudinary + next-cloudinary | ^2.9, ^6.17 |
 | Formatting/Linting | Biome | 2.3.13 |
 | Package manager | pnpm | — |
 | Fulfillment | Gelato API | — |
@@ -41,8 +43,8 @@ The project is **under active development** — some integrations are partially 
 ```
 hypecult/
 ├── app/                    # Next.js App Router
-│   ├── (store)/            # Public storefront (home, product/[slug], policies/refund-policy)
-│   ├── admin/              # Admin shell (role-gated); quick-access overview; `/admin/products` list+filters; `/admin/products/[id]` edit
+│   ├── (store)/            # Public storefront (home, product/[slug], policies: refund, shipping, cookie, privacy, terms)
+│   ├── admin/              # Admin shell (role-gated); `/admin` overview; `/admin/products` + `[id]`; `/admin/promotions` + `new` + `[id]`
 │   ├── (auth)/             # Auth pages (log-in, sign-up, forgot-password)
 │   ├── account/            # Authenticated user area (orders, addresses)
 │   ├── checkout/           # Multi-step checkout flow + success page
@@ -65,7 +67,7 @@ hypecult/
 │   ├── integrations/gelato/ # Gelato API client (orders, quotes, sync)
 │   └── env.ts              # Zod-validated environment variables
 ├── components/
-│   ├── ui/                 # shadcn/ui primitives (button, dialog, sidebar, carousel, etc.)
+│   ├── ui/                 # shadcn/ui primitives + rich-text-editor (TipTap), charts, marquee, etc.
 │   ├── checkout/           # Checkout step components (identification, shipping, payment, review)
 │   ├── header.tsx          # Site header
 │   ├── footer.tsx          # Site footer
@@ -104,7 +106,7 @@ Browser ──> Next.js App Router ──> tRPC HTTP Handler ──> tRPC Router
 | `address` | CRUD for user saved addresses |
 | `order` | Order creation, listing, detail |
 | `cart` | Server-side cart (add, remove, update, clear) |
-| `promotion` | Coupon validation and application |
+| `promotion` | Coupon validation and application; admin list/detail/update (`adminList`, `adminById`, `adminUpdate`) |
 | `gelatoOrder` | Submit orders to Gelato for fulfillment |
 | `gelatoQuote` | Get shipping quotes from Gelato |
 
@@ -132,8 +134,9 @@ Product ──< ProductPromotion >── Promotion
 ```
 
 - **User**: `role` (`UserRole`: `user` | `admin`), name, email, optional password, cpf (Brazilian tax ID), emailVerified, optional OAuth `image`
-- **Product**: sku, name, description, type (tshirt/hoodie/mug/sticker/other), price with optional discount (percentage or fixed), finalPrice, optional gelatoProductId
+- **Product**: sku, name, description (rich text / HTML from admin TipTap), type (tshirt/hoodie/mug/sticker/other), price with optional discount (percentage or fixed), finalPrice, optional gelatoProductId
 - **ProductVariant**: color, optional size (PP–XGG), stock, optional variant-level pricing/discount, optional Gelato IDs
+- **ProductImage**: `url` for display; optional Cloudinary `publicId` (null when seeded from Gelato URLs only)
 - **Order**: status (pending/paid/production/shipped/delivered/cancelled), totals, optional Gelato orderId, optional promotionId
 - **CartItem**: denormalized product snapshot per user (unique on userId+variantId)
 - **Promotion**: code-based coupons with discount rules, free shipping, usage limits, product scoping, expiration
@@ -148,7 +151,7 @@ Product ──< ProductPromotion >── Promotion
 - **Naming**: camelCase for variables/functions, PascalCase for components/types, kebab-case for file names
 - **Formatting**: Biome handles format + lint (`pnpm check` to run both)
 - **Package manager**: pnpm (do not use npm or yarn)
-- **Scripts**: `pnpm dev`, `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:studio`
+- **Scripts**: `pnpm dev`, `pnpm db:generate`, `pnpm db:migrate`, `pnpm db:seed`, `pnpm db:studio`, `pnpm test:unit`
 - **Environment variables**: validated via Zod in `server/env.ts`
 - **Serialization**: tRPC uses superjson (handles Decimal, Date, etc.)
 
@@ -160,31 +163,34 @@ Product ──< ProductPromotion >── Promotion
 |------|--------|-------|
 | Product listing & detail | Working | Products seeded; storefront pages render |
 | Auth (login/register) | Working | NextAuth: credentials + Google OAuth; Prisma adapter; JWT includes `role` |
-| Admin area | Partial | `/admin`, `/admin/products`, `/admin/products/[id]` implemented (tRPC `product.adminList`, `product.adminSummary`, `product.update`); `/admin/promotions` still missing |
+| Admin area | Working | Products: list, edit (`product.adminList`, `adminSummary`, `update`). Promotions: list, create, edit (`promotion.adminList`, `adminById`, `adminUpdate`, etc.) |
 | Cart | Working | Server-side cart with merge on login |
 | Checkout UI | Partial | Multi-step form exists; payment step not integrated with a PSP |
 | Payments | Not wired | `paymentIntentId` field exists on Order but no Stripe (or other PSP) integration in code |
 | Gelato fulfillment | Partial | API client, routers, and sync endpoint exist; end-to-end flow may need testing |
 | Promotions/Coupons | Working | Full CRUD + validation + usage tracking |
 | Account area | Working | Orders list, order detail, address management |
-| README | Outdated | Mentions Stripe and Dimona; actual stack uses Gelato, no Stripe yet |
+| README | Partially outdated | Status table is reasonable; tech table still says Next.js 15 (repo uses 16); `.env` example omits Google OAuth and Cloudinary |
 | Tests | Minimal | Only `cart-merge.test.ts` exists |
 
 ---
 
 ## Environment Variables
 
-Defined in `server/env.ts`:
+Defined in `server/env.ts` (Zod `parse` at module load):
 
 | Variable | Purpose |
 |----------|---------|
 | `DATABASE_URL` | PostgreSQL connection string |
+| `NEXTAUTH_SECRET` | NextAuth secret |
+| `NEXTAUTH_URL` | App base URL for NextAuth |
 | `GELATO_ORDER_API_URL` | Gelato order API base URL |
 | `GELATO_ECOMMERCE_API_URL` | Gelato e-commerce API base URL |
 | `GELATO_ECOMMERCE_STORE_ID` | Gelato store identifier |
 | `GELATO_API_KEY` | Gelato API authentication key |
 | `GELATO_SYNC_SECRET` | Secret for the Gelato sync webhook endpoint |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID (NextAuth Google provider) |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
-
-NextAuth also requires `NEXTAUTH_URL` and `NEXTAUTH_SECRET` (configured in `server/auth/`).
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name (client) |
+| `NEXT_PUBLIC_CLOUDINARY_API_KEY` | Cloudinary API key (client) |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret (server uploads/signing) |

@@ -40,21 +40,23 @@ Each entry uses a unique ID with a type prefix:
 
 ## Backlog
 
-### [UPDATE-004] Footer — links reais para páginas de políticas
-- **Type:** update
+### [REFACTOR-002] Multi-brand config system (Brand Config)
+- **Type:** refactor
 - **Priority:** medium
 - **Status:** backlog
-- **Spec:** Os botões de rodapé em `components/footer.tsx` atualmente apontam para `"/"` (placeholder) ou usam `router.push`. Atualizar para usar `<Link>` do Next.js apontando para as rotas corretas: `/policies/privacy-policy`, `/policies/terms-of-use`, `/policies/refund-policy`, `/policies/shipping-policy` e `/policies/cookie-policy`. Remover dependência desnecessária do `useRouter` se não for mais usada. Adicionar os dois novos links (envio e cookies) à lista existente.
+- **Spec:** Extrair tudo o que é específico de uma marca (cores, logo, fontes, metadata) para um arquivo de configuração por marca (`brand/<name>/config.ts` + `brand/<name>/theme.css`). Uma variável de ambiente `BRAND` seleciona qual configuração carregar em build time. Isso permite usar o mesmo repositório para múltiplas lojas, cada uma deployada como projeto separado na Vercel com seu próprio `.env`. O `app/globals.css` atual mistura infraestrutura de theming (mapeamento `@theme inline`) com valores concretos de cores — esses valores concretos devem migrar para `brand/hypecult/theme.css`. O `components/logo.tsx` tem o path `/HYPECULT.svg` hardcoded. O `app/layout.tsx` tem fontes e metadata hardcoded.
 - **Acceptance criteria:**
-  - [ ] "Privacidade" aponta para `/policies/privacy-policy`
-  - [ ] "Termos de Uso" aponta para `/policies/terms-of-use`
-  - [ ] "Trocas, devoluções e reembolsos" aponta para `/policies/refund-policy`
-  - [ ] "Envio e entrega" aponta para `/policies/shipping-policy`
-  - [ ] "Política de cookies" aponta para `/policies/cookie-policy`
-  - [ ] Todos os links usam `<Link href="...">` em vez de `router.push`
-  - [ ] Sem erros de lint (Biome)
-- **Files likely affected:** `components/footer.tsx`
-- **Notes:** Depende de FEAT-007 estar implementado para que os links não resultem em 404.
+  - [ ] Existe `brand/hypecult/theme.css` com os blocos `:root` e `.dark` migrados de `app/globals.css`
+  - [ ] Existe `brand/hypecult/config.ts` exportando `storeName`, `metadata` (title/description), `fonts`, `logoPath` e `logoAlt`
+  - [ ] Existe `brand.config.ts` na raiz que lê `process.env.BRAND` e re-exporta o config correto (fallback para `hypecult`)
+  - [ ] `app/globals.css` importa o theme CSS da marca ativa via `@import` gerado/resolvido pelo config, mantendo apenas o bloco `@theme inline` e a infra base
+  - [ ] `app/layout.tsx` usa `brandConfig.metadata` e `brandConfig.fonts` em vez de valores hardcoded
+  - [ ] `components/logo.tsx` usa `brandConfig.logoPath` e `brandConfig.logoAlt` em vez de strings hardcoded
+  - [ ] `server/env.ts` adiciona `BRAND: z.string().default("hypecult")`
+  - [ ] Criar uma segunda marca de exemplo (`brand/example/`) demonstra que a troca funciona apenas mudando `BRAND=example`
+  - [ ] Nenhum comportamento existente da loja Hypecult é alterado
+- **Files likely affected:** `app/globals.css`, `app/layout.tsx`, `components/logo.tsx`, `server/env.ts`, `public/` (reorganizar SVGs por marca), novos: `brand/hypecult/theme.css`, `brand/hypecult/config.ts`, `brand.config.ts`
+- **Notes:** Tailwind v4 usa CSS-based config com `@theme inline` e variáveis CSS — a separação é cirúrgica. O `components.json` (shadcn) tem `baseColor`, `menuColor` e `menuAccent` específicos da marca; avaliar se deve fazer parte do config ou permanecer por projeto. Não é necessário suportar troca de marca em runtime — apenas em build/deploy time.
 
 ---
 
@@ -117,19 +119,6 @@ Each entry uses a unique ID with a type prefix:
 
 ---
 
-### [FIX-001] Validate env vars include NextAuth secrets
-- **Type:** fix
-- **Priority:** low
-- **Status:** backlog
-- **Spec:** `server/env.ts` validates Gelato and database env vars but does not include `NEXTAUTH_URL` or `NEXTAUTH_SECRET`. These should be validated at startup to catch misconfigurations early.
-- **Acceptance criteria:**
-  - [ ] `NEXTAUTH_URL` and `NEXTAUTH_SECRET` are included in the Zod schema in `server/env.ts`
-  - [ ] App fails fast with a clear error if they are missing
-- **Files likely affected:** `server/env.ts`
-- **Notes:** Minor but prevents confusing runtime errors.
-
----
-
 ## In Progress
 
 _No items currently in progress._
@@ -137,6 +126,14 @@ _No items currently in progress._
 ---
 
 ## Done
+
+### [FIX-001] Validate env vars include NextAuth secrets — DONE (2026-04-13)
+- **Summary:** `server/env.ts` Zod schema includes `NEXTAUTH_SECRET` (`z.string()`) and `NEXTAUTH_URL` (`z.url()`). `envSchema.parse(process.env)` runs at module load, so missing or invalid values throw before the app serves traffic. Same pattern as other required env vars (Gelato, Google OAuth, Cloudinary).
+
+### [UPDATE-004] Footer — links reais para páginas de políticas — DONE (2026-04-13)
+- **Summary:** `components/footer.tsx` usa `next/link` em todos os itens legais do rodapé via o padrão `Button` + `render={<Link href={...} />}` com `href` tipado como `Route` onde necessário. Rotas: `/policies/privacy-policy`, `/policies/terms-of-use`, `/policies/shipping-policy`, `/policies/refund-policy`, `/policies/cookie-policy`. Incluídos envio e cookies além de privacidade, termos e reembolsos. Sem `useRouter`. Rótulos na UI: "Trocas e reembolsos" e "Cookies" (em vez dos textos longos do critério de aceite).
+
+---
 
 ### [FEAT-007] Policy pages — privacy, terms of use, shipping & cookies — DONE (2026-04-12)
 - **Summary:** Criadas as 4 páginas de políticas legais em `app/(store)/policies/`: `privacy-policy/page.tsx` (LGPD — dados coletados incluindo CPF e OAuth Google, bases legais em tabela, compartilhamento com Gelato, direitos do titular, retenção), `terms-of-use/page.tsx` (elegibilidade, regras de conta, uso permitido, propriedade intelectual, limitação de responsabilidade conforme CDC, foro, referências cruzadas às demais políticas), `shipping-policy/page.tsx` (modelo PoD via Gelato, prazos de produção 2–5 dias úteis + prazos de entrega por modalidade, áreas atendidas, rastreamento, ausência do destinatário, extravio), `cookie-policy/page.tsx` (três categorias: necessários, preferências e analíticos com bases legais LGPD, cookies de terceiros Google, links de instruções por navegador). Todas as páginas seguem o mesmo layout de `refund-policy/page.tsx` (max-w-3xl, header com data de atualização, article com secções numeradas, texto em pt-BR). Cada página exporta `metadata` com `title` e `description`. Sem erros de lint (Biome).
