@@ -3,7 +3,7 @@ import {
   Minus,
   Plus,
   ShoppingBag,
-  Trash,
+  Trash2,
   X,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -96,7 +96,7 @@ export function OrderSummaryCard({
             onClick={() => clear()}
             disabled={currentStep > 3 || isUpdating}
           >
-            <HugeiconsIcon icon={Trash} strokeWidth={2} />
+            <HugeiconsIcon icon={Trash2} strokeWidth={2} />
           </Button> */}
         </CardTitle>
       </CardHeader>
@@ -181,7 +181,7 @@ export function OrderSummaryCard({
                         onClick={() => remove(item.id)}
                         disabled={currentStep > 3 || isUpdating}
                       >
-                        <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                        <HugeiconsIcon icon={Trash2} strokeWidth={2} />
                       </Button>
                     </ButtonGroup>
                   </ButtonGroup>

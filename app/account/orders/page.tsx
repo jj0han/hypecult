@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,6 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/lib/trpc";
@@ -27,34 +36,29 @@ export default function Page() {
       <div className="space-y-4">
         <Skeleton className="h-52 w-full" />
         <Skeleton className="h-52 w-full" />
-        <Skeleton className="h-52 w-full" />
-        <Skeleton className="h-52 w-full" />
       </div>
     );
   }
 
   if (!data?.length) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <HugeiconsIcon
-              icon={ShoppingBag}
-              strokeWidth={2}
-              className="size-5"
-            />
-            Pedidos
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          Voce ainda nao fez nenhum pedido.
-        </CardContent>
-      </Card>
+      <Empty className="border">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <HugeiconsIcon icon={ShoppingBag} strokeWidth={2} />
+          </EmptyMedia>
+          <EmptyTitle>Pedidos</EmptyTitle>
+          <EmptyDescription>Voce ainda nao fez nenhum pedido.</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button render={<Link href="/" />}>Ir para a loja</Button>
+        </EmptyContent>
+      </Empty>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <main className="space-y-4">
       {data.map((order) => (
         <Link
           href={`/account/orders/${order.id}`}
@@ -107,6 +111,6 @@ export default function Page() {
           </Card>
         </Link>
       ))}
-    </div>
+    </main>
   );
 }

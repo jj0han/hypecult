@@ -56,10 +56,10 @@ export default function RootLayout({
   return (
     <Fragment>
       <Header />
-      <div className="p-6 min-h-svh">
+      <div className="px-6 py-8 min-h-svh">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 space-y-2">
               <h1 className="text-2xl font-bold">Minha conta</h1>
               <p className="text-sm text-muted-foreground">
                 Gerencie seus pedidos, endereços e dados de compra.

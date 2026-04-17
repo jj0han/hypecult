@@ -6,7 +6,7 @@ import {
   Plus,
   Search,
   Tick02Icon,
-  Trash,
+  Trash2,
   UnfoldMoreIcon,
   User,
   X,
@@ -47,6 +47,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Field,
   FieldError,
@@ -248,31 +256,40 @@ export default function Page() {
     });
   }
 
+  if (isPending) {
+    return <Skeleton className="h-40 w-full" />;
+  }
+
   return (
     <main className="space-y-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-4">
-          <CardTitle className="text-base flex items-center gap-2">
-            <HugeiconsIcon icon={MapPin} strokeWidth={2} className="size-5" />
-            Meus endereços
-          </CardTitle>
-          <Button size="xs" onClick={handleCreateClick}>
-            <HugeiconsIcon icon={Plus} strokeWidth={2} className="size-4" />
-            Adicionar endereço
-          </Button>
-        </CardHeader>
-        {isPending ? (
+      {!data?.length ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <HugeiconsIcon icon={MapPin} strokeWidth={2} />
+            </EmptyMedia>
+            <EmptyTitle>Endereços</EmptyTitle>
+            <EmptyDescription>
+              Voce ainda não cadastrou nenhum endereço.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={handleCreateClick}>Adicionar endereço</Button>
+          </EmptyContent>
+        </Empty>
+      ) : (
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <HugeiconsIcon icon={MapPin} strokeWidth={2} className="size-5" />
+              Meus endereços
+            </CardTitle>
+            <Button size="xs" onClick={handleCreateClick}>
+              <HugeiconsIcon icon={Plus} strokeWidth={2} className="size-4" />
+              Adicionar endereço
+            </Button>
+          </CardHeader>
           <CardContent>
-            <Skeleton className="h-20 w-full" />
-          </CardContent>
-        ) : (
-          <CardContent>
-            {data?.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                Voce ainda nao cadastrou nenhum endereço.
-              </p>
-            )}
-
             {data && data.length > 0 && (
               <ItemGroup>
                 <div className="flex flex-col gap-3">
@@ -316,7 +333,7 @@ export default function Page() {
                             {remove.isPending ? (
                               <Spinner />
                             ) : (
-                              <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                              <HugeiconsIcon icon={Trash2} strokeWidth={2} />
                             )}
                           </AlertDialogTrigger>
                           <AlertDialogContent>
@@ -338,7 +355,10 @@ export default function Page() {
                                 {remove.isPending ? (
                                   <Spinner />
                                 ) : (
-                                  <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                                  <HugeiconsIcon
+                                    icon={Trash2}
+                                    strokeWidth={2}
+                                  />
                                 )}
                                 Remover
                               </AlertDialogAction>
@@ -352,8 +372,8 @@ export default function Page() {
               </ItemGroup>
             )}
           </CardContent>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {isFormOpen && (
         <Card>

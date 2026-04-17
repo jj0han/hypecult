@@ -21,6 +21,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import type { Route } from "next";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { CldImage } from "next-cloudinary";
@@ -562,8 +563,7 @@ export default function Page() {
                             />
                           </form>
                           <Link
-                            href="https://www.correios.com.br/a-correios/precisa-de-ajuda/politica-de-frete-e-entrega"
-                            target="_blank"
+                            href={"/policies/shipping-policy" as Route}
                             className="text-sm text-muted-foreground"
                           >
                             Política de Frete e Entrega

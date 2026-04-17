@@ -121,6 +121,10 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
                     <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
                   </EmptyMedia>
                   <EmptyTitle>Digite para pesquisar</EmptyTitle>
+                  <EmptyDescription>
+                    Dica: use palavras-chave como "camiseta", "moletom",
+                    "caneca", etc.
+                  </EmptyDescription>
                 </EmptyHeader>
               </Empty>
             )}

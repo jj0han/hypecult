@@ -4,7 +4,7 @@ import {
   MapPin,
   Phone,
   Search,
-  Trash,
+  Trash2,
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -289,7 +289,7 @@ export function StepShippingInfo({
                           {removeAddressPending ? (
                             <Spinner />
                           ) : (
-                            <HugeiconsIcon icon={Trash} strokeWidth={2} />
+                            <HugeiconsIcon icon={Trash2} strokeWidth={2} />
                           )}
                         </Button>
                       </FieldContent>
