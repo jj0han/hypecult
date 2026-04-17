@@ -3,9 +3,11 @@
 import { ArrowRight } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
+import type { Route } from "next";
+import Link from "next/link";
 import { Fragment } from "react/jsx-runtime";
 import { ProductGrid } from "@/components/product-card";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Marquee,
   MarqueeContent,
@@ -54,10 +56,13 @@ export default function Page() {
           <div className="space-y-4 py-4">
             <div className="flex items-center gap-2 justify-between">
               <h1 className="text-2xl font-bold">Novidades</h1>
-              <Button variant="link">
+              <Link
+                href={"/search" as Route}
+                className={buttonVariants({ variant: "link" })}
+              >
                 Ver todos
                 <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
-              </Button>
+              </Link>
             </div>
             <ProductGrid products={data} isPending={isPending} />
           </div>

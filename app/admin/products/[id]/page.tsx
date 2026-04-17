@@ -40,6 +40,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
+import {
   Empty,
   EmptyContent,
   EmptyDescription,
@@ -114,6 +126,9 @@ const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string(),
   active: z.boolean(),
+  categoryId: z.uuid().nullable().optional(),
+  subcategoryIds: z.array(z.uuid()).optional(),
+  aliases: z.array(z.string().min(1, "Alias não pode estar vazio")).optional(),
   price: z.number().positive("Preço deve ser > 0"),
   discountType: z.enum(["percentage", "fixed"]).nullable(),
   discountAmount: z.number().min(0, "Desconto deve ser ≥ 0").nullable(),
@@ -130,12 +145,30 @@ export default function AdminProductEditPage() {
 
   const product = useQuery(trpc.product.byId.queryOptions({ id }));
 
+  const { data: categories = [] } = useQuery(
+    trpc.product.listCategories.queryOptions()
+  );
+  const { data: subcategories = [] } = useQuery(
+    trpc.product.listSubcategories.queryOptions()
+  );
+
+  const subcategoryAnchor = useComboboxAnchor();
+  const subcategoryLabelById = new Map(
+    (subcategories ?? []).map((s) => [s.id, s.name])
+  );
+  const categoryLabelById = new Map(
+    (categories ?? []).map((c) => [c.id, c.name])
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
       active: true,
+      categoryId: null,
+      subcategoryIds: [],
+      aliases: [],
       price: 0,
       discountType: null,
       discountAmount: null,
@@ -157,6 +190,9 @@ export default function AdminProductEditPage() {
       name: p.name,
       description: p.description,
       active: p.active,
+      categoryId: p.categoryId ?? null,
+      subcategoryIds: p.subcategories?.map((s) => s.id) ?? [],
+      aliases: p.aliases?.map((a) => a.alias) ?? [],
       price: Number(p.price),
       discountType: p.discountType ?? null,
       discountAmount: p.discountAmount ? Number(p.discountAmount) : null,
@@ -266,6 +302,9 @@ export default function AdminProductEditPage() {
       name: values.name,
       description: values.description,
       active: values.active,
+      categoryId: values.categoryId,
+      subcategoryIds: values.subcategoryIds,
+      aliases: values.aliases,
       price: values.price,
       discountType: values.discountType,
       discountAmount: values.discountAmount,
@@ -615,6 +654,128 @@ export default function AdminProductEditPage() {
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </CardContent>
+        </Card>
+
+        {/* Taxonomy: category, subcategories, aliases */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Taxonomia</CardTitle>
+            <CardDescription>
+              Categoria de vitrine, temas e aliases para busca.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FieldGroup>
+              {/* Category */}
+              <Controller
+                name="categoryId"
+                control={form.control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>Categoria de vitrine</FieldLabel>
+                    <Select
+                      value={field.value ?? ""}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione uma categoria">
+                          {(value) =>
+                            value
+                              ? (categoryLabelById.get(value) ?? value)
+                              : "Selecione uma categoria"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Nenhuma</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                )}
+              />
+
+              {/* Subcategories */}
+              <Controller
+                name="subcategoryIds"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Temas</FieldLabel>
+                    <Combobox
+                      multiple
+                      autoHighlight
+                      items={subcategories.map((s) => s.id)}
+                      value={field.value ?? []}
+                      onValueChange={(values) => {
+                        field.onChange(values as string[]);
+                      }}
+                    >
+                      <ComboboxChips ref={subcategoryAnchor} className="w-full">
+                        <ComboboxValue placeholder="Selecione um tema">
+                          {(values) => (
+                            <>
+                              {(values ?? []).map((selectedId: string) => (
+                                <ComboboxChip key={selectedId}>
+                                  {subcategoryLabelById.get(selectedId) ??
+                                    selectedId}
+                                </ComboboxChip>
+                              ))}
+                              <ComboboxChipsInput />
+                            </>
+                          )}
+                        </ComboboxValue>
+                      </ComboboxChips>
+
+                      <ComboboxContent anchor={subcategoryAnchor}>
+                        <ComboboxEmpty>Nenhum tema encontrado.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(item) => (
+                            <ComboboxItem key={item} value={item}>
+                              {subcategoryLabelById.get(item as string) ?? item}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
+                  </Field>
+                )}
+              />
+
+              {/* Aliases */}
+              <Controller
+                name="aliases"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="product-aliases">
+                      Aliases (um por linha)
+                    </FieldLabel>
+                    <textarea
+                      id="product-aliases"
+                      placeholder="Ex: Ka&#10;MOTFD&#10;Oversized"
+                      value={(field.value ?? []).join("\n")}
+                      onChange={(e) => {
+                        const lines = e.target.value
+                          .split("\n")
+                          .map((line) => line.trim())
+                          .filter((line) => line.length > 0);
+                        field.onChange(lines);
+                      }}
+                      className="w-full px-3 py-2 min-h-24 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
                   </Field>
                 )}
               />

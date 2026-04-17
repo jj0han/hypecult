@@ -36,6 +36,77 @@ async function main() {
     "   Set a price on each product in the database to make it visible in the store."
   );
 
+  console.log("");
+  console.log("🏷️  Seeding product taxonomy (categories/subcategories) if empty...");
+
+  const [categoryCount, subcategoryCount] = await Promise.all([
+    prisma.productCategory.count(),
+    prisma.subcategory.count(),
+  ]);
+
+  const shouldSeedTaxonomy = categoryCount === 0 && subcategoryCount === 0;
+
+  if (shouldSeedTaxonomy) {
+    const slugify = (value: string) =>
+      value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+
+    const categories = [
+      { name: "Camiseta Oversized" },
+      { name: "Camiseta" },
+    ];
+
+    const subcategories = [
+      // Orpheus vs. the Sirens example
+      "Música",
+      "Estadunidense",
+      "hip-hop",
+      "Hermit and the Recluse",
+
+      // Great Runes / Elden Ring example
+      "Games",
+      "Japonês",
+      "RPG",
+      "Elden Ring",
+
+      // Kirametal example
+      "Indie Rock",
+      "Mass of The Fermenting Dregs",
+    ];
+
+    for (const category of categories) {
+      await prisma.productCategory.upsert({
+        where: { name: category.name },
+        create: {
+          name: category.name,
+          slug: slugify(category.name),
+        },
+        update: { slug: slugify(category.name) },
+      });
+    }
+
+    for (const sub of subcategories) {
+      await prisma.subcategory.upsert({
+        where: { name: sub },
+        create: {
+          name: sub,
+          slug: slugify(sub),
+        },
+        update: { slug: slugify(sub) },
+      });
+    }
+
+    console.log("✅ Taxonomy seeded with example categories/subcategories.");
+    console.log(`   • ${categories.length} categories`);
+    console.log(`   • ${subcategories.length} subcategories`);
+  } else {
+    console.log("ℹ️  Taxonomy already exists. Skipping seeding.");
+  }
+
   // Seed example promotion codes using upsert so re-running is idempotent
   console.log("🎟️  Upserting example promotions...");
 

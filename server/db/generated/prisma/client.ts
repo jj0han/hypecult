@@ -65,6 +65,21 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Address = Prisma.AddressModel
 /**
+ * Model ProductCategory
+ * 
+ */
+export type ProductCategory = Prisma.ProductCategoryModel
+/**
+ * Model Subcategory
+ * 
+ */
+export type Subcategory = Prisma.SubcategoryModel
+/**
+ * Model ProductAlias
+ * 
+ */
+export type ProductAlias = Prisma.ProductAliasModel
+/**
  * Model Product
  * 
  */

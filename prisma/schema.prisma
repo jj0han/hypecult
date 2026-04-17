@@ -116,6 +116,36 @@ model Address {
   createdAt DateTime @default(now())
 }
 
+model ProductCategory {
+  id   String    @id @default(uuid())
+  name String    @unique // e.g., "Camiseta Oversized", "Camiseta"
+  slug String?
+  products Product[]
+
+  createdAt DateTime @default(now())
+}
+
+model Subcategory {
+  id   String    @id @default(uuid())
+  name String    @unique // e.g., "Música", "hip-hop", "RPG", "Elden Ring"
+  slug String?
+  products Product[] @relation("ProductToSubcategory")
+
+  createdAt DateTime @default(now())
+}
+
+model ProductAlias {
+  id        String @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  alias     String @db.Text // e.g., "Ka", "MOTFD"
+
+  createdAt DateTime @default(now())
+
+  @@unique([productId, alias])
+  @@index([alias]) // for efficient search by alias
+}
+
 model Product {
   id              String        @id @default(uuid())
   gelatoProductId String?       @unique // Gelato store product ID (set when synced from Gelato)
@@ -129,9 +159,14 @@ model Product {
   finalPrice      Decimal? // pre-computed price after applying product-level discount
   active          Boolean       @default(true)
 
-  images     ProductImage[]
-  printFiles ProductPrintFile[]
-  variants   ProductVariant[]
+  categoryId String?
+  category   ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  images         ProductImage[]
+  printFiles     ProductPrintFile[]
+  variants       ProductVariant[]
+  aliases        ProductAlias[]
+  subcategories  Subcategory[]      @relation("ProductToSubcategory")
 
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt

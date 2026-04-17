@@ -15,6 +15,7 @@ cloudinary.config({
 export const listProductsSchema = z.object({
   search: z.string().optional(),
   type: z.enum(ProductType).optional(),
+  subcategoryIds: z.array(z.uuid()).optional(), // OR filter: product has any of these subcategories
   sort: z
     .enum(["newest", "price_asc", "price_desc", "name_asc"])
     .default("newest"),
@@ -40,6 +41,9 @@ export const productUpdateSchema = z.object({
   discountType: z.enum(["percentage", "fixed"]).nullable().optional(),
   discountAmount: z.number().nonnegative().nullable().optional(),
   finalPrice: z.number().nonnegative().nullable().optional(),
+  categoryId: z.uuid().nullable().optional(),
+  subcategoryIds: z.array(z.uuid()).optional(), // replace all associated subcategories
+  aliases: z.array(z.string().min(1).trim()).optional(), // replace all aliases
   images: z
     .array(
       z.object({
@@ -111,6 +115,11 @@ export const productRouter = createTRPCRouter({
         where.OR = [
           { name: { contains: search, mode: "insensitive" } },
           { sku: { contains: search, mode: "insensitive" } },
+          {
+            aliases: {
+              some: { alias: { contains: search, mode: "insensitive" } },
+            },
+          },
         ];
       }
 
@@ -157,14 +166,32 @@ export const productRouter = createTRPCRouter({
         }
       })();
 
+      const where: Prisma.ProductWhereInput = {
+        active: true,
+        type: input?.type ?? undefined,
+      };
+
+      // Search: name OR any alias (case-insensitive)
+      if (input?.search) {
+        where.OR = [
+          { name: { contains: input.search, mode: "insensitive" } },
+          {
+            aliases: {
+              some: { alias: { contains: input.search, mode: "insensitive" } },
+            },
+          },
+        ];
+      }
+
+      // Subcategory filter (OR: product has any of the selected subcategories)
+      if (input?.subcategoryIds && input.subcategoryIds.length > 0) {
+        where.subcategories = {
+          some: { id: { in: input.subcategoryIds } },
+        };
+      }
+
       return ctx.prisma.product.findMany({
-        where: {
-          active: true,
-          type: input?.type ?? undefined,
-          name: input?.search
-            ? { contains: input.search, mode: "insensitive" }
-            : undefined,
-        },
+        where,
         include: {
           images: {
             orderBy: {
@@ -172,6 +199,9 @@ export const productRouter = createTRPCRouter({
             },
           },
           variants: true,
+          category: true,
+          subcategories: true,
+          aliases: true,
         },
         orderBy,
       });
@@ -188,6 +218,9 @@ export const productRouter = createTRPCRouter({
             },
           },
           variants: true,
+          category: true,
+          subcategories: true,
+          aliases: true,
         },
       });
 
@@ -203,7 +236,8 @@ export const productRouter = createTRPCRouter({
   update: adminProcedure
     .input(productUpdateSchema)
     .mutation(async ({ ctx, input }) => {
-      const { id, images, variants, ...productData } = input;
+      const { id, images, variants, subcategoryIds, aliases, ...productData } =
+        input;
 
       const product = await ctx.prisma.product.findUnique({
         where: { id },
@@ -233,6 +267,27 @@ export const productRouter = createTRPCRouter({
               },
             })),
           },
+          // Replace subcategories
+          subcategories:
+            subcategoryIds !== undefined
+              ? {
+                  set: subcategoryIds.map((subcategoryId) => ({
+                    id: subcategoryId,
+                  })),
+                }
+              : undefined,
+          // Replace aliases
+          aliases:
+            aliases !== undefined
+              ? {
+                  deleteMany: {},
+                  create: aliases
+                    .filter((alias) => alias.trim().length > 0)
+                    .map((alias) => ({
+                      alias: alias.trim(),
+                    })),
+                }
+              : undefined,
           updatedAt: new Date(),
         },
       });
@@ -317,4 +372,16 @@ export const productRouter = createTRPCRouter({
 
       return { success: true };
     }),
+
+  listCategories: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.productCategory.findMany({
+      orderBy: { name: "asc" },
+    });
+  }),
+
+  listSubcategories: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.subcategory.findMany({
+      orderBy: { name: "asc" },
+    });
+  }),
 });

@@ -56,6 +56,9 @@ export const ModelName = {
   User: 'User',
   VerificationToken: 'VerificationToken',
   Address: 'Address',
+  ProductCategory: 'ProductCategory',
+  Subcategory: 'Subcategory',
+  ProductAlias: 'ProductAlias',
   Product: 'Product',
   ProductVariant: 'ProductVariant',
   ProductImage: 'ProductImage',
@@ -157,6 +160,36 @@ export const AddressScalarFieldEnum = {
 export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
+export const ProductCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductCategoryScalarFieldEnum = (typeof ProductCategoryScalarFieldEnum)[keyof typeof ProductCategoryScalarFieldEnum]
+
+
+export const SubcategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt'
+} as const
+
+export type SubcategoryScalarFieldEnum = (typeof SubcategoryScalarFieldEnum)[keyof typeof SubcategoryScalarFieldEnum]
+
+
+export const ProductAliasScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  alias: 'alias',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductAliasScalarFieldEnum = (typeof ProductAliasScalarFieldEnum)[keyof typeof ProductAliasScalarFieldEnum]
+
+
 export const ProductScalarFieldEnum = {
   id: 'id',
   gelatoProductId: 'gelatoProductId',
@@ -169,6 +202,7 @@ export const ProductScalarFieldEnum = {
   discountAmount: 'discountAmount',
   finalPrice: 'finalPrice',
   active: 'active',
+  categoryId: 'categoryId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

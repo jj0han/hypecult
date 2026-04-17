@@ -1,10 +1,13 @@
+"use client";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export default function Footer() {
+  const router = useRouter();
   return (
     <footer className="flex flex-col items-center gap-6 py-6 border-t">
       <div className="flex flex-col items-center justify-between gap-4 max-w-7xl mx-auto">
@@ -19,17 +22,17 @@ export default function Footer() {
         </Link>
         <ul className="flex items-center gap-4">
           <li>
-            <Button variant="ghost" size="lg" render={<Link href="/" />}>
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Produtos
             </Button>
           </li>
           <li>
-            <Button variant="ghost" size="lg" render={<Link href="/" />}>
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Sobre
             </Button>
           </li>
           <li>
-            <Button variant="ghost" size="lg" render={<Link href="/" />}>
+            <Button variant="ghost" size="lg" onClick={() => router.push("/")}>
               Contato
             </Button>
           </li>
@@ -46,7 +49,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                render={<Link href={"/policies/privacy-policy" as Route} />}
+                onClick={() => router.push("/policies/privacy-policy" as Route)}
               >
                 Privacidade
               </Button>
@@ -55,7 +58,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                render={<Link href={"/policies/terms-of-use" as Route} />}
+                onClick={() => router.push("/policies/terms-of-use" as Route)}
               >
                 Termos de Uso
               </Button>
@@ -64,7 +67,9 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                render={<Link href={"/policies/shipping-policy" as Route} />}
+                onClick={() =>
+                  router.push("/policies/shipping-policy" as Route)
+                }
               >
                 Envio e entrega
               </Button>
@@ -73,7 +78,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                render={<Link href={"/policies/refund-policy" as Route} />}
+                onClick={() => router.push("/policies/refund-policy" as Route)}
               >
                 Trocas e reembolsos
               </Button>
@@ -82,7 +87,7 @@ export default function Footer() {
               <Button
                 variant="ghost"
                 size="sm"
-                render={<Link href={"/policies/cookie-policy" as Route} />}
+                onClick={() => router.push("/policies/cookie-policy" as Route)}
               >
                 Cookies
               </Button>

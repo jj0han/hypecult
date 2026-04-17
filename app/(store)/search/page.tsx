@@ -1,5 +1,10 @@
 "use client";
-import { ArrowRight, SearchRemoveIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight,
+  ArrowUpDownIcon,
+  Filter,
+  SearchRemoveIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
@@ -14,6 +19,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
 import {
   Empty,
   EmptyDescription,
@@ -52,10 +69,12 @@ function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const trpc = useTRPC();
+  const subcategoryAnchor = useComboboxAnchor();
 
   const q = searchParams.get("q") ?? "";
   const sort = (searchParams.get("sort") ?? "newest") as SortOption;
   const type = searchParams.get("type") ?? "";
+  const subQuery = searchParams.getAll("sub");
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -64,7 +83,16 @@ function SearchPageContent() {
     } else {
       params.delete(key);
     }
-    router.replace(`/search?${params.toString()}` as Route);
+    router.push(`/search?${params.toString()}` as Route);
+  }
+
+  function toggleSubcategory(ids: string[]) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("sub");
+    for (const id of ids) {
+      params.append("sub", id);
+    }
+    router.push(`/search?${params.toString()}` as Route);
   }
 
   const { data, isPending } = useQuery(
@@ -72,8 +100,12 @@ function SearchPageContent() {
       search: q || undefined,
       sort,
       type: type ? (type as ProductType) : undefined,
+      subcategoryIds: subQuery.length > 0 ? subQuery : undefined,
     })
   );
+
+  const { data: subcategories = [], isLoading: subcategoriesLoading } =
+    useQuery(trpc.product.listSubcategories.queryOptions());
 
   const productCount = data?.length ?? 0;
 
@@ -92,7 +124,7 @@ function SearchPageContent() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold">
               {q ? `Resultados para "${q}"` : "Todos os produtos"}
@@ -103,7 +135,7 @@ function SearchPageContent() {
                 : `${productCount} produtos encontrados`}
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-3 border border-input bg-input/30 rounded-2xl lg:rounded-full p-2">
             <Select
               value={SORT_LABELS[sort]}
               defaultValue={SORT_LABELS[sort]}
@@ -116,13 +148,23 @@ function SearchPageContent() {
                 )
               }
             >
-              <SelectTrigger size="sm">
-                <SelectValue placeholder="Ordenar por" />
+              <SelectTrigger
+                size="sm"
+                className="w-full border-none bg-transparent"
+              >
+                <SelectValue placeholder="Ordenar por">
+                  <HugeiconsIcon
+                    icon={ArrowUpDownIcon}
+                    strokeWidth={2}
+                    className="text-muted-foreground"
+                  />
+                  <span>{SORT_LABELS[sort]}</span>
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent align="start" className="w-fit">
+              <SelectContent align="start">
                 {Object.entries(SORT_LABELS).map(([key, label]) => (
                   <SelectItem key={key} value={label}>
-                    {label}
+                    <span>{label}</span>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -140,10 +182,13 @@ function SearchPageContent() {
                 )
               }
             >
-              <SelectTrigger size="sm">
-                <SelectValue placeholder="Categoria" />
+              <SelectTrigger
+                size="sm"
+                className="w-full border-none bg-transparent"
+              >
+                <SelectValue placeholder="Tipo de peça" />
               </SelectTrigger>
-              <SelectContent align="start" className="w-fit">
+              <SelectContent align="start">
                 {Object.entries(TYPE_LABELS).map(([key, label]) => (
                   <SelectItem key={key} value={label}>
                     {label}
@@ -151,6 +196,55 @@ function SearchPageContent() {
                 ))}
               </SelectContent>
             </Select>
+
+            <Combobox
+              disabled={subcategoriesLoading || subcategories.length <= 0}
+              multiple
+              autoHighlight
+              items={subcategories.map((s) => s.name)}
+              value={subcategories
+                .filter((s) => subQuery.includes(s.id))
+                .map((s) => s.name)}
+              onValueChange={(values) => {
+                if (isPending) return;
+                const ids = values
+                  .map((v) => subcategories.find((s) => s.name === v)?.id)
+                  .filter((id) => id !== undefined);
+                toggleSubcategory(ids);
+              }}
+            >
+              <ComboboxChips
+                ref={subcategoryAnchor}
+                className="w-full border-none bg-transparent col-span-1 md:col-span-2 pr-3!"
+              >
+                <ComboboxValue>
+                  {(values) => (
+                    <>
+                      {(values ?? []).map((value: string) => (
+                        <ComboboxChip key={value}>{value}</ComboboxChip>
+                      ))}
+                      <ComboboxChipsInput placeholder="Selecione um tema" />
+                      <HugeiconsIcon
+                        icon={Filter}
+                        strokeWidth={2}
+                        className="text-muted-foreground size-4"
+                      />
+                    </>
+                  )}
+                </ComboboxValue>
+              </ComboboxChips>
+
+              <ComboboxContent anchor={subcategoryAnchor}>
+                <ComboboxEmpty>Nenhum tema encontrado.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item} value={item}>
+                      {item}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
           </div>
         </div>
 
