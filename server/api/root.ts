@@ -6,10 +6,12 @@ import { gelatoQuoteRouter } from "./routers/gelato.quote";
 import { orderRouter } from "./routers/order";
 import { productRouter } from "./routers/product";
 import { promotionRouter } from "./routers/promotion";
+import { taxonomyRouter } from "./routers/taxonomy";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   product: productRouter,
+  taxonomy: taxonomyRouter,
   auth: authRouter,
   address: addressRouter,
   order: orderRouter,

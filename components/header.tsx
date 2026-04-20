@@ -35,6 +35,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -105,50 +115,77 @@ export default function Header() {
                 )}
               </Button>
               {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={<Button variant="ghost" />}
-                    className={"group"}
-                  >
-                    <span>{user.name?.split(" ")[0]}</span>
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      strokeWidth={2}
-                      className="group-aria-expanded:rotate-90 transition-transform duration-300 ease-out"
-                    />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      render={<Link href={"/admin" as Route} />}
+                <Dialog>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={<Button variant="ghost" />}
+                      className={"group"}
                     >
-                      <HugeiconsIcon icon={LockKeyIcon} strokeWidth={2} />
-                      Admin
-                    </DropdownMenuItem>
-                    <DropdownMenuItem render={<Link href="/account" />}>
-                      <HugeiconsIcon icon={User} strokeWidth={2} />
-                      Conta
-                    </DropdownMenuItem>
-                    <DropdownMenuItem render={<Link href="/" />}>
-                      <HugeiconsIcon icon={Heart} strokeWidth={2} />
-                      Salvos
-                    </DropdownMenuItem>
-                    <DropdownMenuItem render={<Link href="/checkout" />}>
+                      <span>{user.name?.split(" ")[0]}</span>
                       <HugeiconsIcon
-                        icon={ShoppingCart02Icon}
+                        icon={ArrowRight01Icon}
                         strokeWidth={2}
+                        className="group-aria-expanded:rotate-90 transition-transform duration-300 ease-out"
                       />
-                      Carrinho
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => logOut.mutate()}
-                    >
-                      <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
-                      Sair
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {user.role === "admin" && (
+                        <DropdownMenuItem
+                          render={<Link href={"/admin" as Route} />}
+                        >
+                          <HugeiconsIcon icon={LockKeyIcon} strokeWidth={2} />
+                          Admin
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem render={<Link href="/account" />}>
+                        <HugeiconsIcon icon={User} strokeWidth={2} />
+                        Conta
+                      </DropdownMenuItem>
+                      <DropdownMenuItem render={<Link href="/" />}>
+                        <HugeiconsIcon icon={Heart} strokeWidth={2} />
+                        Salvos
+                      </DropdownMenuItem>
+                      <DropdownMenuItem render={<Link href="/checkout" />}>
+                        <HugeiconsIcon
+                          icon={ShoppingCart02Icon}
+                          strokeWidth={2}
+                        />
+                        Carrinho
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+
+                      <DialogTrigger
+                        render={<DropdownMenuItem variant="destructive" />}
+                      >
+                        <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                        Sair
+                      </DialogTrigger>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Desconectar</DialogTitle>
+                      <DialogDescription>
+                        Tem certeza que deseja sair?
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose render={<Button variant="secondary" />}>
+                        Cancelar
+                      </DialogClose>
+                      <DialogClose
+                        render={
+                          <Button
+                            variant="destructive"
+                            onClick={() => logOut.mutate()}
+                          />
+                        }
+                      >
+                        Sair
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               ) : (
                 <Button
                   disabled={isLoading}
@@ -266,6 +303,16 @@ export default function Header() {
                 <HugeiconsIcon icon={Home01Icon} strokeWidth={2} />
                 Início
               </Button>
+              {user?.role === "admin" && (
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  onClick={() => router.push("/admin")}
+                >
+                  <HugeiconsIcon icon={LockKeyIcon} strokeWidth={2} />
+                  Admin
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 className="w-full"
@@ -291,14 +338,35 @@ export default function Header() {
                 Carrinho
               </Button>
               {user && (
-                <Button
-                  variant="destructive"
-                  className="w-full"
-                  onClick={() => logOut.mutate()}
-                >
-                  <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
-                  Sair
-                </Button>
+                <Dialog>
+                  <DialogTrigger render={<Button variant="destructive" />}>
+                    <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                    Sair
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Desconectar</DialogTitle>
+                      <DialogDescription>
+                        Tem certeza que deseja sair?
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose render={<Button variant="secondary" />}>
+                        Cancelar
+                      </DialogClose>
+                      <DialogClose
+                        render={
+                          <Button
+                            variant="destructive"
+                            onClick={() => logOut.mutate()}
+                          />
+                        }
+                      >
+                        Sair
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
           </div>

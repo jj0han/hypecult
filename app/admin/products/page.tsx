@@ -137,7 +137,7 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card size="sm">
         <CardContent>
           <form id="admin-product-form" onSubmit={form.handleSubmit(onSubmit)}>

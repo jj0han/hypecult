@@ -165,7 +165,7 @@ export default function Page() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Item variant="outline">
         <ItemContent>
           <ItemTitle>Cupons de desconto</ItemTitle>

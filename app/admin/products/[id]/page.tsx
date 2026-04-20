@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { CldImage, CldUploadWidget } from "next-cloudinary";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -137,6 +137,71 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+function ProductAliasesCombobox({
+  id,
+  value,
+  onChange,
+  onBlur,
+  disabled,
+  "aria-invalid": ariaInvalid,
+}: {
+  id: string;
+  value: string[] | undefined;
+  onChange: (next: string[]) => void;
+  onBlur: () => void;
+  disabled?: boolean;
+  "aria-invalid"?: boolean;
+}) {
+  const [inputValue, setInputValue] = useState("");
+  const aliases = value ?? [];
+
+  return (
+    <Combobox
+      autoHighlight={false}
+      inputValue={inputValue}
+      items={[...aliases]}
+      multiple
+      onInputValueChange={setInputValue}
+      onOpenChange={() => {}}
+      onValueChange={(next) => {
+        onChange((next ?? []) as string[]);
+      }}
+      open={false}
+      openOnInputClick={false}
+      value={aliases}
+    >
+      <ComboboxChips className="w-full" aria-invalid={ariaInvalid}>
+        <ComboboxValue placeholder="">
+          {(values) => (
+            <>
+              {(values ?? []).map((alias: string) => (
+                <ComboboxChip key={alias}>{alias}</ComboboxChip>
+              ))}
+              <ComboboxChipsInput
+                aria-invalid={ariaInvalid}
+                disabled={disabled}
+                id={id}
+                onBlur={onBlur}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter") return;
+                  if (e.nativeEvent.isComposing) return;
+                  e.preventDefault();
+                  const trimmed = e.currentTarget.value.trim();
+                  if (!trimmed) return;
+                  setInputValue("");
+                  if (aliases.includes(trimmed)) return;
+                  onChange([...aliases, trimmed]);
+                }}
+                placeholder="Digite e pressione Enter"
+              />
+            </>
+          )}
+        </ComboboxValue>
+      </ComboboxChips>
+    </Combobox>
+  );
+}
 
 export default function AdminProductEditPage() {
   const trpc = useTRPC();
@@ -757,21 +822,14 @@ export default function AdminProductEditPage() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="product-aliases">
-                      Aliases (um por linha)
-                    </FieldLabel>
-                    <textarea
+                    <FieldLabel htmlFor="product-aliases">Aliases</FieldLabel>
+                    <ProductAliasesCombobox
+                      aria-invalid={fieldState.invalid}
+                      disabled={field.disabled}
                       id="product-aliases"
-                      placeholder="Ex: Ka&#10;MOTFD&#10;Oversized"
-                      value={(field.value ?? []).join("\n")}
-                      onChange={(e) => {
-                        const lines = e.target.value
-                          .split("\n")
-                          .map((line) => line.trim())
-                          .filter((line) => line.length > 0);
-                        field.onChange(lines);
-                      }}
-                      className="w-full px-3 py-2 min-h-24 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

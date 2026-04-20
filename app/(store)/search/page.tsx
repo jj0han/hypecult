@@ -135,7 +135,84 @@ function SearchPageContent() {
                 : `${productCount} produtos encontrados`}
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-3 border border-input bg-input/30 rounded-2xl lg:rounded-full p-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 items-center gap-3">
+            <div className="grid col-span-full lg:col-span-3 grid-cols-subgrid items-center gap-3 border border-input bg-input/30 rounded-2xl lg:rounded-full p-2">
+              <Select
+                value={TYPE_LABELS[type]}
+                defaultValue={TYPE_LABELS[type]}
+                onValueChange={(value) =>
+                  updateParam(
+                    "type",
+                    Object.keys(TYPE_LABELS).find(
+                      (key) => TYPE_LABELS[key as ProductType] === value
+                    ) as ProductType
+                  )
+                }
+              >
+                <SelectTrigger
+                  size="sm"
+                  className="w-full border-none bg-transparent"
+                >
+                  <SelectValue placeholder="Tipo de peça" />
+                </SelectTrigger>
+                <SelectContent align="start">
+                  {Object.entries(TYPE_LABELS).map(([key, label]) => (
+                    <SelectItem key={key} value={label}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Combobox
+                disabled={subcategoriesLoading || subcategories.length <= 0}
+                multiple
+                autoHighlight
+                items={subcategories.map((s) => s.name)}
+                value={subcategories
+                  .filter((s) => subQuery.includes(s.id))
+                  .map((s) => s.name)}
+                onValueChange={(values) => {
+                  if (isPending) return;
+                  const ids = values
+                    .map((v) => subcategories.find((s) => s.name === v)?.id)
+                    .filter((id) => id !== undefined);
+                  toggleSubcategory(ids);
+                }}
+              >
+                <ComboboxChips
+                  ref={subcategoryAnchor}
+                  className="w-full border-none bg-transparent col-span-1 md:col-span-2 pr-3!"
+                >
+                  <ComboboxValue>
+                    {(values) => (
+                      <>
+                        {(values ?? []).map((value: string) => (
+                          <ComboboxChip key={value}>{value}</ComboboxChip>
+                        ))}
+                        <ComboboxChipsInput placeholder="Selecione um tema" />
+                        <HugeiconsIcon
+                          icon={Filter}
+                          strokeWidth={2}
+                          className="text-muted-foreground size-4"
+                        />
+                      </>
+                    )}
+                  </ComboboxValue>
+                </ComboboxChips>
+
+                <ComboboxContent anchor={subcategoryAnchor}>
+                  <ComboboxEmpty>Nenhum tema encontrado.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item} value={item}>
+                        {item}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </div>
             <Select
               value={SORT_LABELS[sort]}
               defaultValue={SORT_LABELS[sort]}
@@ -169,82 +246,6 @@ function SearchPageContent() {
                 ))}
               </SelectContent>
             </Select>
-
-            <Select
-              value={TYPE_LABELS[type]}
-              defaultValue={TYPE_LABELS[type]}
-              onValueChange={(value) =>
-                updateParam(
-                  "type",
-                  Object.keys(TYPE_LABELS).find(
-                    (key) => TYPE_LABELS[key as ProductType] === value
-                  ) as ProductType
-                )
-              }
-            >
-              <SelectTrigger
-                size="sm"
-                className="w-full border-none bg-transparent"
-              >
-                <SelectValue placeholder="Tipo de peça" />
-              </SelectTrigger>
-              <SelectContent align="start">
-                {Object.entries(TYPE_LABELS).map(([key, label]) => (
-                  <SelectItem key={key} value={label}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Combobox
-              disabled={subcategoriesLoading || subcategories.length <= 0}
-              multiple
-              autoHighlight
-              items={subcategories.map((s) => s.name)}
-              value={subcategories
-                .filter((s) => subQuery.includes(s.id))
-                .map((s) => s.name)}
-              onValueChange={(values) => {
-                if (isPending) return;
-                const ids = values
-                  .map((v) => subcategories.find((s) => s.name === v)?.id)
-                  .filter((id) => id !== undefined);
-                toggleSubcategory(ids);
-              }}
-            >
-              <ComboboxChips
-                ref={subcategoryAnchor}
-                className="w-full border-none bg-transparent col-span-1 md:col-span-2 pr-3!"
-              >
-                <ComboboxValue>
-                  {(values) => (
-                    <>
-                      {(values ?? []).map((value: string) => (
-                        <ComboboxChip key={value}>{value}</ComboboxChip>
-                      ))}
-                      <ComboboxChipsInput placeholder="Selecione um tema" />
-                      <HugeiconsIcon
-                        icon={Filter}
-                        strokeWidth={2}
-                        className="text-muted-foreground size-4"
-                      />
-                    </>
-                  )}
-                </ComboboxValue>
-              </ComboboxChips>
-
-              <ComboboxContent anchor={subcategoryAnchor}>
-                <ComboboxEmpty>Nenhum tema encontrado.</ComboboxEmpty>
-                <ComboboxList>
-                  {(item) => (
-                    <ComboboxItem key={item} value={item}>
-                      {item}
-                    </ComboboxItem>
-                  )}
-                </ComboboxList>
-              </ComboboxContent>
-            </Combobox>
           </div>
         </div>
 

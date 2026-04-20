@@ -127,6 +127,10 @@ _No items currently in progress._
 
 ## Done
 
+### [FEAT-011] Admin CRUD de taxonomia (`/admin/taxonomy`) — DONE (2026-04-20)
+- **Summary:** Novo router tRPC `taxonomy` (`adminSummary`, listagens com busca, create/update/delete para `ProductCategory` e `Subcategory`). Páginas: `/admin/taxonomy` (hub com cards para categorias e temas; ícones Hugeicons `Layers01Icon`, `Folder01Icon`, `Folder02Icon`), `/admin/taxonomy/categories` e `/admin/taxonomy/subcategories` com tabela no estilo de promoções, filtro por nome/slug, `Dialog` para criar/editar (nome + slug) e `AlertDialog` para excluir. Componente compartilhado `components/admin/taxonomy-crud-table.tsx`. Sidebar e painel admin ganham atalho “Taxonomia”; invalidação inclui `product.listCategories` / `listSubcategories`.
+- **Files likely affected:** `server/api/routers/taxonomy.ts`, `server/api/root.ts`, `components/admin/taxonomy-crud-table.tsx`, `app/admin/taxonomy/page.tsx`, `app/admin/taxonomy/categories/page.tsx`, `app/admin/taxonomy/subcategories/page.tsx`, `app/admin/layout.tsx`, `app/admin/page.tsx`
+
 ### [FEAT-010] Taxonomia de produtos — aliases, categoria de vitrine e subcategorias — DONE (2026-04-17)
 - **Summary:** Prisma: `ProductCategory`, `Subcategory` (nome único), junção `_ProductToSubcategory`, `ProductAlias` (índice em `alias`, unique por produto+alias), `Product.categoryId` opcional; migration `20260417172511_add_product_taxonomy`. `product.list` filtra por nome ou alias (contains, insensitive) e por `subcategoryIds` com **OR** (comentário no schema Zod); inclui `subcategories` e `aliases` no retorno. `product.adminList` estende busca com match em aliases além de nome/sku. Novos endpoints públicos `listCategories` e `listSubcategories`. `product.update` substitui subcategorias e aliases quando enviados. `/search`: query params repetidos `?sub=<uuid>` sincronizados com combobox multi ("Selecione um tema"); filtro **Tipo de peça** permanece explícito (`ProductType`). Admin `/admin/products/[id]`: card de taxonomia com Select de categoria de vitrine, combobox de subcategorias e aliases (um por linha). Gelato sync não exige os novos campos.
 

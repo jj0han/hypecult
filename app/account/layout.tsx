@@ -21,6 +21,16 @@ import Header from "@/components/header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/auth-context";
 
@@ -122,15 +132,43 @@ export default function RootLayout({
                       </Button>
                     );
                   })}
-                  <Button
-                    variant="link"
-                    size="lg"
-                    className="justify-start w-full"
-                    onClick={() => logOut.mutate()}
-                  >
-                    <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
-                    Sair
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger
+                      render={
+                        <Button
+                          variant="link"
+                          size="lg"
+                          className="justify-start w-full"
+                        />
+                      }
+                    >
+                      <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                      Sair
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Desconectar</DialogTitle>
+                        <DialogDescription>
+                          Tem certeza que deseja sair?
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <DialogClose render={<Button variant="secondary" />}>
+                          Cancelar
+                        </DialogClose>
+                        <DialogClose
+                          render={
+                            <Button
+                              variant="destructive"
+                              onClick={() => logOut.mutate()}
+                            />
+                          }
+                        >
+                          Sair
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
             </aside>
