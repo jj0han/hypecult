@@ -16,7 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -51,12 +51,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "./ui/input-group";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group";
+import { Kbd, KbdGroup } from "./ui/kbd";
 import { Skeleton } from "./ui/skeleton";
 import { Spinner } from "./ui/spinner";
 
@@ -71,6 +67,20 @@ export default function Header() {
   const user = data?.user;
   const isLoading = status === "loading";
 
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (event.ctrlKey && event.key === "k") {
+      event.preventDefault();
+      setSearchOpen((searchOpen) => !searchOpen);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
   return (
     <>
       <SearchSheet open={searchOpen} onOpenChange={setSearchOpen} />
@@ -83,15 +93,18 @@ export default function Header() {
                 className="w-full cursor-pointer"
                 onClick={() => setSearchOpen(true)}
               >
+                <InputGroupAddon>
+                  <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
+                </InputGroupAddon>
                 <InputGroupInput
                   placeholder="Pesquisar"
                   readOnly
                   className="cursor-pointer"
                 />
-                <InputGroupAddon>
-                  <InputGroupButton variant="ghost">
-                    <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
-                  </InputGroupButton>
+                <InputGroupAddon align="inline-end">
+                  <KbdGroup>
+                    <Kbd>Ctrl + K</Kbd>
+                  </KbdGroup>
                 </InputGroupAddon>
               </InputGroup>
               <Button variant="ghost" size="icon">
@@ -283,16 +296,14 @@ export default function Header() {
                 setSearchOpen(true);
               }}
             >
+              <InputGroupAddon>
+                <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
+              </InputGroupAddon>
               <InputGroupInput
                 placeholder="Pesquisar"
                 readOnly
                 className="cursor-pointer"
               />
-              <InputGroupAddon>
-                <InputGroupButton variant="ghost">
-                  <HugeiconsIcon icon={SearchIcon} strokeWidth={2} />
-                </InputGroupButton>
-              </InputGroupAddon>
             </InputGroup>
             <div className="flex flex-col gap-2">
               <Button

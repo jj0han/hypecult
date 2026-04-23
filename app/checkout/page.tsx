@@ -1,10 +1,8 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ChevronDown,
-  ChevronRight,
   PolicyIcon,
-  Shield,
+  ShieldCheck,
   ShoppingBag,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -35,13 +33,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   Item,
-  ItemActions,
   ItemContent,
   ItemDescription,
   ItemMedia,
@@ -563,80 +555,41 @@ export default function Page() {
                 onApplyPromo={applyPromo}
                 onRemovePromo={removePromo}
               />
-              <Card>
-                <CardHeader className="flex items-center gap-3">
+              <Item variant="muted">
+                <ItemMedia>
                   <HugeiconsIcon
-                    icon={Shield}
+                    icon={ShieldCheck}
                     strokeWidth={2}
                     className="text-green-600"
                   />
-                  <div>
-                    <CardTitle>Seguro e encriptado</CardTitle>
-                    <CardDescription>
-                      Seus dados são protegidos com criptografia SSL
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-              <Collapsible className="space-y-2">
-                <Item variant="outline">
-                  <ItemMedia>
-                    <HugeiconsIcon icon={PolicyIcon} strokeWidth={2} />
-                  </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>Devoluções e garantia</ItemTitle>
-                  </ItemContent>
-                  <ItemActions>
-                    <CollapsibleTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          className="group"
-                        />
-                      }
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Seguro e encriptado</ItemTitle>
+                  <ItemDescription>
+                    Seus dados são protegidos com criptografia SSL
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+              <Item variant="muted">
+                <ItemMedia>
+                  <HugeiconsIcon icon={PolicyIcon} strokeWidth={2} />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Devoluções e garantia</ItemTitle>
+                  <ItemDescription>
+                    <Link
+                      href={{
+                        pathname: "/policies/refund-policy",
+                        query: { redirect: "/checkout" },
+                      }}
                     >
-                      <HugeiconsIcon
-                        icon={ChevronRight}
-                        strokeWidth={2}
-                        className="group-aria-expanded:hidden"
-                      />
-                      <HugeiconsIcon
-                        icon={ChevronDown}
-                        strokeWidth={2}
-                        className="group-aria-[expanded=false]:hidden"
-                      />
-                      <span className="sr-only">
-                        Alternar detalhes da política
-                      </span>
-                    </CollapsibleTrigger>
-                  </ItemActions>
-                </Item>
-                <CollapsibleContent className="space-y-2">
-                  <Item variant="muted">
-                    <ItemContent className="gap-3">
-                      <ItemDescription className="text-foreground text-sm leading-relaxed line-clamp-none">
-                        Os pedidos são produzidos sob demanda (print-on-demand)
-                        e enviados via Gelato. Não há devolução por desistência
-                        após a fabricação do pedido personalizado; defeitos ou
-                        inconformidades devem ser comunicados em até 30 dias do
-                        recebimento.{" "}
-                        <Link
-                          href={{
-                            pathname: "/policies/refund-policy",
-                            query: { redirect: "/checkout" },
-                          }}
-                          className="font-medium text-foreground underline underline-offset-2 hover:opacity-90"
-                        >
-                          Leia a política completa de trocas, devoluções e
-                          reembolsos
-                        </Link>
-                        .
-                      </ItemDescription>
-                    </ItemContent>
-                  </Item>
-                </CollapsibleContent>
-              </Collapsible>
+                      Leia a política completa de trocas, devoluções e
+                      reembolsos
+                    </Link>
+                    .
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
             </div>
           </div>
         </>

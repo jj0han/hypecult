@@ -14,18 +14,19 @@ import type { CheckoutSummary } from "@/app/checkout/use-checkout-summary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Item,
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Spinner } from "../ui/spinner";
 
 type OrderItem = {
@@ -83,21 +84,9 @@ export function OrderSummaryCard({
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
-            <HugeiconsIcon
-              icon={ShoppingBag}
-              strokeWidth={2}
-              className="size-5"
-            />
+            <HugeiconsIcon icon={ShoppingBag} strokeWidth={2} />
             <span>Resumo do pedido</span>
           </div>
-          {/* <Button
-            size={"icon-xs"}
-            variant={"destructive"}
-            onClick={() => clear()}
-            disabled={currentStep > 3 || isUpdating}
-          >
-            <HugeiconsIcon icon={Trash2} strokeWidth={2} />
-          </Button> */}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -216,11 +205,9 @@ export function OrderSummaryCard({
 
         {appliedPromo && (
           <Item variant={"muted"} size={"xs"}>
-            <HugeiconsIcon
-              icon={DiscountIcon}
-              strokeWidth={2}
-              className="size-5"
-            />
+            <ItemMedia>
+              <HugeiconsIcon icon={DiscountIcon} strokeWidth={2} />
+            </ItemMedia>
             <ItemContent>
               <ItemTitle>{data?.code}</ItemTitle>
               <ItemDescription>{data?.description}</ItemDescription>
@@ -232,13 +219,13 @@ export function OrderSummaryCard({
                 onClick={onRemovePromo}
                 disabled={currentStep > 3}
               >
-                <HugeiconsIcon icon={X} strokeWidth={2} className="size-4" />
+                <HugeiconsIcon icon={X} strokeWidth={2} />
               </Button>
             </ItemActions>
           </Item>
         )}
 
-        <div className="flex flex-col gap-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>

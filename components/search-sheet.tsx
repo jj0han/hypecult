@@ -122,8 +122,8 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
                   </EmptyMedia>
                   <EmptyTitle>Digite para pesquisar</EmptyTitle>
                   <EmptyDescription>
-                    Dica: use palavras-chave como "camiseta", "moletom",
-                    "caneca", etc.
+                    Dica: use palavras-chave como "oversized", "grupo musical",
+                    "jogo", etc.
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>

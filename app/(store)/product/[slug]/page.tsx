@@ -8,8 +8,10 @@ import {
   ClipboardCopy,
   Clock01Icon,
   Clothes,
+  Facebook02Icon,
   Fire03Icon,
   Info,
+  InstagramIcon,
   PolicyIcon,
   RulerIcon,
   SearchIcon,
@@ -18,6 +20,7 @@ import {
   StarAward02Icon,
   Sun01Icon,
   Truck,
+  WhatsappIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -73,6 +76,14 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -248,7 +259,7 @@ export default function Page() {
                 <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
               </BreadcrumbSeparator>
               <BreadcrumbItem>
-                <Link href="/">Produtos</Link>
+                <Link href="/search">Produtos</Link>
               </BreadcrumbItem>
               <BreadcrumbSeparator>
                 <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
@@ -329,15 +340,15 @@ export default function Page() {
                   // variant.finalPrice > product.finalPrice > original price (fallback when no discount)
                   const effectiveFinalPrice = Number(
                     selectedVariantData?.finalPrice ??
-                      data.finalPrice ??
-                      originalPrice
+                    data.finalPrice ??
+                    originalPrice
                   );
 
                   const hasDiscount =
                     Number(
                       selectedVariantData?.discountAmount ??
-                        data.discountAmount ??
-                        0
+                      data.discountAmount ??
+                      0
                     ) > 0;
 
                   return (
@@ -353,17 +364,69 @@ export default function Page() {
                             className="text-base text-muted-foreground space-y-2"
                           />
                         </div>
-                        <Button
-                          variant={"link"}
-                          size={"icon-lg"}
-                          onClick={handleShare}
-                        >
-                          <HugeiconsIcon
-                            icon={Share08Icon}
-                            strokeWidth={2}
-                            className="size-6"
+                        <Popover>
+                          <PopoverTrigger
+                            render={
+                              <Button variant={"link"} size={"icon-lg"}>
+                                <HugeiconsIcon
+                                  icon={Share08Icon}
+                                  strokeWidth={2}
+                                />
+                              </Button>
+                            }
                           />
-                        </Button>
+                          <PopoverContent align="end" className="max-w-3xs">
+                            <PopoverHeader>
+                              <PopoverTitle>Compartilhar</PopoverTitle>
+                              <PopoverDescription>
+                                Compartilhe o link deste produto com seus
+                                amigos!
+                              </PopoverDescription>
+                            </PopoverHeader>
+                            <div className="flex gap-2">
+                              <Button
+                                variant={"secondary"}
+                                size={"icon"}
+                                onClick={handleShare}
+                              >
+                                <HugeiconsIcon
+                                  icon={ClipboardCopy}
+                                  strokeWidth={2}
+                                />
+                              </Button>
+                              <Button
+                                variant={"link"}
+                                size={"icon"}
+                                className="bg-green-500 text-white"
+                              >
+                                <HugeiconsIcon
+                                  icon={WhatsappIcon}
+                                  strokeWidth={2}
+                                />
+                              </Button>
+                              <Button
+                                variant={"link"}
+                                size={"icon"}
+                                className="bg-blue-500 text-white"
+                              >
+                                <HugeiconsIcon
+                                  icon={Facebook02Icon}
+                                  strokeWidth={2}
+                                />
+                              </Button>
+                              <Button
+                                variant={"link"}
+                                size={"icon"}
+                                className="bg-linear-to-tr from-10% from-yellow-500 via-rose-500 to-purple-600 text-white"
+                              >
+                                <HugeiconsIcon
+                                  icon={InstagramIcon}
+                                  strokeWidth={2}
+                                />
+                              </Button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -414,9 +477,9 @@ export default function Page() {
                                     <FieldTitle
                                       className={cn(
                                         variant?.id === selectedVariant &&
-                                          "text-primary",
+                                        "text-primary",
                                         (!variant || variant.stock <= 0) &&
-                                          "text-muted-foreground line-through"
+                                        "text-muted-foreground line-through"
                                       )}
                                     >
                                       {size}
@@ -449,8 +512,8 @@ export default function Page() {
                             );
                             const itemFinalPrice = Number(
                               variant.finalPrice ??
-                                data.finalPrice ??
-                                itemOriginalPrice
+                              data.finalPrice ??
+                              itemOriginalPrice
                             );
                             const image = data.images?.[0];
                             add({
@@ -533,7 +596,7 @@ export default function Page() {
                                     />
                                     <InputGroupAddon align="inline-end">
                                       <InputGroupButton
-                                        variant={"destructive"}
+                                        variant={"ghost"}
                                         size={"xs"}
                                         disabled={
                                           createQuote.isPending ||
@@ -878,7 +941,7 @@ function ProductImageSkeleton() {
           key={`skeleton-${
             // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as a key
             index
-          }`}
+            }`}
           className="aspect-square rounded-lg size-full"
         />
       ))}

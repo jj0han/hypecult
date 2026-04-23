@@ -1,5 +1,5 @@
 "use client";
-import { ChevronLeft, Shield } from "@hugeicons/core-free-icons";
+import { ChevronLeft, ShieldCheck } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/logo";
@@ -34,7 +34,7 @@ function Header() {
         <Logo id="header-logo" />
       </div>
       <Badge variant="outline" className="justify-self-end md:flex hidden">
-        <HugeiconsIcon icon={Shield} strokeWidth={2} />
+        <HugeiconsIcon icon={ShieldCheck} strokeWidth={2} />
         Segurança SSL
       </Badge>
     </div>
