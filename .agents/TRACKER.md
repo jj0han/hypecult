@@ -40,26 +40,6 @@ Each entry uses a unique ID with a type prefix:
 
 ## Backlog
 
-### [REFACTOR-002] Multi-brand config system (Brand Config)
-- **Type:** refactor
-- **Priority:** medium
-- **Status:** backlog
-- **Spec:** Extrair tudo o que é específico de uma marca (cores, logo, fontes, metadata) para um arquivo de configuração por marca (`brand/<name>/config.ts` + `brand/<name>/theme.css`). Uma variável de ambiente `BRAND` seleciona qual configuração carregar em build time. Isso permite usar o mesmo repositório para múltiplas lojas, cada uma deployada como projeto separado na Vercel com seu próprio `.env`. O `app/globals.css` atual mistura infraestrutura de theming (mapeamento `@theme inline`) com valores concretos de cores — esses valores concretos devem migrar para `brand/hypecult/theme.css`. O `components/logo.tsx` tem o path `/HYPECULT.svg` hardcoded. O `app/layout.tsx` tem fontes e metadata hardcoded.
-- **Acceptance criteria:**
-  - [ ] Existe `brand/hypecult/theme.css` com os blocos `:root` e `.dark` migrados de `app/globals.css`
-  - [ ] Existe `brand/hypecult/config.ts` exportando `storeName`, `metadata` (title/description), `fonts`, `logoPath` e `logoAlt`
-  - [ ] Existe `brand.config.ts` na raiz que lê `process.env.BRAND` e re-exporta o config correto (fallback para `hypecult`)
-  - [ ] `app/globals.css` importa o theme CSS da marca ativa via `@import` gerado/resolvido pelo config, mantendo apenas o bloco `@theme inline` e a infra base
-  - [ ] `app/layout.tsx` usa `brandConfig.metadata` e `brandConfig.fonts` em vez de valores hardcoded
-  - [ ] `components/logo.tsx` usa `brandConfig.logoPath` e `brandConfig.logoAlt` em vez de strings hardcoded
-  - [ ] `server/env.ts` adiciona `BRAND: z.string().default("hypecult")`
-  - [ ] Criar uma segunda marca de exemplo (`brand/example/`) demonstra que a troca funciona apenas mudando `BRAND=example`
-  - [ ] Nenhum comportamento existente da loja Hypecult é alterado
-- **Files likely affected:** `app/globals.css`, `app/layout.tsx`, `components/logo.tsx`, `server/env.ts`, `public/` (reorganizar SVGs por marca), novos: `brand/hypecult/theme.css`, `brand/hypecult/config.ts`, `brand.config.ts`
-- **Notes:** Tailwind v4 usa CSS-based config com `@theme inline` e variáveis CSS — a separação é cirúrgica. O `components.json` (shadcn) tem `baseColor`, `menuColor` e `menuAccent` específicos da marca; avaliar se deve fazer parte do config ou permanecer por projeto. Não é necessário suportar troca de marca em runtime — apenas em build/deploy time.
-
----
-
 ### [FEAT-001] Payment integration (PSP)
 - **Type:** feature
 - **Priority:** critical
@@ -88,23 +68,6 @@ Each entry uses a unique ID with a type prefix:
 - **Files likely affected:** `server/integrations/gelato/`, `server/api/routers/gelato.order.ts`, `server/api/routers/gelato.quote.ts`, `app/checkout/`, `server/api/routers/order.ts`
 - **Notes:** Depends on FEAT-001 (payment must work before fulfillment submission makes sense).
 
----
-
-### [CHORE-002] Expand test coverage
-- **Type:** chore
-- **Priority:** medium
-- **Status:** backlog
-- **Spec:** Only `tests/cart-merge.test.ts` exists. Add unit tests for critical business logic: promotion validation, price/discount calculations, order creation flow, and Zod schema validation.
-- **Acceptance criteria:**
-  - [ ] Tests for promotion validation logic (limits, expiration, product scoping)
-  - [ ] Tests for discount calculation (product-level and variant-level, percentage and fixed)
-  - [ ] Tests for cart operations (add, remove, update quantity, merge)
-  - [ ] All tests pass with `pnpm test:unit`
-- **Files likely affected:** `tests/` (new test files), potentially `server/api/routers/` if logic needs to be extracted for testability
-- **Notes:** Currently using `tsx --test` (Node built-in test runner). Evaluate if a framework like Vitest would be beneficial.
-
----
-
 ### [UPDATE-001] Checkout shipping step with live Gelato quotes
 - **Type:** update
 - **Priority:** medium
@@ -121,11 +84,15 @@ Each entry uses a unique ID with a type prefix:
 
 ## In Progress
 
-_No items currently in progress._
-
----
-
 ## Done
+
+### [CHORE-002] Expand test coverage — DONE (2026-04-27)
+- **Summary:** Added focused Node test runner coverage for promotion validation, pricing and discount calculations, cart operations, checkout/order schemas, and checkout summary money rounding. The work kept the existing test approach instead of migrating frameworks, and `pnpm test:unit` is noted as passing in the completed acceptance criteria.
+- **Commits/PRs:** Not available.
+
+### [REFACTOR-002] Consolidate formatter utility usage — DONE (2026-04-27)
+- **Summary:** Consolidated repeated BRL currency formatting through the shared `formatCurrency` helper across product, search, cart, checkout, and product detail UI, and removed the private formatter clone from `server/lib/promotion-validation.ts`. Dynamic-currency cases such as Gelato shipping quote display remain explicit where currency codes matter.
+- **Commits/PRs:** Not available.
 
 ### [FEAT-011] Admin CRUD de taxonomia (`/admin/taxonomy`) — DONE (2026-04-20)
 - **Summary:** Novo router tRPC `taxonomy` (`adminSummary`, listagens com busca, create/update/delete para `ProductCategory` e `Subcategory`). Páginas: `/admin/taxonomy` (hub com cards para categorias e temas; ícones Hugeicons `Layers01Icon`, `Folder01Icon`, `Folder02Icon`), `/admin/taxonomy/categories` e `/admin/taxonomy/subcategories` com tabela no estilo de promoções, filtro por nome/slug, `Dialog` para criar/editar (nome + slug) e `AlertDialog` para excluir. Componente compartilhado `components/admin/taxonomy-crud-table.tsx`. Sidebar e painel admin ganham atalho “Taxonomia”; invalidação inclui `product.listCategories` / `listSubcategories`.

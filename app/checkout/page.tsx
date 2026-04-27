@@ -177,14 +177,22 @@ export default function Page() {
     queryKey: ["states", "list"],
     queryFn: async () => {
       const response = await fetch("/api/ibge/estados");
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return undefined;
+      }
+      return data;
     },
   });
 
   const citiesByState = useMutation<City[] | undefined, Error, string>({
     mutationFn: async (uf: string) => {
       const response = await fetch(`/api/ibge/estados/municipios/${uf}`);
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return undefined;
+      }
+      return data;
     },
   });
 
@@ -358,6 +366,7 @@ export default function Page() {
       code,
       orderAmount: summary.subtotal,
       cartItems: orderItems.map((item) => ({
+        productId: item.productId,
         hasDiscount: item.hasDiscount ?? false,
         subtotal: item.price * item.quantity,
       })),
@@ -440,6 +449,7 @@ export default function Page() {
           code: promotionData.code,
           orderAmount: summary.subtotal,
           cartItems: orderItems.map((item) => ({
+            productId: item.productId,
             hasDiscount: item.hasDiscount ?? false,
             subtotal: item.price * item.quantity,
           })),

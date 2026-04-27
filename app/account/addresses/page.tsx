@@ -125,13 +125,24 @@ export default function Page() {
     queryKey: ["states", "list"],
     queryFn: async () => {
       const response = await fetch("/api/ibge/estados");
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return undefined;
+      }
+      return data;
     },
   });
   const citiesByState = useMutation<City[] | undefined, Error, string>({
     mutationFn: async (uf: string) => {
       const response = await fetch(`/api/ibge/estados/municipios/${uf}`);
-      return await response.json();
+      const data = await response.json();
+      if (!response.ok) {
+        return undefined;
+      }
+      return data;
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   const viacep = useMutation<ViaCEPResponse | undefined, Error, string>({

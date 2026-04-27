@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/item";
 import { Sheet, SheetClose, SheetContent } from "@/components/ui/sheet";
 import { useTRPC } from "@/lib/trpc";
+import { formatCurrency } from "@/utils/formatters";
 import {
   Empty,
   EmptyDescription,
@@ -166,10 +167,7 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
                       ? product.discountType === "percentage" &&
                         product.discountAmount
                         ? `${Number(product.discountAmount)}% OFF`
-                        : `- ${(originalPrice - finalPrice).toLocaleString(
-                            "pt-BR",
-                            { style: "currency", currency: "BRL" }
-                          )}`
+                        : `- ${formatCurrency(originalPrice - finalPrice)}`
                       : null;
                     const image = product.images?.[0];
 
@@ -211,17 +209,11 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
                             </div>
                             <div className="flex items-baseline gap-2">
                               <ItemTitle className="text-base font-bold">
-                                {finalPrice.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
+                                {formatCurrency(finalPrice)}
                               </ItemTitle>
                               {hasDiscount && (
                                 <span className="text-sm text-muted-foreground line-through font-normal">
-                                  {originalPrice.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
+                                  {formatCurrency(originalPrice)}
                                 </span>
                               )}
                             </div>

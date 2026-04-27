@@ -35,6 +35,7 @@ import type {
   ProductType,
   ProductVariant,
 } from "@/server/db/generated/prisma/client";
+import { formatCurrency } from "@/utils/formatters";
 
 export type ProductCardData = {
   id: string;
@@ -59,10 +60,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const discountLabel = hasDiscount
     ? product.discountType === "percentage" && product.discountAmount
       ? `${Number(product.discountAmount)}% OFF`
-      : `- ${(originalPrice - finalPrice).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}`
+      : `- ${formatCurrency(originalPrice - finalPrice)}`
     : null;
 
   const image = product.images?.[0];
@@ -112,17 +110,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             </div>
             <div className="flex items-baseline gap-2">
               <ItemTitle className="text-base font-bold">
-                {finalPrice.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
+                {formatCurrency(finalPrice)}
               </ItemTitle>
               {hasDiscount && (
                 <span className="text-sm text-muted-foreground line-through font-normal">
-                  {originalPrice.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                  {formatCurrency(originalPrice)}
                 </span>
               )}
             </div>

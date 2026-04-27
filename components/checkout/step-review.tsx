@@ -33,6 +33,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import type { CheckoutFormData } from "@/schemas/checkout";
 import type { GelatoShipmentMethod } from "@/server/integrations/gelato/gelato.types";
+import { formatCurrency } from "@/utils/formatters";
 
 interface StepReviewProps {
   form: UseFormReturn<CheckoutFormData>;
@@ -197,11 +198,7 @@ export function StepReview({
           ) : (
             <>
               <HugeiconsIcon icon={LockKeyhole} strokeWidth={2} />
-              Finalizar pedido{" "}
-              {summary.total.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
+              Finalizar pedido {formatCurrency(summary.total)}
             </>
           )}
         </Button>

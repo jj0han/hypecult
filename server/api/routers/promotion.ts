@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import z from "zod";
 import type { Prisma } from "@/server/db/generated/prisma/client";
 import type { DiscountType } from "@/server/db/generated/prisma/enums";
+import { validatePromotionBusinessRules } from "@/server/lib/promotion-validation";
 import {
   adminProcedure,
   createTRPCRouter,
@@ -92,6 +93,7 @@ export const promotionRouter = createTRPCRouter({
         cartItems: z
           .array(
             z.object({
+              productId: z.string().optional(),
               hasDiscount: z.boolean(),
               subtotal: z.number(),
             })
@@ -112,107 +114,31 @@ export const promotionRouter = createTRPCRouter({
         });
       }
 
-      if (!promotion.active) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Este cupom não está mais ativo",
-        });
-      }
+      const usageCount =
+        promotion.limit !== null
+          ? await ctx.prisma.order.count({
+              where: { promotionId: promotion.id },
+            })
+          : 0;
+      const userUsage =
+        promotion.userLimit !== null && ctx.session?.user?.id
+          ? await ctx.prisma.userPromotion.findUnique({
+              where: {
+                userId_promotionId: {
+                  userId: ctx.session.user.id,
+                  promotionId: promotion.id,
+                },
+              },
+            })
+          : null;
 
-      if (promotion.expiresAt && promotion.expiresAt < new Date()) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Este cupom expirou",
-        });
-      }
-
-      // Check global usage limit by counting completed orders that used this promotion
-      if (promotion.limit !== null) {
-        const usageCount = await ctx.prisma.order.count({
-          where: { promotionId: promotion.id },
-        });
-        if (usageCount >= promotion.limit) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Este cupom atingiu o limite máximo de usos",
-          });
-        }
-      }
-
-      // Check per-user usage limit for authenticated users
-      if (promotion.userLimit !== null && ctx.session?.user?.id) {
-        const userUsage = await ctx.prisma.userPromotion.findUnique({
-          where: {
-            userId_promotionId: {
-              userId: ctx.session.user.id,
-              promotionId: promotion.id,
-            },
-          },
-        });
-        if (userUsage && userUsage.usageCount >= promotion.userLimit) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Você já utilizou este cupom o número máximo de vezes",
-          });
-        }
-      }
-
-      // Check order amount constraints
-      if (input.orderAmount !== undefined) {
-        if (
-          promotion.minOrderAmount !== null &&
-          input.orderAmount < Number(promotion.minOrderAmount)
-        ) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Pedido mínimo de ${Number(promotion.minOrderAmount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} para usar este cupom`,
-          });
-        }
-
-        if (
-          promotion.maxOrderAmount !== null &&
-          input.orderAmount > Number(promotion.maxOrderAmount)
-        ) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Este cupom é válido apenas para pedidos até ${Number(promotion.maxOrderAmount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`,
-          });
-        }
-      }
-
-      // Compute which subtotal the coupon actually applies to
-      // If allowOnDiscountedItems=false, exclude cart items that already have a product discount
-      let applicableSubtotal: number | null = null;
-      if (!promotion.allowOnDiscountedItems && input.cartItems) {
-        applicableSubtotal = input.cartItems.reduce(
-          (sum, item) => (item.hasDiscount ? sum : sum + item.subtotal),
-          0
-        );
-      }
-
-      return {
-        id: promotion.id,
-        code: promotion.code,
-        description: promotion.description,
-        discountType: promotion.discountType,
-        discountAmount: Number(promotion.discountAmount),
-        freeShipping: promotion.freeShipping,
-        freeShippingMaxAmount: promotion.freeShippingMaxAmount
-          ? Number(promotion.freeShippingMaxAmount)
-          : null,
-        allowOnDiscountedItems: promotion.allowOnDiscountedItems,
-        applicableSubtotal,
-        minOrderAmount: promotion.minOrderAmount
-          ? Number(promotion.minOrderAmount)
-          : null,
-        maxOrderAmount: promotion.maxOrderAmount
-          ? Number(promotion.maxOrderAmount)
-          : null,
-        productIds:
-          promotion.productPromotions.length > 0
-            ? promotion.productPromotions.map((pp) => pp.productId)
-            : null,
-      };
+      return validatePromotionBusinessRules({
+        promotion,
+        orderAmount: input.orderAmount,
+        cartItems: input.cartItems,
+        usageCount,
+        userUsageCount: userUsage?.usageCount,
+      });
     }),
 
   create: protectedProcedure

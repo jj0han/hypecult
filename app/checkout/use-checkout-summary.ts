@@ -12,6 +12,10 @@ type ShippingMethod = {
   price: number;
 };
 
+function roundMoney(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
 export type PromotionData = {
   id: string;
   code: string;
@@ -68,7 +72,10 @@ export function calculateCheckoutSummary({
     // Determine which portion of the cart the coupon applies to.
     // If allowOnDiscountedItems=false, use server-computed applicableSubtotal when
     // available, otherwise compute it locally from the item flags.
-    if(!promotion.allowOnDiscountedItems && items.some(item => item.hasDiscount)) {
+    if (
+      !promotion.allowOnDiscountedItems &&
+      items.some((item) => item.hasDiscount)
+    ) {
       onError?.();
     }
     const baseForDiscount =
@@ -82,7 +89,7 @@ export function calculateCheckoutSummary({
           ));
 
     if (promotion.discountType === "percentage") {
-      discount = baseForDiscount * (promotion.discountAmount / 100);
+      discount = roundMoney(baseForDiscount * (promotion.discountAmount / 100));
     } else {
       discount = promotion.discountAmount;
     }
@@ -98,14 +105,16 @@ export function calculateCheckoutSummary({
   if (promotion?.freeShipping) {
     if (promotion.freeShippingMaxAmount !== null) {
       // Cover up to freeShippingMaxAmount — user pays the remainder
-      shipping = Math.max(0, baseShipping - promotion.freeShippingMaxAmount);
+      shipping = roundMoney(
+        Math.max(0, baseShipping - promotion.freeShippingMaxAmount)
+      );
     } else {
       shipping = 0;
     }
   }
 
-  const tax = (subtotal - discount) * 0.0;
-  const total = subtotal - discount + shipping + tax;
+  const tax = roundMoney((subtotal - discount) * 0.0);
+  const total = roundMoney(subtotal - discount + shipping + tax);
 
   return { subtotal, discount, shipping, tax, total };
 }

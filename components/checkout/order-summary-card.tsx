@@ -26,6 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/context/cart-context";
 import { useTRPC } from "@/lib/trpc";
+import { formatCurrency } from "@/utils/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Spinner } from "../ui/spinner";
 
@@ -119,26 +120,17 @@ export function OrderSummaryCard({
                     <p className="text-sm font-medium truncate">{item.name}</p>
                   </div>
                   <div className="text-sm font-semibold">
-                    {(item.price * item.quantity).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
+                    {formatCurrency(item.price * item.quantity)}
                   </div>
                 </div>
                 <div className="flex items-center justify-between w-full gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold">
-                      {item.price.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
+                      {formatCurrency(item.price)}
                     </span>
                     {item.originalPrice && (
                       <span className="text-sm text-muted-foreground line-through">
-                        {item.originalPrice.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
+                        {formatCurrency(item.originalPrice)}
                       </span>
                     )}
                   </div>
@@ -229,23 +221,12 @@ export function OrderSummaryCard({
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
-              <span>
-                {summary.subtotal.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </span>
+              <span>{formatCurrency(summary.subtotal)}</span>
             </div>
             {summary.discount > 0 && (
               <div className="flex justify-between text-sm text-green-600">
                 <span>Desconto</span>
-                <span>
-                  -
-                  {summary.discount.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </span>
+                <span>-{formatCurrency(summary.discount)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm">
@@ -255,16 +236,10 @@ export function OrderSummaryCard({
                   <span className="text-green-600 font-medium">Grátis</span>
                 ) : summary.shipping >= 0 && data?.freeShipping ? (
                   <span className="text-green-600 font-medium">
-                    {summary.shipping.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
+                    {formatCurrency(summary.shipping)}
                   </span>
                 ) : (
-                  summary.shipping.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })
+                  formatCurrency(summary.shipping)
                 )}
               </div>
             </div>
@@ -272,12 +247,7 @@ export function OrderSummaryCard({
           <Separator />
           <div className="flex justify-between font-semibold text-lg">
             <span>Total</span>
-            <span>
-              {summary.total.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </span>
+            <span>{formatCurrency(summary.total)}</span>
           </div>
         </div>
       </CardContent>

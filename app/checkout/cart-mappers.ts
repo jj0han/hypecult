@@ -7,6 +7,7 @@ export function mapCartToOrderItems(cart: CartItem[] | null) {
         item.originalPrice !== undefined && item.originalPrice > item.price;
       return {
         id: item.variantId,
+        productId: item.productId,
         name: item.name,
         price: item.price,
         originalPrice: item.originalPrice,

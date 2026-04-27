@@ -24,7 +24,14 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { useTRPC } from "@/lib/trpc";
+import { formatCurrency } from "@/utils/formatters";
 import { mergeCartItems } from "./cart-merge";
+import {
+  addCartItem,
+  incrementCartItem,
+  normalizeCartItems,
+  removeCartItem,
+} from "./cart-operations";
 
 export type CartItem = {
   productId: string;
@@ -59,31 +66,6 @@ type CartContextType = {
 };
 
 const CartContext = createContext<CartContextType | null>(null);
-
-function normalizeCartItems(input: CartItem[]) {
-  const byVariant = new Map<string, CartItem>();
-  for (const item of input) {
-    const row: CartItem = {
-      ...item,
-      productUid: item.productUid ?? null,
-    };
-    const existing = byVariant.get(row.variantId);
-    if (!existing) {
-      byVariant.set(row.variantId, row);
-      continue;
-    }
-
-    byVariant.set(row.variantId, {
-      ...existing,
-      quantity: existing.quantity + row.quantity,
-      productUid: existing.productUid ?? row.productUid ?? null,
-    });
-  }
-
-  return Array.from(byVariant.values()).sort((a, b) =>
-    a.variantId.localeCompare(b.variantId)
-  );
-}
 
 function getCartHash(input: CartItem[]) {
   return JSON.stringify(
@@ -129,20 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   function add(item: CartItem) {
-    setCart((prev) => {
-      if (!prev) return [item];
-      const existingItem = prev.find((i) => i.variantId === item.variantId);
-
-      if (existingItem) {
-        return prev.map((i) =>
-          i.variantId === item.variantId
-            ? { ...i, quantity: i.quantity + item.quantity }
-            : i
-        );
-      }
-
-      return [...prev, item];
-    });
+    setCart((prev) => addCartItem(prev, item));
 
     toast.custom(
       (id) => (
@@ -175,12 +144,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           <ItemContent>
             <ItemTitle>{item.name}</ItemTitle>
             <ItemDescription>Tamanho: {item.size}</ItemDescription>
-            <ItemTitle>
-              {item.price.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </ItemTitle>
+            <ItemTitle>{formatCurrency(item.price)}</ItemTitle>
           </ItemContent>
           <ItemActions className="col-span-2">
             <Button
@@ -202,26 +166,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   function remove(variantId: string) {
-    setCart((prev) => {
-      if (!prev) return null;
-      return prev.filter((i) => i.variantId !== variantId);
-    });
+    setCart((prev) => removeCartItem(prev, variantId));
   }
 
   function increment(variantId: string, quantity: number) {
-    setCart((prev) => {
-      if (!prev) return null;
-      const target = prev.find((i) => i.variantId === variantId);
-      if (!target) return prev;
-      if (target.quantity + quantity <= 0) {
-        return prev.filter((i) => i.variantId !== variantId);
-      }
-      return prev.map((i) => {
-        return i.variantId === variantId
-          ? { ...i, quantity: i.quantity + quantity }
-          : i;
-      });
-    });
+    setCart((prev) => incrementCartItem(prev, variantId, quantity));
   }
 
   function set(items: CartItem[]) {
