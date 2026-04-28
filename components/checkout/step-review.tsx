@@ -190,7 +190,7 @@ export function StepReview({
         <Button
           size="lg"
           onClick={onValidateAndSubmit}
-          disabled={orderPending}
+          disabled={true}
           className="w-full sm:w-auto"
         >
           {orderPending ? (

@@ -66,7 +66,7 @@ export default function RootLayout({
   return (
     <Fragment>
       <Header />
-      <div className="px-6 py-8 min-h-svh">
+      <div className="p-6 min-h-svh">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1 space-y-2">
