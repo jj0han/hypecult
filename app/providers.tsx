@@ -70,15 +70,14 @@ function getTrpcClient() {
 
 function Intro({ onComplete }: { onComplete: () => void }) {
   const introRootRef = useRef<HTMLDivElement>(null);
-  const logoAnimRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const stagger = 0.08;
-      const scaleFactor = 1.515;
+      const scaleFactor = 1.63;
 
       const headerLogo = document.getElementById("header-logo");
-      const logoAnimEl = logoAnimRef.current;
+      const logoAnimEl = document.getElementById("logo-anim");
 
       let targetX = 0,
         targetY = 0,
@@ -182,7 +181,7 @@ function Intro({ onComplete }: { onComplete: () => void }) {
         <div className="flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center gap-16 w-full absolute inset-0">
             <div
-              ref={logoAnimRef}
+              id="logo-anim"
               className="w-full px-16 z-50 logo-animation"
               style={{ opacity: 0 }}
             >
@@ -237,7 +236,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               <Suspense
                 fallback={
                   <div className="h-screen w-screen flex items-center justify-center">
-                    <Spinner strokeWidth={2} />
+                    <Spinner strokeWidth={2} className="text-primary" />
                   </div>
                 }
               >

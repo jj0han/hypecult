@@ -16,14 +16,14 @@ export default function Logo({
       id={id}
       layoutId="logo-motion"
       layout="position"
-      className={cn("sm:h-9 h-8 py-2 z-10", className)}
+      className={cn("sm:h-9 h-8 w-40 sm:w-50 py-2 z-10", className)}
     >
       <Link href={"/"}>
         <Image
           src="/HYPECULT.svg"
           alt="Hypecult"
-          width={300}
-          height={300}
+          width={200}
+          height={200}
           className="object-contain h-full w-full"
         />
       </Link>
