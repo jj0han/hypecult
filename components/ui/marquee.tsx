@@ -63,7 +63,7 @@ export const MarqueeItem = ({ className, ...props }: MarqueeItemProps) => (
 );
 
 export function MaskedMarqueeItem({ bg, mask }: Props) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLLinkElement>(null);
 
   const bgX = useMotionValue(0);
   const bgY = useMotionValue(0);
@@ -89,9 +89,10 @@ export function MaskedMarqueeItem({ bg, mask }: Props) {
   }, [bgX, bgY]);
 
   return (
-    <motion.div
+    <motion.link
       ref={ref}
-      className="h-full aspect-587/59"
+      fetchPriority="high"
+      className="h-full aspect-587/59 block"
       style={{
         backgroundImage: `url(${bg})`,
         backgroundPositionX: bgX,

@@ -11,13 +11,13 @@ export default function Footer() {
   return (
     <footer className="flex flex-col items-center gap-6 py-6 border-t">
       <div className="flex flex-col items-center justify-between gap-4 max-w-7xl mx-auto">
-        <Link href="/" className="flex items-center font-medium h-10">
+        <Link href="/" className="flex items-center font-medium">
           <Image
             src="/HYPECULT.svg"
             alt="Hypecult"
             width={150}
             height={150}
-            className="object-contain"
+            className="object-contain w-38 h-10"
           />
         </Link>
         <ul className="flex items-center gap-4">

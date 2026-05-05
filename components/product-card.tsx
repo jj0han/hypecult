@@ -82,7 +82,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger render={<Link href={`/product/${product.id}`} />}>
+      <ContextMenuTrigger
+        render={<Link href={`/product/${product.id}`} role="listitem" />}
+      >
         <Item variant="default" size="xs" className="items-start">
           <ItemHeader>
             <div className="relative aspect-square border rounded-lg overflow-hidden size-full!">
@@ -96,7 +98,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 style={{ objectFit: "cover" }}
               />
               {discountLabel && (
-                <Badge className="absolute top-2 left-2 bg-green-600">
+                <Badge className="absolute top-2 left-2 bg-green-700">
                   {discountLabel}
                 </Badge>
               )}

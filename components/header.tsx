@@ -103,11 +103,11 @@ export default function Header() {
                 />
                 <InputGroupAddon align="inline-end">
                   <KbdGroup>
-                    <Kbd>Ctrl + K</Kbd>
+                    <Kbd className="text-foreground">Ctrl + K</Kbd>
                   </KbdGroup>
                 </InputGroupAddon>
               </InputGroup>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" title="Salvos">
                 <HugeiconsIcon icon={Heart} strokeWidth={2} />
               </Button>
               <Button
@@ -115,6 +115,7 @@ export default function Header() {
                 size="icon"
                 onClick={() => router.push("/checkout")}
                 className={"relative"}
+                title="Carrinho"
               >
                 <HugeiconsIcon icon={ShoppingCart02Icon} strokeWidth={2} />
                 {cart && (

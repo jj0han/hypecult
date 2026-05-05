@@ -10,7 +10,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
-import { Fragment, Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
 import { Spinner } from "@/components/ui/spinner";
@@ -242,7 +242,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               >
                 <AuthProvider>
                   <TooltipProvider>
-                    <Fragment key="content">{children}</Fragment>
+                    <main key="content">{children}</main>
                     {intro && (
                       <Intro key="intro" onComplete={() => setIntro(false)} />
                     )}
