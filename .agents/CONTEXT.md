@@ -22,7 +22,7 @@ The project is **under active development** — some integrations are partially 
 | ORM | Prisma | ^7.3.0 |
 | Database | PostgreSQL (via `@prisma/adapter-pg` + `pg`) | — |
 | API layer | tRPC | ^11.9.0 |
-| Data fetching | TanStack React Query | ^5 |
+| Data fetching | TanStack React Query | ^5.90 |
 | Auth | NextAuth (Prisma Adapter) | ^4.24.13 |
 | Validation | Zod | ^4.3.6 |
 | Styling | Tailwind CSS | ^4 |
@@ -43,8 +43,8 @@ The project is **under active development** — some integrations are partially 
 ```
 hypecult/
 ├── app/                    # Next.js App Router
-│   ├── (store)/            # Public storefront (home, product/[slug], policies: refund, shipping, cookie, privacy, terms)
-│   ├── admin/              # Admin shell (role-gated); `/admin` overview; `/admin/products` + `[id]`; `/admin/promotions` + `new` + `[id]`
+│   ├── (store)/            # Public storefront (home, product/[slug], search, policies: refund, shipping, cookie, privacy, terms)
+│   ├── admin/              # Admin shell (role-gated); `/admin` overview; `/admin/products` + `[id]`; `/admin/promotions` + `new` + `[id]`; `/admin/taxonomy` (+ categories / subcategories)
 │   ├── (auth)/             # Auth pages (log-in, sign-up, forgot-password)
 │   ├── account/            # Authenticated user area (orders, addresses)
 │   ├── checkout/           # Multi-step checkout flow + success page
@@ -61,7 +61,7 @@ hypecult/
 │   ├── api/
 │   │   ├── root.ts         # tRPC app router (merges all sub-routers)
 │   │   ├── trpc.ts         # tRPC init, context, middleware
-│   │   └── routers/        # Domain routers: product, auth, address, order, cart, promotion, gelato.*
+│   │   └── routers/        # Domain routers: product, taxonomy, auth, address, order, cart, promotion, gelato.*
 │   ├── auth/               # NextAuth config, password utilities
 │   ├── db/                 # Prisma client instance + generated client
 │   ├── integrations/gelato/ # Gelato API client (orders, quotes, sync)
@@ -102,6 +102,7 @@ Browser ──> Next.js App Router ──> tRPC HTTP Handler ──> tRPC Router
 | Router | Purpose |
 |--------|---------|
 | `product` | Product listing, detail, search |
+| `taxonomy` | Admin CRUD for product categories and subcategories |
 | `auth` | Registration, login helpers |
 | `address` | CRUD for user saved addresses |
 | `order` | Order creation, listing, detail |
@@ -127,14 +128,19 @@ User ──< Order ──< OrderItem
 User ──< CartItem
 User ──< UserPromotion >── Promotion
 
+ProductCategory ──< Product
+Subcategory >──< Product (many-to-many)
 Product ──< ProductVariant
 Product ──< ProductImage
 Product ──< ProductPrintFile
+Product ──< ProductAlias
 Product ──< ProductPromotion >── Promotion
 ```
 
 - **User**: `role` (`UserRole`: `user` | `admin`), name, email, optional password, cpf (Brazilian tax ID), emailVerified, optional OAuth `image`
-- **Product**: sku, name, description (rich text / HTML from admin TipTap), type (tshirt/hoodie/mug/sticker/other), price with optional discount (percentage or fixed), finalPrice, optional gelatoProductId
+- **Product**: sku, name, description (rich text / HTML from admin TipTap), type (tshirt/hoodie/mug/sticker/other), price with optional discount (percentage or fixed), finalPrice, optional gelatoProductId, optional `categoryId`, many `subcategories`, optional `aliases` (search terms)
+- **ProductCategory** / **Subcategory**: taxonomy for catalog organization; product has optional category and many subcategories
+- **ProductAlias**: alternate search strings per product (indexed for lookup)
 - **ProductVariant**: color, optional size (PP–XGG), stock, optional variant-level pricing/discount, optional Gelato IDs
 - **ProductImage**: `url` for display; optional Cloudinary `publicId` (null when seeded from Gelato URLs only)
 - **Order**: status (pending/paid/production/shipped/delivered/cancelled), totals, optional Gelato orderId, optional promotionId
@@ -161,9 +167,9 @@ Product ──< ProductPromotion >── Promotion
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Product listing & detail | Working | Products seeded; storefront pages render |
+| Product listing & detail | Working | Products seeded; storefront home, product, and search pages render |
 | Auth (login/register) | Working | NextAuth: credentials + Google OAuth; Prisma adapter; JWT includes `role` |
-| Admin area | Working | Products: list, edit (`product.adminList`, `adminSummary`, `update`). Promotions: list, create, edit (`promotion.adminList`, `adminById`, `adminUpdate`, etc.) |
+| Admin area | Working | Products: list, edit (`product.adminList`, `adminSummary`, `update`). Promotions: list, create, edit (`promotion.adminList`, `adminById`, `adminUpdate`, etc.). Taxonomy: categories/subcategories CRUD (`taxonomy.*` admin procedures) |
 | Cart | Working | Server-side cart with merge on login |
 | Checkout UI | Partial | Multi-step form exists; payment step not integrated with a PSP |
 | Payments | Not wired | `paymentIntentId` field exists on Order but no Stripe (or other PSP) integration in code |
@@ -171,7 +177,7 @@ Product ──< ProductPromotion >── Promotion
 | Promotions/Coupons | Working | Full CRUD + validation + usage tracking |
 | Account area | Working | Orders list, order detail, address management |
 | README | Partially outdated | Status table is reasonable; tech table still says Next.js 15 (repo uses 16); `.env` example omits Google OAuth and Cloudinary |
-| Tests | Minimal | Only `cart-merge.test.ts` exists |
+| Tests | Light | Unit tests under `tests/` (cart merge/operations, checkout summary, pricing, promotion validation, schema validation) |
 
 ---
 

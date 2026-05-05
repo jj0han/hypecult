@@ -4,7 +4,7 @@
 
 ### About
 
-Hypecult is a **Brazilian print-on-demand e-commerce platform** built with Next.js (App Router), Prisma, and tRPC. It handles product listings, cart management, a multi-step checkout flow, and order processing — with fulfillment via **Gelato** (print-on-demand provider). Product imagery can be delivered via **Cloudinary**. The UI is in **pt-BR** and supports Brazilian address lookups (CEP via ViaCEP, state/city via IBGE).
+Hypecult is a **Brazilian print-on-demand e-commerce platform** built with Next.js (App Router), Prisma, and tRPC. It handles product listings (including storefront search), cart management, a multi-step checkout flow, and order processing — with fulfillment via **Gelato** (print-on-demand provider). Admins manage products, promotions, and **product taxonomy** (categories and subcategories). Product imagery can be delivered via **Cloudinary**. The UI is in **pt-BR** and supports Brazilian address lookups (CEP via ViaCEP, state/city via IBGE).
 
 > **This project is currently under construction.** Features and integrations are still being developed and may change significantly.
 
@@ -111,9 +111,9 @@ pnpm dev
 
 | Area | Status |
 |------|--------|
-| Product listing & detail | Working |
+| Product listing, detail & search | Working |
 | Auth (login/register) | Working (credentials + Google) |
-| Admin (products, promotions) | Working |
+| Admin (products, promotions, taxonomy) | Working |
 | Cart | Working |
 | Checkout UI | Partial |
 | Payments (PSP) | Planned — no PSP integrated yet |
@@ -121,3 +121,4 @@ pnpm dev
 | Promotions/Coupons | Working |
 | Account area | Working |
 | Product images | Cloudinary integrated (see env vars) |
+| Unit tests | Light coverage in `tests/` |

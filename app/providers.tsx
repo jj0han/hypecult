@@ -220,7 +220,7 @@ function Intro({ onComplete }: { onComplete: () => void }) {
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   const trpcClient = getTrpcClient();
-  const [intro, setIntro] = useState(false);
+  const [intro, setIntro] = useState(true);
 
   useEffect(() => {
     if (!sessionStorage.getItem("intro-completed")) {
@@ -245,7 +245,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   <TooltipProvider>
                     <main key="content">{children}</main>
                     {intro && (
-                      <Intro key="intro" onComplete={() => setIntro(false)} />
+                      <Intro
+                        key="intro"
+                        onComplete={() => {
+                          setIntro(false);
+                        }}
+                      />
                     )}
                     <Toaster
                       richColors
