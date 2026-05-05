@@ -1,10 +1,5 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: we need to use the index as a key */
-import {
-  ChevronLeft,
-  CreditCard,
-  Lock,
-  User,
-} from "@hugeicons/core-free-icons";
+import { ArrowRight, CreditCard, Lock, User } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
@@ -244,15 +239,14 @@ export function StepPayment({
       <CardFooter className="flex justify-between flex-col sm:flex-row gap-4">
         <Button
           size="lg"
-          variant="outline"
+          variant="secondary"
           onClick={onPrev}
           className="w-full sm:w-auto"
         >
-          <HugeiconsIcon icon={ChevronLeft} strokeWidth={2} />
           Voltar
         </Button>
         <Button size="lg" onClick={onNext} className="w-full sm:w-auto">
-          Continuar
+          Continuar <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
         </Button>
       </CardFooter>
     </Card>

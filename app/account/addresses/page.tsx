@@ -285,7 +285,10 @@ export default function Page() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button onClick={handleCreateClick}>Adicionar endereço</Button>
+            <Button onClick={handleCreateClick}>
+              <HugeiconsIcon icon={Plus} strokeWidth={2} />
+              Adicionar endereço
+            </Button>
           </EmptyContent>
         </Empty>
       ) : (
@@ -354,7 +357,7 @@ export default function Page() {
                               </AlertDialogTitle>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel variant={"ghost"}>
+                              <AlertDialogCancel variant={"secondary"}>
                                 Cancelar
                               </AlertDialogCancel>
                               <AlertDialogAction

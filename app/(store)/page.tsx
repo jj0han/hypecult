@@ -5,7 +5,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import Link from "next/link";
-import { Fragment } from "react/jsx-runtime";
 import { ProductGrid } from "@/components/product-card";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -22,7 +21,7 @@ export default function Page() {
   const { data, isPending } = useQuery(trpc.product.list.queryOptions());
 
   return (
-    <Fragment>
+    <div className="min-h-svh">
       <Marquee className="py-8">
         <ProgressiveBlur
           direction="left"
@@ -68,6 +67,6 @@ export default function Page() {
           </div>
         </div>
       </div>
-    </Fragment>
+    </div>
   );
 }

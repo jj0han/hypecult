@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: template */
 import {
+  ArrowRight,
   Mail,
   MapPin,
   Phone,
@@ -509,7 +510,13 @@ export function StepShippingInfo({
           size="lg"
           className="w-full sm:w-auto ml-auto"
         >
-          {isPending ? <Spinner /> : "Continuar"}
+          {isPending ? (
+            <Spinner />
+          ) : (
+            <>
+              Continuar <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>

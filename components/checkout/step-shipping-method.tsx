@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: template */
 import {
+  ArrowRight,
   ArrowRight01Icon,
-  ChevronLeft,
   Fire02Icon,
   Truck,
 } from "@hugeicons/core-free-icons";
@@ -149,12 +149,12 @@ export function StepShippingMethod({
       </CardContent>
       <CardFooter className="flex justify-between flex-col sm:flex-row gap-4">
         <Button
-          variant="outline"
+          variant="secondary"
           size="lg"
           onClick={onPrev}
+          disabled={isPending}
           className="w-full sm:w-auto"
         >
-          <HugeiconsIcon icon={ChevronLeft} strokeWidth={2} />
           Voltar
         </Button>
         <Button
@@ -163,7 +163,13 @@ export function StepShippingMethod({
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          {isPending ? <Spinner /> : "Continuar"}
+          {isPending ? (
+            <Spinner />
+          ) : (
+            <>
+              Continuar <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
+            </>
+          )}
         </Button>
       </CardFooter>
     </Card>

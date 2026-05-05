@@ -4,7 +4,7 @@ import {
   Heart,
   Home01Icon,
   LockKeyIcon,
-  Logout01Icon,
+  Logout,
   Menu11Icon,
   SearchIcon,
   ShoppingCart02Icon,
@@ -171,7 +171,7 @@ export default function Header() {
                       <DialogTrigger
                         render={<DropdownMenuItem variant="destructive" />}
                       >
-                        <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                        <HugeiconsIcon icon={Logout} strokeWidth={2} />
                         Sair
                       </DialogTrigger>
                     </DropdownMenuContent>
@@ -195,6 +195,7 @@ export default function Header() {
                           />
                         }
                       >
+                        <HugeiconsIcon icon={Logout} strokeWidth={2} />
                         Sair
                       </DialogClose>
                     </DialogFooter>
@@ -352,7 +353,7 @@ export default function Header() {
               {user && (
                 <Dialog>
                   <DialogTrigger render={<Button variant="destructive" />}>
-                    <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                    <HugeiconsIcon icon={Logout} strokeWidth={2} />
                     Sair
                   </DialogTrigger>
                   <DialogContent>
@@ -374,6 +375,7 @@ export default function Header() {
                           />
                         }
                       >
+                        <HugeiconsIcon icon={Logout} strokeWidth={2} />
                         Sair
                       </DialogClose>
                     </DialogFooter>

@@ -1,9 +1,4 @@
-import {
-  Check,
-  ChevronLeft,
-  LockKeyhole,
-  Wallet,
-} from "@hugeicons/core-free-icons";
+import { Check, Security, Wallet } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -179,12 +174,11 @@ export function StepReview({
       <CardFooter className="flex justify-between flex-col sm:flex-row gap-4">
         <Button
           size="lg"
-          variant="outline"
+          variant="secondary"
           onClick={onPrev}
           disabled={orderPending}
           className="w-full sm:w-auto"
         >
-          <HugeiconsIcon icon={ChevronLeft} strokeWidth={2} />
           Voltar
         </Button>
         <Button
@@ -197,7 +191,7 @@ export function StepReview({
             <Spinner />
           ) : (
             <>
-              <HugeiconsIcon icon={LockKeyhole} strokeWidth={2} />
+              <HugeiconsIcon icon={Security} strokeWidth={2} />
               Finalizar pedido {formatCurrency(summary.total)}
             </>
           )}

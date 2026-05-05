@@ -57,7 +57,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -372,6 +371,7 @@ export default function Page() {
                                 <HugeiconsIcon
                                   icon={Share08Icon}
                                   strokeWidth={2}
+                                  className="size-6"
                                 />
                               </Button>
                             }
@@ -384,60 +384,79 @@ export default function Page() {
                                 amigos!
                               </DialogDescription>
                             </DialogHeader>
-                            <div className="flex gap-2">
-                              <Button
-                                variant={"secondary"}
-                                size={"icon"}
-                                onClick={handleShare}
-                                render={<DialogClose />}
-                              >
-                                <HugeiconsIcon
-                                  icon={ClipboardCopy}
-                                  strokeWidth={2}
+                            <div className="space-y-6">
+                              <div className="flex gap-2 justify-center">
+                                <Button
+                                  variant={"secondary"}
+                                  size={"icon-lg"}
+                                  onClick={handleShare}
+                                  render={<DialogClose />}
+                                  className="size-14 rounded-full"
+                                >
+                                  <HugeiconsIcon
+                                    icon={ClipboardCopy}
+                                    strokeWidth={2}
+                                    className="size-6"
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"link"}
+                                  size={"icon-lg"}
+                                  render={<DialogClose />}
+                                  className="bg-green-500 text-white size-14 rounded-full"
+                                >
+                                  <HugeiconsIcon
+                                    icon={WhatsappIcon}
+                                    strokeWidth={2}
+                                    className="size-6"
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"link"}
+                                  size={"icon-lg"}
+                                  render={<DialogClose />}
+                                  className="bg-blue-500 text-white size-14 rounded-full"
+                                >
+                                  <HugeiconsIcon
+                                    icon={Facebook02Icon}
+                                    strokeWidth={2}
+                                    className="size-6"
+                                  />
+                                </Button>
+                                <Button
+                                  variant={"link"}
+                                  size={"icon-lg"}
+                                  render={<DialogClose />}
+                                  className="bg-linear-to-tr from-10% from-yellow-500 via-rose-500 to-purple-600 text-white size-14 rounded-full"
+                                >
+                                  <HugeiconsIcon
+                                    icon={InstagramIcon}
+                                    strokeWidth={2}
+                                    className="size-6"
+                                  />
+                                </Button>
+                              </div>
+                              <InputGroup>
+                                <InputGroupInput
+                                  placeholder="Link"
+                                  value={`${window.location.origin}/product/${slug}`}
+                                  readOnly
+                                  className="truncate"
                                 />
-                              </Button>
-                              <Button
-                                variant={"link"}
-                                size={"icon"}
-                                render={<DialogClose />}
-                                className="bg-green-500 text-white"
-                              >
-                                <HugeiconsIcon
-                                  icon={WhatsappIcon}
-                                  strokeWidth={2}
-                                />
-                              </Button>
-                              <Button
-                                variant={"link"}
-                                size={"icon"}
-                                render={<DialogClose />}
-                                className="bg-blue-500 text-white"
-                              >
-                                <HugeiconsIcon
-                                  icon={Facebook02Icon}
-                                  strokeWidth={2}
-                                />
-                              </Button>
-                              <Button
-                                variant={"link"}
-                                size={"icon"}
-                                render={<DialogClose />}
-                                className="bg-linear-to-tr from-10% from-yellow-500 via-rose-500 to-purple-600 text-white"
-                              >
-                                <HugeiconsIcon
-                                  icon={InstagramIcon}
-                                  strokeWidth={2}
-                                />
-                              </Button>
+                                <InputGroupAddon align="inline-end">
+                                  <InputGroupButton
+                                    variant="ghost"
+                                    size="icon-xs"
+                                    onClick={handleShare}
+                                  >
+                                    <HugeiconsIcon
+                                      icon={ClipboardCopy}
+                                      strokeWidth={2}
+                                    />
+                                  </InputGroupButton>
+                                </InputGroupAddon>
+                              </InputGroup>
                             </div>
-                            <DialogFooter>
-                              <Button
-                                variant={"outline"}
-                                render={<DialogClose />}
-                              >
-                                Cancelar
-                              </Button>
-                            </DialogFooter>
                           </DialogContent>
                         </Dialog>
                       </div>

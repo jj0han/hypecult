@@ -99,6 +99,7 @@ function Intro({ onComplete }: { onComplete: () => void }) {
           sessionStorage.setItem("intro-completed", "true");
         },
       });
+      tl.timeScale(1.35);
       tl.fromTo(
         ".stroke-logo-animation",
         { opacity: 0 },

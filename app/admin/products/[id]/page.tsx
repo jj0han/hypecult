@@ -537,19 +537,21 @@ export default function AdminProductEditPage() {
               widget.close();
             }}
           >
-            {({ open }) => (
-              <Button
-                onClick={() => open()}
-                disabled={p.images.length >= 6 || addImage.isPending}
-              >
-                Adicionar
-                {addImage.isPending ? (
-                  <Spinner />
-                ) : (
-                  <HugeiconsIcon icon={Plus} strokeWidth={2} />
-                )}
-              </Button>
-            )}
+            {({ open }) =>
+              p.images.length > 0 && (
+                <Button
+                  onClick={() => open()}
+                  disabled={p.images.length >= 6 || addImage.isPending}
+                >
+                  Adicionar
+                  {addImage.isPending ? (
+                    <Spinner />
+                  ) : (
+                    <HugeiconsIcon icon={Plus} strokeWidth={2} />
+                  )}
+                </Button>
+              )
+            }
           </CldUploadWidget>
         </CardHeader>
         <CardContent>
@@ -580,9 +582,7 @@ export default function AdminProductEditPage() {
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
-                    <Button variant="outline" size="sm">
-                      Fazer upload
-                    </Button>
+                    <Button>Fazer upload</Button>
                   </EmptyContent>
                 </Empty>
               )}

@@ -1,5 +1,9 @@
 "use client";
-import { ArrowRight01Icon, ShoppingBag } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight,
+  ArrowRight01Icon,
+  ShoppingBag,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -51,7 +55,9 @@ export default function Page() {
           <EmptyDescription>Voce ainda nao fez nenhum pedido.</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button render={<Link href="/" />}>Ir para a loja</Button>
+          <Button render={<Link href="/" />}>
+            Ir para a loja <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
+          </Button>
         </EmptyContent>
       </Empty>
     );

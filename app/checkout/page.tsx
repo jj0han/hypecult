@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  ArrowRight,
   PolicyIcon,
   ShieldCheck,
   ShoppingBag,
@@ -26,12 +27,13 @@ import { StepShippingInfo } from "@/components/checkout/step-shipping-info";
 import { StepShippingMethod } from "@/components/checkout/step-shipping-method";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Item,
   ItemContent,
@@ -463,24 +465,23 @@ export default function Page() {
       {isLoading ? (
         <CheckoutSkeleton />
       ) : !cart ? (
-        <Card className="flex flex-col gap-6 max-w-md mx-auto w-full">
-          <CardHeader>
-            <CardTitle>Nenhum item no carrinho</CardTitle>
-            <CardDescription>
+        <Empty className="border">
+          <EmptyMedia variant="icon">
+            <HugeiconsIcon icon={ShoppingBag} strokeWidth={2} />
+          </EmptyMedia>
+          <EmptyHeader>
+            <EmptyTitle>Nenhum item no carrinho</EmptyTitle>
+            <EmptyDescription>
               Adicione itens ao carrinho para continuar com a compra
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button
-              onClick={() => router.push("/")}
-              size="lg"
-              className="w-full sm:w-auto sm:ml-auto"
-            >
-              <HugeiconsIcon icon={ShoppingBag} strokeWidth={2} />
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={() => router.push("/")} size="lg">
               Ir para a loja
+              <HugeiconsIcon icon={ArrowRight} strokeWidth={2} />
             </Button>
-          </CardFooter>
-        </Card>
+          </EmptyContent>
+        </Empty>
       ) : (
         <>
           <div className="flex flex-col space-y-2">

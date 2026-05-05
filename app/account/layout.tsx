@@ -2,7 +2,7 @@
 import {
   ArrowLeft01Icon,
   GridViewIcon,
-  Logout01Icon,
+  Logout,
   MapPin,
   ShoppingBag,
   User,
@@ -142,7 +142,7 @@ export default function RootLayout({
                         />
                       }
                     >
-                      <HugeiconsIcon icon={Logout01Icon} strokeWidth={2} />
+                      <HugeiconsIcon icon={Logout} strokeWidth={2} />
                       Sair
                     </DialogTrigger>
                     <DialogContent>
@@ -164,6 +164,7 @@ export default function RootLayout({
                             />
                           }
                         >
+                          <HugeiconsIcon icon={Logout} strokeWidth={2} />
                           Sair
                         </DialogClose>
                       </DialogFooter>
