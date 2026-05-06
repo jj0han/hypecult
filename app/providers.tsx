@@ -3,6 +3,13 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import {
+  AlertTriangle,
+  CancelCircleIcon,
+  CheckmarkCircleIcon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
@@ -10,7 +17,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import superjson from "superjson";
 import { Toaster } from "@/components/ui/sonner";
 import { Spinner } from "@/components/ui/spinner";
@@ -99,74 +106,73 @@ function Intro({ onComplete }: { onComplete: () => void }) {
           sessionStorage.setItem("intro-completed", "true");
         },
       });
-      tl.timeScale(1.35);
-      tl.fromTo(
-        ".stroke-logo-animation",
-        { opacity: 0 },
-        { opacity: 1, duration: 0.4, ease: "power2.inOut", stagger }
-      )
-        .to(
+      if (!session) {
+        tl.timeScale(1.35);
+        tl.fromTo(
           ".stroke-logo-animation",
-          { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
-          "-=0.1"
-        )
-        .to(gsap.utils.toArray(".stroke-logo-animation").slice(0, 3), {
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.inOut",
-          stagger,
-        })
-        .to(
-          gsap.utils.toArray(".stroke-logo-animation").slice(0, 3),
-          { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
-          "-=0.1"
-        )
-        .fromTo(
-          logoAnimEl,
           { opacity: 0 },
-          { opacity: 1, duration: 0.4 },
-          "-=0.7"
+          { opacity: 1, duration: 0.4, ease: "power2.inOut", stagger }
         )
-        .fromTo(
-          logoAnimEl,
-          { scale: 1 },
-          { scale: 1.05, duration: 1, delay: 0.1, ease: "sine.out" },
-          "-=0.2"
-        )
-        .to(logoAnimEl, { scale: 1, ease: "sine.in", duration: 0.5 })
-        .to(
-          logoAnimEl,
-          {
-            x: targetX,
-            y: targetY,
-            scale: 1,
-            width: targetW * scaleFactor,
-            height: targetH * scaleFactor,
-            duration: 0.8,
-            ease: "sine.inOut",
-          },
-          "-=0.1"
-        )
-        .fromTo(
-          ".background-animation",
-          { y: 0 },
-          {
-            y: "-100%",
-            duration: 0.5,
-            stagger: { each: 0.15, from: "end" },
+          .to(
+            ".stroke-logo-animation",
+            { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
+            "-=0.1"
+          )
+          .to(gsap.utils.toArray(".stroke-logo-animation").slice(0, 3), {
+            opacity: 1,
+            duration: 0.4,
             ease: "power2.inOut",
-          }
-        );
+            stagger,
+          })
+          .to(
+            gsap.utils.toArray(".stroke-logo-animation").slice(0, 3),
+            { opacity: 0, duration: 0.4, ease: "power2.inOut", stagger },
+            "-=0.1"
+          )
+          .fromTo(
+            logoAnimEl,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.4 },
+            "-=0.7"
+          )
+          .fromTo(
+            logoAnimEl,
+            { scale: 1 },
+            { scale: 1.05, duration: 1, delay: 0.1, ease: "sine.out" },
+            "-=0.2"
+          )
+          .to(logoAnimEl, { scale: 1, ease: "sine.in", duration: 0.5 })
+          .to(
+            logoAnimEl,
+            {
+              x: targetX,
+              y: targetY,
+              scale: 1,
+              width: targetW * scaleFactor,
+              height: targetH * scaleFactor,
+              duration: 0.8,
+              ease: "sine.inOut",
+            },
+            "-=0.1"
+          )
+          .fromTo(
+            ".background-animation",
+            { y: 0 },
+            {
+              y: "-100%",
+              duration: 0.5,
+              stagger: { each: 0.15, from: "end" },
+              ease: "power2.inOut",
+            }
+          );
+      }
     },
     { scope: introRootRef }
   );
 
-  if (typeof window === "undefined") return null;
   const session = sessionStorage.getItem("intro-completed");
 
-  if (session) {
-    return null;
-  }
+  if (typeof window === "undefined" || session) return null;
 
   return (
     <div
@@ -222,11 +228,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const trpcClient = getTrpcClient();
   const [intro, setIntro] = useState(true);
 
-  useEffect(() => {
-    if (!sessionStorage.getItem("intro-completed")) {
+  if (typeof window !== "undefined") {
+    if (!sessionStorage.getItem("intro-completed") && intro !== true) {
       setIntro(true);
     }
-  }, []);
+  }
 
   return (
     <SessionProvider>
@@ -253,9 +259,38 @@ export function Providers({ children }: { children: React.ReactNode }) {
                       />
                     )}
                     <Toaster
-                      richColors
                       theme="light"
                       position="bottom-center"
+                      icons={{
+                        success: (
+                          <HugeiconsIcon
+                            icon={CheckmarkCircleIcon}
+                            strokeWidth={2}
+                            className="size-4 text-green-500"
+                          />
+                        ),
+                        error: (
+                          <HugeiconsIcon
+                            icon={CancelCircleIcon}
+                            strokeWidth={2}
+                            className="size-4 text-red-500"
+                          />
+                        ),
+                        info: (
+                          <HugeiconsIcon
+                            icon={InformationCircleIcon}
+                            strokeWidth={2}
+                            className="size-4 text-blue-500"
+                          />
+                        ),
+                        warning: (
+                          <HugeiconsIcon
+                            icon={AlertTriangle}
+                            strokeWidth={2}
+                            className="size-4 text-yellow-600"
+                          />
+                        ),
+                      }}
                     />
                   </TooltipProvider>
                 </AuthProvider>
