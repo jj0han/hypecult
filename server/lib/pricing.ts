@@ -12,10 +12,12 @@ export function computeFinalPrice(
     return price;
   }
   if (discountType === "percentage") {
-    return Math.round(price * (1 - discountAmount / 100) * 10) / 10;
+    return Number(
+      (Math.max(price * (1 - discountAmount / 100) * 10) / 10).toFixed(2)
+    );
   }
   if (discountType === "fixed") {
-    return (Math.round(price - discountAmount) * 10) / 10;
+    return Number(Math.max(((price - discountAmount) * 10) / 10).toFixed(2));
   }
   return price;
 }

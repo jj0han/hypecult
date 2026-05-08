@@ -170,9 +170,11 @@ function Intro({ onComplete }: { onComplete: () => void }) {
     { scope: introRootRef }
   );
 
+  if (typeof window === "undefined") return null;
+
   const session = sessionStorage.getItem("intro-completed");
 
-  if (typeof window === "undefined" || session) return null;
+  if (session) return null;
 
   return (
     <div
