@@ -64,8 +64,6 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
       const timer = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(timer);
     }
-    setInputValue("");
-    setDebouncedQuery("");
   }, [open]);
 
   const hasQuery = debouncedQuery.length > 0;
