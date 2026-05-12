@@ -270,6 +270,7 @@ export default function Header() {
                     <Image
                       src="/HYPECULT.svg"
                       alt="Hypecult"
+                      fetchPriority="high"
                       width={300}
                       height={300}
                       className="object-contain dark:brightness-[0.2] dark:grayscale h-full w-full"

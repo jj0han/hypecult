@@ -126,6 +126,7 @@ export function Intro({ onComplete }: { onComplete: () => void }) {
               <Image
                 src="/HYPECULT.svg"
                 alt="Hypecult"
+                fetchPriority="high"
                 width={2000}
                 height={2000}
                 className="z-50"
@@ -142,6 +143,7 @@ export function Intro({ onComplete }: { onComplete: () => void }) {
                 <Image
                   alt="Hypecult"
                   src="/HYPECULT-4.svg"
+                  fetchPriority="high"
                   width={2000}
                   height={2000}
                 />

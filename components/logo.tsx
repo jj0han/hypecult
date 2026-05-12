@@ -22,6 +22,7 @@ export default function Logo({
         <Image
           src="/HYPECULT.svg"
           alt="Hypecult"
+          fetchPriority="high"
           width={200}
           height={200}
           className="object-contain h-full w-full"

@@ -8,8 +8,9 @@ import FastMarquee from "react-fast-marquee";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  bg: string;
+  bg?: string;
   mask: string;
+  className?: string;
 };
 
 export type MarqueeProps = HTMLAttributes<HTMLDivElement>;
@@ -62,7 +63,7 @@ export const MarqueeItem = ({ className, ...props }: MarqueeItemProps) => (
   <div className={cn("mx-2 shrink-0 object-contain", className)} {...props} />
 );
 
-export function MaskedMarqueeItem({ bg, mask }: Props) {
+export function MaskedMarqueeItem({ bg, mask, className }: Props) {
   const ref = useRef<HTMLLinkElement>(null);
 
   const bgX = useMotionValue(0);
@@ -92,7 +93,7 @@ export function MaskedMarqueeItem({ bg, mask }: Props) {
     <motion.link
       ref={ref}
       fetchPriority="high"
-      className="h-full aspect-587/59 block"
+      className={cn("h-full aspect-587/59 block bg-background", className)}
       style={{
         backgroundImage: `url(${bg})`,
         backgroundPositionX: bgX,

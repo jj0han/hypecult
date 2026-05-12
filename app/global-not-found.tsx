@@ -36,6 +36,7 @@ export default function GlobalNotFound() {
                 <Image
                   src="/HYPECULT.svg"
                   alt="Hypecult"
+                  fetchPriority="high"
                   width={300}
                   height={300}
                   className="object-contain h-full w-full"

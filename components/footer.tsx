@@ -15,6 +15,7 @@ export default function Footer() {
           <Image
             src="/HYPECULT.svg"
             alt="Hypecult"
+            fetchPriority="high"
             width={150}
             height={150}
             className="object-contain w-38 h-10"
