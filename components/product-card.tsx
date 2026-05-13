@@ -91,7 +91,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               <CldImage
                 src={image?.publicId ?? image?.url ?? "placeholder"}
                 alt={image?.alt ?? ""}
-                fill
+                format="webp"
+                width={600}
+                height={600}
                 crop="fill"
                 gravity="auto"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 25vw"

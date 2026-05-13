@@ -5,6 +5,10 @@ import type {
   ShirtSize,
 } from "@/server/db/generated/prisma/enums";
 
+export async function copyToClipboard(text: string) {
+  await navigator.clipboard.writeText(text);
+}
+
 export function getStatusVariant(
   status: OrderStatus
 ): VariantProps<typeof badgeVariants>["variant"] {

@@ -7,13 +7,15 @@ import {
   Touch04Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Dithering, GrainGradient } from "@paper-design/shaders-react";
+import { Dithering, GrainGradient, Heatmap } from "@paper-design/shaders-react";
 import { useQuery } from "@tanstack/react-query";
 import Autoplay from "embla-carousel-autoplay";
 import { motion } from "motion/react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { ProductGrid } from "@/components/product-card";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -36,7 +38,7 @@ import {
 } from "@/components/ui/marquee";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { useTRPC } from "@/lib/trpc";
-import { useEffect, useState } from "react";
+import { copyToClipboard } from "@/utils/helpers";
 
 export default function Page() {
   const trpc = useTRPC();
@@ -45,12 +47,12 @@ export default function Page() {
     useQuery(
       trpc.product.list.queryOptions({
         subcategoryIds: ["fa9a39c3-9a1a-4d0b-8b01-98403419df85"],
-      }),
+      })
     );
   const { data: gamesData, isPending: isPendingGamesData } = useQuery(
     trpc.product.list.queryOptions({
       subcategoryIds: ["e7bf922b-3c76-48ac-afb2-4fed371642ef"],
-    }),
+    })
   );
   const [isActive, setIsActive] = useState(true);
 
@@ -78,7 +80,7 @@ export default function Page() {
       >
         <CarouselContent>
           <CarouselItem>
-            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100vh-131px)]">
+            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
               <div className="absolute inset-0 flex flex-col space-y-4 justify-center items-center p-6">
                 <motion.h1
                   animate={{
@@ -100,7 +102,7 @@ export default function Page() {
                 >
                   Evento de Lançamento
                 </motion.h2>
-                <motion.div
+                <motion.form
                   animate={{
                     y: [-100, 0],
                     opacity: [0, 0.9],
@@ -108,22 +110,39 @@ export default function Page() {
                   }}
                   className="z-10 mt-16 flex flex-col items-center gap-4"
                 >
-                  <Label className="text-background text-center text-sm md:text-lg z-10 text-shadow-2xs">
+                  <Label
+                    htmlFor="coupon-code"
+                    className="text-background text-center text-sm md:text-lg z-10 text-shadow-md"
+                  >
                     10% de Desconto na sua primeira compra com o código:
                   </Label>
                   <InputGroup className="w-52 h-auto">
                     <InputGroupInput
+                      id="coupon-code"
                       defaultValue="WELCOME10"
                       readOnly
                       className="text-background text-lg! md:text-xl! font-bold text-center tracking-wide"
                     />
                     <InputGroupAddon align="inline-end">
-                      <InputGroupButton size="icon-sm" variant="default">
+                      <InputGroupButton
+                        title="Copiar código de cupom"
+                        size="icon-sm"
+                        variant="default"
+                        onClick={async () =>
+                          await copyToClipboard("WELCOME10")
+                            .finally(() => {
+                              toast.success("Código de cupom copiado");
+                            })
+                            .catch(() => {
+                              toast.error("Erro ao copiar cupom");
+                            })
+                        }
+                      >
                         <HugeiconsIcon icon={CopyIcon} strokeWidth={2} />
                       </InputGroupButton>
                     </InputGroupAddon>
                   </InputGroup>
-                </motion.div>
+                </motion.form>
               </div>
               <motion.div
                 animate={{
@@ -134,7 +153,7 @@ export default function Page() {
               >
                 <Image
                   alt=""
-                  src={"/editor_front-removebg-preview.png"}
+                  src={"/editor_front-removebg-preview.webp"}
                   fill
                   fetchPriority="high"
                   className="object-contain grayscale contrast-200"
@@ -155,7 +174,7 @@ export default function Page() {
             </div>
           </CarouselItem>
           <CarouselItem>
-            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100vh-131px)]">
+            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
               <Dithering
                 width={"100%"}
                 height={"100%"}
@@ -167,6 +186,34 @@ export default function Page() {
                 size={2.5}
                 speed={0.15}
                 scale={0.84}
+              />
+            </div>
+          </CarouselItem>
+          <CarouselItem>
+            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
+              <Heatmap
+                width={"100%"}
+                height={"100%"}
+                image="/eldenring.png"
+                colors={[
+                  "#efb02a",
+                  "#ffffff",
+                  "#ebf0ff",
+                  "#ffffff",
+                  "#ffe77a",
+                  "#ff9a1f",
+                  "#ff4d00",
+                  "#9933cc",
+                ]}
+                colorBack="#00000000"
+                contour={1}
+                angle={0}
+                noise={0}
+                innerGlow={1}
+                outerGlow={0.25}
+                speed={0.66}
+                scale={0.5}
+                fit="contain"
               />
             </div>
           </CarouselItem>
@@ -247,7 +294,7 @@ export default function Page() {
               className="h-14 sm:h-24 lg:h-36 sm:mx-16 mx-8"
             >
               <MaskedMarqueeItem
-                bg="/background.png"
+                bg="/background.webp"
                 mask="/HYPECULT-WHITE.svg"
               />
             </MarqueeItem>

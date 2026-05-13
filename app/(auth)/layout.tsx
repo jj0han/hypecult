@@ -17,7 +17,7 @@ export default function RootLayout({
         </div>
       </div>
       <div className="relative hidden lg:block overflow-hidden">
-        <div className="bg-[url('/background.png')] bg-cover bg-center grayscale brightness-75 absolute inset-0 blur-xs scale-110" />
+        <div className="bg-[url('/background.webp')] bg-cover bg-center grayscale brightness-75 absolute inset-0 blur-xs scale-110" />
         <Image
           src="/HYPECULT-WHITE.svg"
           alt="Login"
