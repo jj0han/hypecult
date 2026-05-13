@@ -1,35 +1,13 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: we need to use the index as a key */
 "use client";
-import {
-  ArrowRight,
-  CopyIcon,
-  Mouse22FreeIcons,
-  Touch04Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowRight } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Dithering, GrainGradient, Heatmap } from "@paper-design/shaders-react";
 import { useQuery } from "@tanstack/react-query";
-import Autoplay from "embla-carousel-autoplay";
-import { motion } from "motion/react";
 import type { Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { AnimatedCarousel } from "@/components/animations/animated-carousel";
 import { ProductGrid } from "@/components/product-card";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
 import {
   Marquee,
   MarqueeContent,
@@ -38,7 +16,6 @@ import {
 } from "@/components/ui/marquee";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { useTRPC } from "@/lib/trpc";
-import { copyToClipboard } from "@/utils/helpers";
 
 export default function Page() {
   const trpc = useTRPC();
@@ -54,186 +31,10 @@ export default function Page() {
       subcategoryIds: ["e7bf922b-3c76-48ac-afb2-4fed371642ef"],
     })
   );
-  const [isActive, setIsActive] = useState(true);
-
-  useEffect(() => {
-    function handleVisibilityChange() {
-      setIsActive(!document.hidden);
-    }
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
 
   return (
     <div className="min-h-svh">
-      <Carousel
-        opts={{ active: isActive, loop: true }}
-        plugins={[
-          Autoplay({
-            active: isActive,
-            delay: 10000,
-          }),
-        ]}
-      >
-        <CarouselContent>
-          <CarouselItem>
-            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
-              <div className="absolute inset-0 flex flex-col space-y-4 justify-center items-center p-6">
-                <motion.h1
-                  animate={{
-                    y: [-100, 0],
-                    opacity: [0, 1],
-                    transition: { duration: 0.7, ease: "easeOut" },
-                  }}
-                  className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] font-extrabold text-background z-0 uppercase"
-                >
-                  Hypecult.
-                </motion.h1>
-                <motion.h2
-                  animate={{
-                    y: [-100, 0],
-                    opacity: [0, 0.9],
-                    transition: { duration: 0.7, delay: 0.1, ease: "easeOut" },
-                  }}
-                  className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-semibold text-background z-10"
-                >
-                  Evento de Lançamento
-                </motion.h2>
-                <motion.form
-                  animate={{
-                    y: [-100, 0],
-                    opacity: [0, 0.9],
-                    transition: { duration: 0.7, delay: 0.1, ease: "easeOut" },
-                  }}
-                  className="z-10 mt-16 flex flex-col items-center gap-4"
-                >
-                  <Label
-                    htmlFor="coupon-code"
-                    className="text-background text-center text-sm md:text-lg z-10 text-shadow-md"
-                  >
-                    10% de Desconto na sua primeira compra com o código:
-                  </Label>
-                  <InputGroup className="w-52 h-auto">
-                    <InputGroupInput
-                      id="coupon-code"
-                      defaultValue="WELCOME10"
-                      readOnly
-                      className="text-background text-lg! md:text-xl! font-bold text-center tracking-wide"
-                    />
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupButton
-                        title="Copiar código de cupom"
-                        size="icon-sm"
-                        variant="default"
-                        onClick={async () =>
-                          await copyToClipboard("WELCOME10")
-                            .finally(() => {
-                              toast.success("Código de cupom copiado");
-                            })
-                            .catch(() => {
-                              toast.error("Erro ao copiar cupom");
-                            })
-                        }
-                      >
-                        <HugeiconsIcon icon={CopyIcon} strokeWidth={2} />
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </motion.form>
-              </div>
-              <motion.div
-                animate={{
-                  y: [200, 0],
-                  transition: { duration: 0.7, delay: 0.1, ease: "easeInOut" },
-                }}
-                className="absolute h-full w-full right-0 top-0"
-              >
-                <Image
-                  alt=""
-                  src={"/editor_front-removebg-preview.webp"}
-                  fill
-                  fetchPriority="high"
-                  className="object-contain grayscale contrast-200"
-                />
-              </motion.div>
-              <GrainGradient
-                colors={["#c70035", "#ff8ff4db", "#adceffdb"]}
-                colorBack="#00000000"
-                softness={0.5}
-                intensity={0.4}
-                noise={0.25}
-                shape="corners"
-                speed={1}
-                fit="cover"
-                width={"100%"}
-                height={"100%"}
-              />
-            </div>
-          </CarouselItem>
-          <CarouselItem>
-            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
-              <Dithering
-                width={"100%"}
-                height={"100%"}
-                fit="cover"
-                colorBack="#000000"
-                colorFront="#a9ae56"
-                shape="warp"
-                type="4x4"
-                size={2.5}
-                speed={0.15}
-                scale={0.84}
-              />
-            </div>
-          </CarouselItem>
-          <CarouselItem>
-            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
-              <Heatmap
-                width={"100%"}
-                height={"100%"}
-                image="/eldenring.png"
-                colors={[
-                  "#efb02a",
-                  "#ffffff",
-                  "#ebf0ff",
-                  "#ffffff",
-                  "#ffe77a",
-                  "#ff9a1f",
-                  "#ff4d00",
-                  "#9933cc",
-                ]}
-                colorBack="#00000000"
-                contour={1}
-                angle={0}
-                noise={0}
-                innerGlow={1}
-                outerGlow={0.25}
-                speed={0.66}
-                scale={0.5}
-                fit="contain"
-              />
-            </div>
-          </CarouselItem>
-        </CarouselContent>
-        <div className="absolute bottom-12 left-1/2 z-50 text-muted-foreground flex flex-col items-center -translate-x-1/2">
-          <HugeiconsIcon
-            icon={Mouse22FreeIcons}
-            strokeWidth={2}
-            className="animate-bounce hidden md:block"
-          />
-          <div className="animate-bounce md:hidden">
-            <HugeiconsIcon
-              icon={Touch04Icon}
-              strokeWidth={2}
-              className="-rotate-45"
-            />
-          </div>
-          <span>Scroll</span>
-        </div>
-      </Carousel>
+      <AnimatedCarousel />
       <div className="px-6">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-4 py-4">
