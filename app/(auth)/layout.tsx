@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MeshGradient } from "@paper-design/shaders-react";
 import Logo from "@/components/logo";
 
 export default function RootLayout({
@@ -17,12 +17,14 @@ export default function RootLayout({
         </div>
       </div>
       <div className="relative hidden lg:block overflow-hidden">
-        <div className="bg-[url('/background.webp')] bg-cover bg-center grayscale brightness-75 absolute inset-0 blur-xs scale-110" />
-        <Image
-          src="/HYPECULT-WHITE.svg"
-          alt="Login"
-          fill
-          className="object-contain dark:brightness-[0.2] dark:grayscale scale-95"
+        <MeshGradient
+          width={"100%"}
+          height={"100%"}
+          fit="contain"
+          colors={["#000000", "#0a0024", "#c93636", "#9c2121"]}
+          grainMixer={0.1}
+          grainOverlay={0.2}
+          speed={0.5}
         />
       </div>
     </div>

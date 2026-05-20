@@ -29,8 +29,8 @@ const GrainGradient = dynamic(
   () => import("@paper-design/shaders-react").then((mod) => mod.GrainGradient),
   { ssr: false }
 );
-const Heatmap = dynamic(
-  () => import("@paper-design/shaders-react").then((mod) => mod.Heatmap),
+const GemSmoke = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.GemSmoke),
   { ssr: false }
 );
 
@@ -102,7 +102,7 @@ export function AnimatedCarousel() {
                     transition: {
                       duration: 0.7,
                       ease: "easeOut",
-                      delay: 0.2,
+                      delay: 0.3,
                     },
                   }}
                   className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] xl:text-[16rem] 2xl:text-[20rem] font-extrabold text-background z-0 uppercase"
@@ -181,15 +181,17 @@ export function AnimatedCarousel() {
                 className="absolute h-full w-full right-0 top-0"
               >
                 <Image
-                  alt=""
+                  alt="person"
                   src={"/editor_front-removebg-preview.webp"}
                   fill
                   fetchPriority="high"
                   className="object-contain grayscale contrast-200"
                 />
               </motion.div>
-
               <GrainGradient
+                width={"100%"}
+                height={"100%"}
+                fit="cover"
                 colors={["#c70035", "#ff8ff4db", "#adceffdb"]}
                 colorBack="#00000000"
                 softness={0.5}
@@ -197,14 +199,38 @@ export function AnimatedCarousel() {
                 noise={0.25}
                 shape="corners"
                 speed={selectedSlide === 0 && isActive ? 1 : 0}
-                fit="cover"
-                width={"100%"}
-                height={"100%"}
               />
             </div>
           )}
         </CarouselItem>
         <CarouselItem>
+          {mountedShaders.has(1) && (
+            <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
+              <GemSmoke
+                width={"100%"}
+                height={"100%"}
+                fit="contain"
+                image="/HYPECULT.svg"
+                colors={["#333333", "#e7e6df"]}
+                colorBack="#f0efea"
+                colorInner="#fafaf5"
+                minPixelRatio={1}
+                maxPixelCount={1080 * 1920}
+                shape={undefined}
+                innerDistortion={0.8}
+                outerDistortion={0.6}
+                outerGlow={0.55}
+                innerGlow={1}
+                offset={0}
+                angle={0}
+                size={0.8}
+                speed={0.8}
+                scale={0.6}
+              />
+            </div>
+          )}
+        </CarouselItem>
+        {/*<CarouselItem>
           {mountedShaders.has(1) && (
             <div className="bg-foreground m-6 rounded-4xl relative overflow-hidden h-[calc(100svh-131px)]">
               <div
@@ -267,7 +293,7 @@ export function AnimatedCarousel() {
               />
             </div>
           )}
-        </CarouselItem>
+        </CarouselItem>*/}
       </CarouselContent>
       <div className="absolute bottom-12 left-1/2 z-50 text-muted-foreground flex flex-col items-center -translate-x-1/2">
         <HugeiconsIcon

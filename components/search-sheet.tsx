@@ -193,7 +193,7 @@ export function SearchSheet({ open, onOpenChange }: SearchSheetProps) {
                                 style={{ objectFit: "cover" }}
                               />
                               {discountLabel && (
-                                <Badge className="absolute top-2 left-2 bg-green-600">
+                                <Badge className="absolute top-2 left-2 bg-green-700">
                                   {discountLabel}
                                 </Badge>
                               )}
